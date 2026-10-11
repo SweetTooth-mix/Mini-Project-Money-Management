@@ -1,147 +1,161 @@
-# Kira Rapi — JKKR App
+# Kira Rapi
 
-Kira Rapi ialah aplikasi web pengurusan kewangan untuk **Jawatankuasa Kemajuan & Keselamatan Kampung (JKKR)**. Aplikasi ini mengurus akaun, transaksi, dana, yuran ahli, serta penyediaan dan cetakan resit, baucer, dan rumusan kewangan.
+**Urus kewangan dengan lebih rapi.**
 
-> Dokumentasi ini berdasarkan ringkasan sistem sedia ada. Kod aplikasi, schema Prisma, dan skrip projek belum tersedia dalam repository ini; arahan setup di bawah ialah panduan umum yang perlu disemak apabila kod dimasukkan.
+Aplikasi pengurusan kewangan komuniti dalam Bahasa Melayu: buku tunai, akaun dan dana, resit/baucer, yuran ahli, rumusan bulanan, serta jejak audit. Versi baharu ini dibina untuk satu organisasi bagi setiap pemasangan.
 
-## Stack teknologi
+![Dashboard Kira Rapi dengan data demonstrasi](docs/screenshots/dashboard.png)
 
-| Komponen | Teknologi |
+## Apa yang tersedia
+
+| Modul | Fungsi |
 | --- | --- |
-| Framework | Next.js 14.2.5, App Router, React 18 |
-| Bahasa | TypeScript |
-| Pangkalan data | PostgreSQL 16 |
-| ORM | Prisma 5.22 |
-| Authentication | JWT melalui `jose`, `bcryptjs`, cookie session selama 8 jam |
-| UI | Tailwind CSS, design system `kira-rapi-ui.css`, `lucide-react`, `recharts` |
-| Deployment | PM2, nginx reverse proxy |
+| Dashboard | Baki, penerimaan, perbelanjaan, tunggakan yuran, carta enam bulan dan dokumen menunggu semakan |
+| Buku tunai | Ledger berturutan, baki berjalan, penapis bulan/akaun/dana, pindahan dalaman dan eksport CSV |
+| Resit & baucer | Cipta/sunting draf, lampiran PDF/PNG/JPEG, kelulusan, rekod bayaran, pembatalan dan cetakan A4 |
+| Yuran ahli | Daftar ahli, kadar bulanan, jana yuran tanpa pendua dan kutipan melalui resit |
+| Akaun & dana | Akaun bank/tunai/lain-lain, baki pembukaan serta dana tersuai |
+| Rumusan | Pecahan kategori, baki awal/akhir, butiran pelarasan dan cetakan/simpan PDF melalui browser |
+| Tetapan | Profil organisasi, penandatangan, pengguna, permohonan akses, kata laluan dan kunci tempoh kewangan |
+| Audit | Rekod tindakan dengan pengguna, masa dan butiran perubahan |
 
-## Fungsi utama
+UI menyokong desktop dan telefon. Font dibekalkan bersama aplikasi; tiada permintaan font pihak ketiga diperlukan semasa digunakan.
 
-- **Akaun kewangan:** akaun BANK, CASH, dan OTHER dengan baki pembukaan.
-- **Buku tunai:** rekod pendapatan dan perbelanjaan, ledger, serta penapisan transaksi.
-- **Pengurusan dana:** pengasingan transaksi mengikut dana.
-- **Resit dan baucer:** dokumen berstatus DRAFT, APPROVED, atau PAID, dengan sokongan cetakan.
-- **Rumusan kewangan:** pengiraan baki pembukaan dan penutupan bulanan serta cetakan laporan.
-- **Yuran ahli:** rekod yuran bulanan.
-- **Tetapan organisasi:** profil organisasi, akaun, senarai, template dokumen, dan kelulusan.
-- **Audit:** jejak tindakan melalui AuditLog.
+## Ketepatan kewangan
 
-## Model data
+- Nilai wang disimpan sebagai **integer sen (`BIGINT`)** dan dikira menggunakan `bigint`, bukan floating point.
+- Baki berasal daripada ledger; tiada medan baki akaun berasingan yang perlu diselaraskan.
+- Baki awal dimasukkan sebagai entri pembukaan dengan akaun dan dana yang jelas.
+- Draf tidak mengubah baki. Aliran biasa ialah **DRAFT → PENDING → APPROVED → PAID**.
+- Penyedia tidak boleh meluluskan dokumen sendiri, termasuk Super Admin. Sediakan sekurang-kurangnya dua pengguna untuk proses kelulusan.
+- Catatan bayaran, kemas kini yuran, status dokumen dan audit berlaku dalam satu transaksi database.
+- Kekangan unik dan penguncian transaksi menghalang catatan bayaran berganda, termasuk permintaan serentak.
+- Bayaran yang dibatalkan menghasilkan entri pembalikan. Entri asal dan log audit tidak boleh diubah atau dipadam oleh operasi biasa aplikasi.
+- Pindahan merekodkan dua entri yang seimbang dan tidak dianggap pendapatan/perbelanjaan.
+- Laporan menggunakan snapshot transaksi database yang konsisten. Rumusnya ialah **baki awal + penerimaan − perbelanjaan + pelarasan = baki akhir**.
+- Yuran hanya ditanda dibayar apabila resit selesai; pembatalan membuka semula yuran tersebut.
+- Maklumat organisasi pada dokumen dibekukan ketika diluluskan, supaya perubahan profil tidak mengubah cetakan dokumen lama.
 
-| Model | Tujuan |
-| --- | --- |
-| `Account` | Akaun kewangan dengan jenis BANK/CASH/OTHER dan opening balance |
-| `Transaction` | Transaksi INCOME/EXPENSE yang dikaitkan dengan akaun dan dana |
-| `Dana` | Enum dana: GAB_JKKR, AC_TUMPANG, DANA_KEROHANIAN, LAIN2 |
-| `ListItem` | Senarai tersuai, termasuk tambahan pilihan dana pada aplikasi |
-| `BaucerResit` | Dokumen baucer/resit dengan status DRAFT/APPROVED/PAID |
-| `YuranRecord` | Rekod yuran bulanan ahli |
-| `CompanyProfile` | Profil organisasi dan penandatangan sedia, semak, serta lulus |
-| `DocumentTemplate` | Template resit, baucer, dan rumusan; logo, label, serta penandatangan |
-| `AuditLog` | Rekod tindakan pengguna |
+Pembalikan dilaporkan sebagai pelarasan pada tarikh pembalikan. Baki negatif dibenarkan supaya ledger boleh mewakili rekod sebenar; semak dan selaraskan rekod bank/tunai secara berkala.
 
-Peranan pengguna: **SUPER_ADMIN**, **ADMIN**, dan **USER**. Perincian kebenaran setiap peranan perlu dirujuk pada implementasi aplikasi.
+## Stack
 
-## Modul dan route
+Next.js **16.4.0** (App Router), React **19.3.0**, TypeScript, PostgreSQL **16**, Prisma **6.19.3**, Zod, bcryptjs, Lucide dan CSS responsif. Authentication menggunakan token sesi rawak dengan hash dalam database, cookie HttpOnly/SameSite dan tempoh lapan jam. Sesi boleh ditamatkan apabila akaun dinyahaktifkan atau kata laluan ditukar.
 
-| Route | Modul |
-| --- | --- |
-| `/dashboard` | Dashboard utama |
-| `/dashboard/buku-tunai` | Buku tunai, ledger, dan filter |
-| `/dashboard/baucer-resit` | Pengurusan dan cetakan resit/baucer |
-| `/dashboard/rumusan` | Rumusan kewangan |
-| `/dashboard/rumusan/cetak` | Cetakan rumusan |
-| `/dashboard/yuran` | Yuran bulanan |
-| `/dashboard/settings` | Template, senarai, akaun, dan kelulusan |
+## Mula di mesin pembangunan
 
-Sistem dilaporkan mempunyai **27 API route** yang merangkumi authentication (`/api/auth/*`), accounts, transactions, baucer-resit, company-profiles, list-types/items, templates, uploads, users, yuran, dan me. Method HTTP, payload, dan kebenaran endpoint perlu dirujuk pada kod route.
-
-## Komponen khusus
-
-- `lib/terbilang.ts` menukar nombor kepada perkataan Melayu, termasuk format “ringgit Malaysia” pada baucer.
-- `lib/rumusan.ts` dan `rumusan-ledger.ts` mengira baki pembukaan dan penutupan mengikut bulan.
-- `/dashboard/rumusan/cetak/print.css` menyediakan gaya cetakan rumusan.
-- Middleware melindungi route kecuali `/login`, `/register`, dan `/`.
-- Security headers merangkumi CSP, HSTS, dan `X-Frame-Options: DENY`.
-
-## Setup pembangunan
-
-### Prasyarat
-
-- Node.js dan package manager yang serasi dengan `package.json` serta lockfile projek.
-- PostgreSQL 16.
-- Kod aplikasi lengkap dan konfigurasi environment yang dirujuk oleh aplikasi.
-
-### Langkah umum
-
-1. Masukkan atau dapatkan kod aplikasi lengkap dalam checkout ini.
-2. Semak `package.json`, lockfile, schema Prisma, dan contoh konfigurasi environment.
-3. Pasang dependencies menggunakan package manager projek. Jika projek menggunakan `package-lock.json`, gunakan `npm ci`.
-4. Sediakan pangkalan data PostgreSQL untuk pembangunan. Tetapkan sambungan DB dan konfigurasi authentication mengikut nama pemboleh ubah sebenar dalam kod. Jangan commit fail yang mengandungi rahsia.
-5. Generate Prisma Client dan jalankan migration menggunakan skrip projek. Pastikan sambungan menunjuk kepada DB pembangunan sebelum menjalankan migration atau seed.
-6. Jalankan skrip development yang ditetapkan dalam `package.json`.
-
-Jika skrip dan struktur projek mengesahkan penggunaan npm/Prisma standard, contoh arahan ialah:
+Prasyarat: **Node.js 22+**, npm, Docker dengan Compose v2. Pembangunan dan ujian cloud telah dijalankan menggunakan Node.js 24.
 
 ```bash
-npm ci
-npx prisma generate
-npx prisma migrate dev
+git clone https://github.com/SweetTooth-mix/Mini-Project-Money-Management.git
+cd Mini-Project-Money-Management
+npm run setup:local
 npm run dev
 ```
 
-Arahan ini belum diuji dalam repository ini kerana kod dan manifest belum tersedia. Gunakan arahan seed yang ditetapkan oleh projek hanya pada DB pembangunan atau ujian.
+`setup:local` akan:
 
-## Deployment sedia ada
+1. Menjana `.env` peribadi jika belum wujud, dengan kata laluan rawak untuk DB dan dua pengguna demonstrasi.
+2. Menjalankan PostgreSQL melalui Compose pada port tempatan **5434**.
+3. Memasang dependencies menggunakan `npm ci`, menjana Prisma Client, menjalankan migration dan seed.
 
-Maklumat berikut ialah konfigurasi deployment yang dilaporkan, bukan hasil pemeriksaan langsung daripada repository ini:
+Aplikasi menggunakan port **3000**. Buka port tersebut melalui kaedah akses yang disediakan oleh mesin pembangunan anda. Endpoint `/api/health` memeriksa sambungan database.
 
-| Tetapan | Nilai |
+Arahan setup boleh diulang: `.env` sedia ada dikekalkan, migration yang sudah digunakan tidak diulang, dan seed tidak menulis semula organisasi atau kata laluan sedia ada. Jika setup gagal, baca ralat sebelum mencuba semula; jangan padam volume database untuk membaiki masalah dependency.
+
+### Log masuk demonstrasi
+
+Nilai kata laluan ada dalam `.env` tempatan yang dijana oleh setup, bukan dalam repository atau dokumentasi.
+
+| Akaun | E-mel | Pemboleh ubah kata laluan |
+| --- | --- | --- |
+| Super Admin | Nilai `SEED_ADMIN_EMAIL` (lalai `admin@kira-rapi.local`) | `SEED_ADMIN_PASSWORD` |
+| Penyemak | `penyemak@kira-rapi.local` | `SEED_REVIEWER_PASSWORD` |
+
+Seed demonstrasi mengandungi organisasi, nama, transaksi dan baki rekaan. Gunakan akaun penyemak untuk meluluskan dokumen yang disediakan oleh Super Admin, atau sebaliknya. Menukar nilai seed dalam `.env` tidak menukar kata laluan pengguna yang sudah wujud; gunakan halaman Tetapan.
+
+### Pemboleh ubah environment
+
+Rujuk [`.env.example`](.env.example). Jangan commit `.env`, dump database atau uploads.
+
+| Nama | Kegunaan |
 | --- | --- |
-| Nama aplikasi | Kira Rapi — JKKR App |
-| Container | LXC 101 |
-| Domain | [debri.cipher-node.org](https://debri.cipher-node.org) |
-| Pengguna sistem | `jkkr` |
-| Direktori aplikasi | `/home/jkkr/jkkr-app` |
-| Proses PM2 | `kira-rapi`, mode fork |
-| Port aplikasi | `3000` |
-| Reverse proxy | nginx, port 80 |
-| Pangkalan data | PostgreSQL, `localhost:5432` |
+| `DATABASE_URL` | Sambungan PostgreSQL aplikasi |
+| `POSTGRES_PASSWORD` | Kata laluan container PostgreSQL tempatan |
+| `APP_URL` | Origin aplikasi; gunakan HTTPS untuk production supaya cookie Secure dan HSTS diaktifkan |
+| `UPLOAD_DIR` | Direktori lampiran yang berterusan, lalai `.data/uploads` |
+| `SEED_ADMIN_EMAIL` | E-mel Super Admin awal |
+| `SEED_ADMIN_PASSWORD` | Kata laluan awal, minimum 12 aksara |
+| `SEED_DEMO` | `true` untuk data demonstrasi; `false` untuk organisasi baharu tanpa data rekaan |
+| `SEED_REVIEWER_PASSWORD` | Diperlukan apabila `SEED_DEMO=true` |
 
-Aliran trafik: nginx menerima permintaan web dan menghantarnya kepada Next.js pada port 3000; aplikasi menggunakan PostgreSQL sebagai stor data.
+Jika menggunakan PostgreSQL sendiri, sediakan `.env`, kemudian jalankan `npm ci` dan `npm run db:setup`; Docker tidak diperlukan untuk menjalankan aplikasi dengan database luaran.
 
-Untuk deployment seterusnya, gunakan skrip build projek dan konfigurasi PM2/nginx yang sebenar. Semak migration, backup DB, pemboleh ubah environment, serta readiness aplikasi sebelum restart servis.
+## Peranan
 
-### Pemeriksaan operasi
+| Tindakan | USER | ADMIN | SUPER_ADMIN |
+| --- | :---: | :---: | :---: |
+| Lihat dashboard, ledger, dokumen, yuran, laporan dan audit organisasi | ✓ | ✓ | ✓ |
+| Sediakan/sunting draf sendiri dan muat naik lampiran | ✓ | ✓ | ✓ |
+| Lulus/tolak dokumen pengguna lain | — | ✓ | ✓ |
+| Rekod bayaran, pembatalan dan pindahan | — | ✓ | ✓ |
+| Tambah akaun/dana, daftar ahli dan jana yuran | — | ✓ | ✓ |
+| Urus pengguna, profil dan tempoh terkunci | — | — | ✓ |
+| Tukar kata laluan sendiri | ✓ | ✓ | ✓ |
 
-Pada host deployment, dengan akses yang sesuai:
+Pendaftaran awam menghasilkan pengguna `PENDING` dengan peranan USER. Hanya Super Admin boleh mengaktifkannya. Semakan peranan dibuat semula pada server untuk tindakan kewangan; menyembunyikan butang sahaja bukan kawalan akses.
+
+## Ujian
 
 ```bash
-# Jalankan sebagai pengguna jkkr untuk melihat proses PM2 aplikasi.
-cd /home/jkkr/jkkr-app
-pm2 status
-pm2 logs kira-rapi --lines 50 --nostream
-
-# Semak status servis sistem.
-systemctl status nginx postgresql --no-pager
+npm run test               # Pengiraan wang, tarikh, ledger dan eksport CSV
+npm run test:integration   # Database test berasingan: transaksi serentak, kelulusan, pembalikan, yuran, kunci tempoh
+npm run build             # Build production dan semakan TypeScript
+npm run test:e2e           # Chromium: login, modul, mobile, cetakan dan aliran dokumen
+npm run typecheck
+npm audit
 ```
 
-Status yang dilaporkan semasa ringkasan disediakan: PM2 `kira-rapi` online, nginx dan PostgreSQL active, serta Next.js mendengar pada port 3000. Status ini boleh berubah dan perlu diperiksa semula pada host.
+`test:integration` menyediakan `kira_rapi_test` pada PostgreSQL Compose tempatan dan membersihkan data fixture dalam DB tersebut. Untuk database ujian luaran, tetapkan `TEST_DATABASE_URL` yang nama databasenya berakhir dengan `_test`.
 
-## Akaun seed dan keselamatan
+`test:e2e` **reset DB khusus `kira_rapi_e2e_test`**, mencipta fixture dan menjalankan aplikasi production pada port 3100. Ia memerlukan build yang terkini dan PostgreSQL Compose tempatan. DB aplikasi `kira_rapi` tidak direset oleh ujian. Runner memilih Chromium sistem jika tersedia; jika tiada, jalankan `npx playwright install chromium`. Screenshot dan PDF ujian berada dalam `.data/screenshots`.
 
-Seed dilaporkan menyediakan akaun contoh untuk peranan super admin dan pengguna. Semak skrip seed untuk butirannya dan gunakan hanya dalam persekitaran pembangunan atau ujian. Tukar atau nyahaktifkan akaun lalai sebelum penggunaan production; kata laluan tidak disimpan dalam README ini.
+Keputusan terakhir yang disahkan dan butiran deployment terdapat dalam [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
-## Validasi
+## Deployment production
 
-Selepas kod aplikasi tersedia, semak workflow berikut dengan DB ujian:
+Gunakan database baharu, `SEED_DEMO=false`, kata laluan peribadi dan `APP_URL` HTTPS sebelum menjalankan setup production. Sediakan pengguna penyemak melalui Tetapan selepas login pertama.
 
-- Login, logout, tamat tempoh session, dan akses mengikut peranan.
-- Rekod transaksi masuk/keluar serta kesannya pada baki akaun dan dana.
-- Baki pembukaan/penutupan bulanan dalam buku tunai dan rumusan.
-- Penyediaan, kelulusan, pembayaran, dan cetakan resit/baucer.
-- Rekod yuran bulanan dan jejak audit.
-- Build production serta ujian/type check yang disediakan oleh projek.
+```bash
+npm ci
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run build
+npm run start
+```
 
-Tiada build atau test suite boleh dijalankan daripada kandungan repository semasa.
+Setiap instance aplikasi memerlukan akses kepada database dan direktori uploads yang sama. Untuk pemasangan PM2/nginx satu host seperti sistem asal, gunakan satu instance dahulu dan simpan uploads di storan berterusan. Sertakan kedua-dua PostgreSQL dan uploads dalam backup.
+
+Arahan deployment di atas telah diuji pada environment pembangunan; aplikasi ini belum dipasang pada LXC atau domain production asal. Lihat [panduan operasi](docs/OPERATIONS.md) untuk PM2/nginx, backup dan pemulihan.
+
+## Struktur
+
+```text
+app/                  Halaman, Server Actions dan endpoint muat turun/eksport
+components/           UI responsif, borang, navigasi dan paparan dokumen
+lib/finance.ts        State dokumen, posting, pembalikan dan transaksi database
+lib/money.ts          Integer sen, format RM, tarikh dan terbilang Melayu
+lib/ledger.ts         Pengiraan laporan dan keselamatan CSV
+lib/auth.ts           Sesi yang boleh dibatalkan
+lib/uploads.ts        Validasi dan storan lampiran
+prisma/               Schema, migration, kekangan integriti dan seed
+scripts/              Setup tempatan dan runner database ujian
+tests/                Ujian unit, integrasi PostgreSQL dan browser
+```
+
+## Hubungan dengan sistem asal
+
+Konteks sistem asal disimpan dalam [docs/legacy-context.md](docs/legacy-context.md). Versi ini dibina berdasarkan keperluan yang diterangkan, bukan salinan source code lama. Schema dan authentication berbeza; jangan jalankan migration ini pada database lama.
+
+Pemindahan data legacy, logo/template visual tersuai, rekonsiliasi bank automatik, sokongan pelbagai organisasi dan penghantaran e-mel belum disediakan. Pemindahan data sebenar memerlukan pemetaan schema serta semakan jumlah baki terhadap sumber asal.

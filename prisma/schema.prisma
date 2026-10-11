@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+enum UserStatus {
+  ACTIVE
+  PENDING
+  DISABLED
+}
+enum AccountType {
+  BANK
+  CASH
+  OTHER
+}
+enum DocumentType {
+  RESIT
+  BAUCER
+}
+enum DocumentStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+  VOID
+}
+enum EntryType {
+  OPENING
+  INCOME
+  EXPENSE
+  TRANSFER_IN
+  TRANSFER_OUT
+  REVERSAL
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         Role       @default(USER)
+  status       UserStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
+  sessions     Session[]
+  documents    Document[] @relation("CreatedDocuments")
+  approvals    Document[] @relation("ApprovedDocuments")
+  auditLogs    AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([expiresAt])
+}
+
+model LoginAttempt {
+  key          String   @id
+  attempts     Int      @default(0)
+  windowStart  DateTime @default(now())
+}
+
+model Organization {
+  id            String    @id @default("main")
+  name          String    @default("JKKR Kampung Harmoni")
+  address       String    @default("")
+  email         String    @default("")
+  phone         String    @default("")
+  preparedBy    String    @default("")
+  checkedBy     String    @default("")
+  approvedBy    String    @default("")
+  closedThrough DateTime? @db.Date
+  updatedAt     DateTime  @updatedAt
+}
+
+model Fund {
+  id        String        @id @default(cuid())
+  code      String        @unique
+  name      String
+  color     String        @default("#1f6b50")
+  active    Boolean       @default(true)
+  entries   LedgerEntry[]
+  documents Document[]
+}
+
+model Account {
+  id        String        @id @default(cuid())
+  code      String        @unique
+  name      String
+  type      AccountType
+  active    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  entries   LedgerEntry[]
+  documents Document[]
+}
+
+model Document {
+  id             String         @id @default(cuid())
+  number         String         @unique
+  type           DocumentType
+  status         DocumentStatus @default(DRAFT)
+  date           DateTime       @db.Date
+  party          String
+  description    String
+  category       String
+  amountSen      BigInt
+  accountId      String
+  fundId         String
+  paymentMethod  String         @default("BANK")
+  reference      String         @default("")
+  note           String         @default("")
+  snapshot       Json?
+  createdById    String
+  approvedById   String?
+  approvedAt     DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  account        Account        @relation(fields: [accountId], references: [id])
+  fund           Fund           @relation(fields: [fundId], references: [id])
+  createdBy      User           @relation("CreatedDocuments", fields: [createdById], references: [id])
+  approvedBy     User?          @relation("ApprovedDocuments", fields: [approvedById], references: [id])
+  entry          LedgerEntry?
+  attachment     Attachment?
+  due            Due?
+  @@index([date, status])
+}
+
+model LedgerEntry {
+  id           String     @id @default(cuid())
+  date         DateTime   @db.Date
+  type         EntryType
+  amountSen    BigInt
+  description  String
+  category     String
+  reference    String
+  accountId    String
+  fundId       String
+  documentId   String?    @unique
+  reversalOfId String?    @unique
+  transferId   String?
+  createdAt    DateTime   @default(now())
+  account      Account    @relation(fields: [accountId], references: [id])
+  fund         Fund       @relation(fields: [fundId], references: [id])
+  document     Document?  @relation(fields: [documentId], references: [id])
+  reversalOf   LedgerEntry? @relation("Reversals", fields: [reversalOfId], references: [id])
+  reversal     LedgerEntry? @relation("Reversals")
+  @@index([date, accountId, fundId])
+  @@index([transferId])
+}
+
+model Member {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  name         String
+  phone        String   @default("")
+  monthlySen   BigInt   @default(1000)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  dues         Due[]
+}
+
+model Due {
+  id           String    @id @default(cuid())
+  memberId     String
+  year         Int
+  month        Int
+  amountSen    BigInt
+  documentId   String?   @unique
+  paidAt       DateTime?
+  member       Member    @relation(fields: [memberId], references: [id])
+  document     Document? @relation(fields: [documentId], references: [id])
+  @@unique([memberId, year, month])
+  @@index([year, month])
+}
+
+model Attachment {
+  id         String   @id @default(cuid())
+  documentId String   @unique
+  fileName   String
+  storedName String   @unique
+  mimeType   String
+  size       Int
+  document   Document @relation(fields: [documentId], references: [id])
+}
+
+model Counter {
+  key   String @id
+  value Int    @default(0)
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entityId  String
+  detail    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  @@index([createdAt])
+}
