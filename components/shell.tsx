@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
   ChartNoAxesCombined,
@@ -17,8 +17,12 @@ import {
   X,
   ArrowUpRight,
   Bell,
+  Building2,
+  Files,
+  ChevronRight,
 } from "lucide-react";
 import { logoutAction } from "@/app/actions";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   { href: "/dashboard", label: "Gambaran keseluruhan", icon: LayoutDashboard },
@@ -31,6 +35,7 @@ const links = [
     label: "Rumusan kewangan",
     icon: ChartNoAxesCombined,
   },
+  { href: "/dashboard/laporan-excel", label: "Laporan Excel", icon: Files },
 ];
 const roleNames: Record<string, string> = {
   SUPER_ADMIN: "Super Admin",
@@ -69,6 +74,49 @@ export function Shell({
 }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const sidebar = useRef<HTMLElement>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusable = () =>
+      Array.from(
+        sidebar.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex="0"]',
+        ) ?? [],
+      ).filter((element) => element.getClientRects().length > 0);
+    focusable()[0]?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+      }
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    const desktop = window.matchMedia("(min-width: 1101px)");
+    const onResize = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    desktop.addEventListener("change", onResize);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onResize);
+      menuButton.current?.focus();
+    };
+  }, [open]);
   const current =
     links.find((l) =>
       l.href === "/dashboard" ? path === l.href : path.startsWith(l.href),
@@ -79,14 +127,23 @@ export function Shell({
         <button
           className="nav-backdrop"
           onClick={() => setOpen(false)}
-          aria-label="Tutup menu"
+          aria-label="Tutup lapisan menu"
+          tabIndex={-1}
         />
       )}
-      <aside className={`sidebar ${open ? "is-open" : ""}`}>
+      <aside
+        id="workspace-navigation"
+        ref={sidebar}
+        className={`sidebar ${open ? "is-open" : ""}`}
+        role={open ? "dialog" : undefined}
+        aria-modal={open ? true : undefined}
+        aria-label={open ? "Menu ruang kerja" : "Ruang kerja organisasi"}
+      >
         <Link
           href="/dashboard"
           className="brand-link"
           aria-label="Kira Rapi — dashboard"
+          onClick={() => setOpen(false)}
         >
           <Brand />
         </Link>
@@ -98,13 +155,15 @@ export function Shell({
           <X size={20} />
         </button>
         <div className="org-switch">
-          <span className="org-avatar">KH</span>
+          <span className="org-avatar">
+            <Building2 size={19} />
+          </span>
           <div>
             <strong>{organization}</strong>
             <small>Ruang kerja organisasi</small>
           </div>
         </div>
-        <p className="nav-caption">RUANG KEWANGAN</p>
+        <p className="nav-caption">KEWANGAN</p>
         <nav aria-label="Navigasi utama">
           {links.map(({ href, label, icon: Icon }) => {
             const active =
@@ -132,6 +191,7 @@ export function Shell({
             href="/dashboard/audit"
             onClick={() => setOpen(false)}
             className={`nav-link ${path.includes("audit") ? "active" : ""}`}
+            aria-current={path.includes("audit") ? "page" : undefined}
           >
             <ShieldCheck size={19} strokeWidth={1.7} />
             Jejak audit
@@ -140,17 +200,18 @@ export function Shell({
             href="/dashboard/settings"
             onClick={() => setOpen(false)}
             className={`nav-link ${path.includes("settings") ? "active" : ""}`}
+            aria-current={path.includes("settings") ? "page" : undefined}
           >
             <Settings size={19} strokeWidth={1.7} />
             Tetapan
           </Link>
         </nav>
         <div className="sidebar-note">
-          <div className="note-spark">✳</div>
-          <strong>Setiap sen, lebih teratur.</strong>
-          <p>Rekod yang jelas untuk komuniti yang lebih baik.</p>
-          <Link href="/dashboard/rumusan">
-            Semak rumusan <ArrowUpRight size={15} />
+          <Files size={20} aria-hidden="true" />
+          <strong>Laporan, sedia dibentang.</strong>
+          <p>Jana Excel berpaut atau PDF dalam format organisasi.</p>
+          <Link href="/dashboard/laporan-excel" onClick={() => setOpen(false)}>
+            Buka laporan <ArrowUpRight size={16} />
           </Link>
         </div>
         <form action={logoutAction} className="sidebar-user">
@@ -174,26 +235,31 @@ export function Shell({
           </button>
         </form>
       </aside>
-      <div className="workspace">
+      <div className="workspace" inert={open || undefined}>
         <header className="topbar">
           <div className="topbar-left">
             <button
               className="icon-button mobile-menu"
+              ref={menuButton}
               onClick={() => setOpen(true)}
               aria-label="Buka menu"
               aria-expanded={open}
+              aria-controls="workspace-navigation"
             >
               <Menu size={22} />
             </button>
-            <span className="breadcrumb">
-              Ruang kerja <span>/</span> <strong>{current}</strong>
-            </span>
+            <div className="breadcrumb">
+              <span className="breadcrumb-root">Ruang kerja</span>
+              <ChevronRight size={14} aria-hidden="true" />
+              <strong>{current}</strong>
+            </div>
           </div>
           <div className="topbar-right">
             <span className="workspace-state">
               <i />
               {demo ? "Ruang demonstrasi" : "Ruang organisasi"}
             </span>
+            <ThemeToggle />
             <Link
               className="notification"
               href="/dashboard/baucer-resit?status=PENDING"
@@ -202,15 +268,25 @@ export function Shell({
               <Bell size={20} />
               {pending > 0 && <i />}
             </Link>
-            <span className="avatar avatar-small">{name[0]}</span>
+            <Link
+              href="/dashboard/settings"
+              className="topbar-profile"
+              aria-label={`Tetapan akaun ${name}`}
+            >
+              <span className="avatar avatar-small">{name[0]}</span>
+              <span>
+                <strong>{name.split(" ")[0]}</strong>
+                <small>{roleNames[role]}</small>
+              </span>
+            </Link>
           </div>
         </header>
-        <main id="main-content" className="main-content">
+        <main id="main-content" className="main-content" tabIndex={-1}>
           {children}
         </main>
         <footer className="app-footer">
           <span>© {new Date().getFullYear()} Kira Rapi</span>
-          <span>Urus kewangan dengan lebih rapi.</span>
+          <span>Kewangan komuniti, diurus bersama.</span>
         </footer>
       </div>
     </div>

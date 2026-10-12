@@ -16,10 +16,15 @@ Aplikasi pengurusan kewangan komuniti dalam Bahasa Melayu: buku tunai, akaun dan
 | Yuran ahli | Daftar ahli, kadar bulanan, jana yuran tanpa pendua dan kutipan melalui resit |
 | Akaun & dana | Akaun bank/tunai/lain-lain, baki pembukaan serta dana tersuai |
 | Rumusan | Pecahan kategori, baki awal/akhir, butiran pelarasan dan cetakan/simpan PDF melalui browser |
+| Laporan Excel | Empat workbook berpaut mengikut template asal, laporan 12 bulan, akaun tunjang, rumusan yuran dan PDF A4 |
 | Tetapan | Profil organisasi, penandatangan, pengguna, permohonan akses, kata laluan dan kunci tempoh kewangan |
 | Audit | Rekod tindakan dengan pengguna, masa dan butiran perubahan |
 
-UI menyokong desktop dan telefon. Font dibekalkan bersama aplikasi; tiada permintaan font pihak ketiga diperlukan semasa digunakan.
+UI korporat moden menyokong desktop dan telefon, dengan **mod siang dan malam**. Butang bulan/matahari di bahagian atas menukar tema; pilihan disimpan dalam browser dan digunakan semula selepas reload. Sebelum pilihan dibuat, tema mengikut tetapan peranti. Cetakan dan PDF kekal berlatar putih.
+
+Dashboard menyediakan pintasan kelulusan, yuran dan laporan. Penjana Excel membahagikan pilihan kepada tempoh laporan dan pemetaan dana. Menu telefon menyokong papan kekunci serta kekunci Escape. Font dibekalkan bersama aplikasi; tiada permintaan font pihak ketiga diperlukan semasa digunakan.
+
+Pratonton: [mod siang](docs/screenshots/dashboard.png) · [mod malam](docs/screenshots/dashboard-night.png) · [telefon](docs/screenshots/dashboard-mobile.png). Lihat [panduan reka bentuk UI/UX](docs/UI-UX.md).
 
 ## Ketepatan kewangan
 
@@ -44,7 +49,7 @@ Next.js **16.4.0** (App Router), React **19.3.0**, TypeScript, PostgreSQL **16**
 
 ## Mula di mesin pembangunan
 
-Prasyarat: **Node.js 22+**, npm, Docker dengan Compose v2. Pembangunan dan ujian cloud telah dijalankan menggunakan Node.js 24.
+Prasyarat: **Node.js 22+**, npm, Docker dengan Compose v2, **Python 3.10+ dengan venv** dan **LibreOffice Calc** untuk output Excel/PDF. Pembangunan dan ujian cloud telah dijalankan menggunakan Node.js 24. Rujuk [persediaan dan penggunaan laporan Excel](docs/EXCEL-REPORTS.md).
 
 ```bash
 git clone https://github.com/SweetTooth-mix/Mini-Project-Money-Management.git
@@ -58,6 +63,7 @@ npm run dev
 1. Menjana `.env` peribadi jika belum wujud, dengan kata laluan rawak untuk DB dan dua pengguna demonstrasi.
 2. Menjalankan PostgreSQL melalui Compose pada port tempatan **5434**.
 3. Memasang dependencies menggunakan `npm ci`, menjana Prisma Client, menjalankan migration dan seed.
+4. Menyediakan virtualenv Python dan menyemak LibreOffice untuk penjanaan laporan.
 
 Aplikasi menggunakan port **3000**. Buka port tersebut melalui kaedah akses yang disediakan oleh mesin pembangunan anda. Endpoint `/api/health` memeriksa sambungan database.
 
@@ -89,7 +95,7 @@ Rujuk [`.env.example`](.env.example). Jangan commit `.env`, dump database atau u
 | `SEED_DEMO` | `true` untuk data demonstrasi; `false` untuk organisasi baharu tanpa data rekaan |
 | `SEED_REVIEWER_PASSWORD` | Diperlukan apabila `SEED_DEMO=true` |
 
-Jika menggunakan PostgreSQL sendiri, sediakan `.env`, kemudian jalankan `npm ci` dan `npm run db:setup`; Docker tidak diperlukan untuk menjalankan aplikasi dengan database luaran.
+Jika menggunakan PostgreSQL sendiri, sediakan `.env`, kemudian jalankan `npm ci`, `npm run setup:reports` dan `npm run db:setup`; Docker tidak diperlukan untuk menjalankan aplikasi dengan database luaran.
 
 ## Peranan
 
@@ -110,8 +116,9 @@ Pendaftaran awam menghasilkan pengguna `PENDING` dengan peranan USER. Hanya Supe
 ```bash
 npm run test               # Pengiraan wang, tarikh, ledger dan eksport CSV
 npm run test:integration   # Database test berasingan: transaksi serentak, kelulusan, pembalikan, yuran, kunci tempoh
+npm run test:reports       # Template Excel, pautan formula, baki 12 bulan dan PDF
 npm run build             # Build production dan semakan TypeScript
-npm run test:e2e           # Chromium: login, modul, mobile, cetakan dan aliran dokumen
+npm run test:e2e           # Chromium: aliran dokumen, Excel/PDF, tema dan navigasi telefon
 npm run typecheck
 npm audit
 ```
@@ -128,6 +135,7 @@ Gunakan database baharu, `SEED_DEMO=false`, kata laluan peribadi dan `APP_URL` H
 
 ```bash
 npm ci
+npm run setup:reports
 npm run db:generate
 npm run db:migrate
 npm run db:seed
@@ -158,4 +166,4 @@ tests/                Ujian unit, integrasi PostgreSQL dan browser
 
 Konteks sistem asal disimpan dalam [docs/legacy-context.md](docs/legacy-context.md). Versi ini dibina berdasarkan keperluan yang diterangkan, bukan salinan source code lama. Schema dan authentication berbeza; jangan jalankan migration ini pada database lama.
 
-Pemindahan data legacy, logo/template visual tersuai, rekonsiliasi bank automatik, sokongan pelbagai organisasi dan penghantaran e-mel belum disediakan. Pemindahan data sebenar memerlukan pemetaan schema serta semakan jumlah baki terhadap sumber asal.
+Empat template Excel asal tersedia melalui Laporan Excel. Pemindahan data legacy, editor visual untuk template/logo baharu, rekonsiliasi bank automatik, sokongan pelbagai organisasi dan penghantaran e-mel belum disediakan. Pemindahan data sebenar memerlukan pemetaan schema serta semakan jumlah baki terhadap sumber asal.

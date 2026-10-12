@@ -4,6 +4,7 @@ import { Brand } from "@/components/shell";
 import { Field, Flash } from "@/components/ui";
 import { Submit } from "@/components/form-controls";
 import type { Search } from "@/lib/queries";
+import { ThemeToggle } from "@/components/theme-toggle";
 export default async function Register({
   searchParams,
 }: {
@@ -11,6 +12,9 @@ export default async function Register({
 }) {
   return (
     <main className="register-page" id="main-content">
+      <div className="auth-theme">
+        <ThemeToggle />
+      </div>
       <Link href="/login">
         <Brand />
       </Link>

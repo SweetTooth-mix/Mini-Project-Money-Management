@@ -35,10 +35,16 @@ export default async function Report({
           title="Rumusan kewangan"
           description="Laporan yang mudah disemak, dibentang dan dicetak."
         >
+          <a
+            href="/dashboard/laporan-excel"
+            className="button button-secondary"
+          >
+            Excel & PDF format asal
+          </a>
           <a href={`/api/export?${query}`} className="button button-secondary">
             Eksport ledger CSV
           </a>
-          <PrintButton />
+          <PrintButton label="Cetak ringkasan" />
         </PageHeading>
         <Panel title="Pilihan laporan">
           <form className="filter-bar">

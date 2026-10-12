@@ -26,6 +26,7 @@ test("anonymous routes are protected and invalid login fails", async ({
   expect((await request.get("/api/health")).status()).toBe(200);
   expect((await request.get("/api/me")).status()).toBe(401);
   expect((await request.get("/api/export")).status()).toBe(401);
+  expect((await request.get("/api/reports?year=2026")).status()).toBe(401);
   expect((await request.get("/api/attachments/unknown")).status()).toBe(401);
   await page.goto("/dashboard/buku-tunai");
   await expect(page).toHaveURL(/\/login$/);
@@ -58,6 +59,7 @@ test("dashboard, modules, mobile navigation and print render without client erro
     ["yuran", "Yuran ahli"],
     ["akaun", "Akaun & dana"],
     ["rumusan", "Rumusan kewangan"],
+    ["laporan-excel", "Jana laporan Excel"],
     ["settings", "Tetapan ruang kerja"],
     ["audit", "Jejak audit"],
   ]) {
@@ -106,6 +108,7 @@ test("dashboard, modules, mobile navigation and print render without client erro
     "akaun",
     "settings",
     "rumusan",
+    "laporan-excel",
   ]) {
     await page.goto(`/dashboard/${route}`);
     await expect(page.locator("main h1")).toBeVisible();
@@ -145,13 +148,11 @@ test("draft, attachment, independent approval, payment, export and reversal work
     page.getByRole("status").filter({ hasText: "dikemas kini" }),
   ).toBeVisible();
   const pdf = await page.pdf({ format: "A4" });
-  await page
-    .locator('input[type="file"]')
-    .setInputFiles({
-      name: "bukti.pdf",
-      mimeType: "application/pdf",
-      buffer: pdf,
-    });
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "bukti.pdf",
+    mimeType: "application/pdf",
+    buffer: pdf,
+  });
   await page.getByRole("button", { name: "Simpan lampiran" }).click();
   const link = page.getByRole("link", { name: "bukti.pdf" });
   await expect(link).toBeVisible();
@@ -267,4 +268,58 @@ test("registration requires approval and ordinary users cannot access management
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login$/);
   await adminContext.close();
+});
+
+test("linked Excel package and template PDF download from authenticated report screen", async ({
+  page,
+}) => {
+  test.setTimeout(150_000);
+  await login(page);
+  await page.goto("/dashboard/laporan-excel");
+  await page.screenshot({
+    path: ".data/screenshots/laporan-excel.png",
+    fullPage: true,
+  });
+  const year = await page.getByLabel("Tahun laporan").inputValue();
+  expect((await page.request.get("/api/reports?year=invalid")).status()).toBe(
+    400,
+  );
+  expect(
+    (
+      await page.request.get(`/api/reports?year=${year}&report=document`)
+    ).status(),
+  ).toBe(400);
+  const gab = await page.getByLabel("Kolum GAB JKKR").inputValue();
+  expect(
+    (
+      await page.request.get(
+        `/api/reports?year=${year}&gab=${gab}&tumpang=${gab}`,
+      )
+    ).status(),
+  ).toBe(400);
+  const downloading = page.waitForEvent("download", { timeout: 90_000 });
+  await page
+    .getByRole("button", { name: "Jana 4 Excel berpaut (.zip)", exact: true })
+    .click();
+  const archive = await downloading;
+  expect(archive.suggestedFilename()).toMatch(/\.zip$/);
+  await archive.saveAs(".data/screenshots/laporan-excel.zip");
+  await expect(
+    page.getByRole("button", { name: "PDF format asal", exact: true }),
+  ).toBeEnabled();
+  const pdfDownloading = page.waitForEvent("download", { timeout: 110_000 });
+  await page
+    .getByRole("button", { name: "PDF format asal", exact: true })
+    .click();
+  const pdf = await pdfDownloading;
+  expect(pdf.suggestedFilename()).toMatch(/\.pdf$/);
+  await pdf.saveAs(".data/screenshots/laporan-excel.pdf");
+  await expect(page.locator(".excel-error[role=alert]")).toHaveCount(0);
+  const doc = await db.document.findFirstOrThrow({ where: { status: "PAID" } });
+  const response = await page.request.get(
+    `/api/reports?year=${year}&format=xlsx&report=document&document=${doc.id}`,
+  );
+  expect(response.status()).toBe(200);
+  expect(response.headers()["cache-control"]).toBe("private, no-store");
+  expect((await response.body()).subarray(0, 2).toString()).toBe("PK");
 });

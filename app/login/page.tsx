@@ -7,6 +7,7 @@ import { Brand } from "@/components/shell";
 import { Field, Flash } from "@/components/ui";
 import { Submit } from "@/components/form-controls";
 import type { Search } from "@/lib/queries";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function Login({
   searchParams,
@@ -56,6 +57,9 @@ export default async function Login({
         <div className="auth-orbit" />
       </section>
       <section className="auth-form-side">
+        <div className="auth-theme">
+          <ThemeToggle />
+        </div>
         <div className="auth-form">
           <span className="eyebrow">SELAMAT KEMBALI</span>
           <h2>Masuk ke ruang kerja.</h2>

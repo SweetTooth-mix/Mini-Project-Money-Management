@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { Plus } from "lucide-react";
 export function Disclosure({
   id,
   title,
@@ -42,7 +43,9 @@ export function Disclosure({
           {title}
           <small>{description}</small>
         </span>
-        <span className="plus-mark">+</span>
+        <span className="plus-mark" aria-hidden="true">
+          <Plus size={20} />
+        </span>
       </summary>
       {children}
     </details>

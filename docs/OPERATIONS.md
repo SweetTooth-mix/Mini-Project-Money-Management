@@ -19,8 +19,11 @@ Konfigurasi PM2 disediakan dalam [`ecosystem.config.cjs`](../ecosystem.config.cj
 
 Pada checkout versi baharu dengan `.env` production yang lengkap:
 
+Penjana template memerlukan Python 3.10+ dengan venv, LibreOffice Calc dan fon Liberation pada host. Lihat [output Excel dan PDF](EXCEL-REPORTS.md) untuk pemasangan dan cara fail berpaut.
+
 ```bash
 npm ci
+npm run setup:reports
 npm run db:generate
 npm run db:migrate
 npm run db:seed
@@ -43,7 +46,7 @@ location / {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 60s;
+    proxy_read_timeout 120s;
 }
 ```
 
@@ -97,11 +100,15 @@ Disahkan pada **12 Oktober 2026 (Asia/Kuala_Lumpur)**:
 | Build production dan TypeScript | Lulus |
 | Ujian unit | 8 lulus |
 | Ujian integrasi PostgreSQL | 10 lulus |
-| Senario browser Chromium | 4 lulus, termasuk desktop/mobile, lampiran, kelulusan dan pembatalan akses |
+| Ujian output Excel | 8 lulus: baki 12 bulan, formula berpaut, format asal, baris dinamik, bulan kosong dan PDF |
+| Senario browser Chromium | 8 lulus, termasuk desktop/mobile, tema siang/malam, fokus menu, lampiran, kelulusan, pembatalan akses dan muat turun Excel/PDF |
+| Semakan visual UI | Desktop dan telefon dalam kedua-dua tema; tiada limpahan halaman pada saiz yang diuji |
 | Audit dependencies npm | 0 vulnerability dilaporkan |
-| Cetakan rumusan contoh | 1 halaman A4; sidebar dan kawalan aplikasi disembunyikan |
+| Cetakan rumusan contoh | Fixture asal 1 halaman A4; fixture dengan pelarasan tambahan 2 halaman. Cetakan dari mod malam kekal putih; sidebar dan kawalan aplikasi disembunyikan |
 
-Ujian unit dan integrasi berada dalam `tests/`; senario browser berada dalam `tests/e2e/app.spec.ts`. Ujian menggunakan database berasingan. Jalankan `npm run build` sebelum `npm run test:e2e` supaya browser menguji kod semasa.
+Ujian unit dan integrasi berada dalam `tests/`; senario browser berada dalam `tests/e2e/app.spec.ts` dan `tests/e2e/design.spec.ts`. Ujian menggunakan database berasingan. Jalankan `npm run build` sebelum `npm run test:e2e` supaya browser menguji kod semasa.
+
+Redesign UI disahkan dengan build production dan lapan senario browser. Fail template Excel, penjana laporan, logik kewangan dan schema dibandingkan menggunakan SHA-256 dan kekal sama seperti sebelum redesign. Semakan kontras teks terpilih pada dashboard, buku tunai, resit/baucer, laporan Excel dan tetapan tidak menemukan kegagalan ambang kontras dalam kedua-dua tema; ini bukan audit aksesibiliti menyeluruh.
 
 Screenshot dan PDF di `.data/screenshots` menggunakan data rekaan. Screenshot README disalin daripada run browser yang disahkan.
 

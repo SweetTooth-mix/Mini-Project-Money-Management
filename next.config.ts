@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    "/api/reports": ["./templates/excel/*.xlsx", "./scripts/excel/generate.py"],
+  },
+  outputFileTracingExcludes: { "/api/reports": ["./.venv/**"] },
   experimental: { serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
     return [

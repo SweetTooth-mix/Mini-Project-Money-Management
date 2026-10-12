@@ -6,10 +6,11 @@ import { requireUser } from "@/lib/auth";
 import { money, shortDate, terbilang, today } from "@/lib/money";
 import type { Search } from "@/lib/queries";
 import { Field, Flash, PageHeading, Panel, Status } from "@/components/ui";
-import { PrintButton, Submit } from "@/components/form-controls";
+import { Submit } from "@/components/form-controls";
 import { documentAction, uploadAction } from "@/app/actions";
 import { DocumentForm } from "@/components/document-form";
 import { Disclosure } from "@/components/disclosure";
+import { ExcelExport } from "@/components/excel-export";
 
 export default async function DocumentPage({
   params,
@@ -77,8 +78,8 @@ export default async function DocumentPage({
           description={`Disediakan oleh ${doc.createdBy.name} · ${shortDate(doc.date)}`}
         >
           <Status value={doc.status} />
-          <PrintButton />
         </PageHeading>
+        <ExcelExport document={doc.id} year={doc.date.getUTCFullYear()} />
         <Flash search={await searchParams} />
         <div className="workflow-steps">
           {steps.map((s, i) => (

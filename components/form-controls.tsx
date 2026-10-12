@@ -17,14 +17,18 @@ export function Submit({
     </button>
   );
 }
-export function PrintButton() {
+export function PrintButton({
+  label = "Cetak / Simpan PDF",
+}: {
+  label?: string;
+}) {
   return (
     <button
       className="button button-secondary no-print"
       onClick={() => window.print()}
     >
       <Printer size={16} />
-      Cetak / Simpan PDF
+      {label}
     </button>
   );
 }

@@ -6,7 +6,14 @@ import {
   useId,
   type HTMLAttributes,
 } from "react";
-import { ArrowDownLeft, ArrowUpRight, FileText, Plus } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CircleAlert,
+  CircleCheck,
+  FileText,
+  Plus,
+} from "lucide-react";
 import { money, shortDate } from "@/lib/money";
 import type { Search } from "@/lib/queries";
 
@@ -41,7 +48,12 @@ export function Flash({ search }: { search: Search }) {
       className={`flash ${error ? "flash-error" : "flash-success"}`}
       role={error ? "alert" : "status"}
     >
-      {(error || success).slice(0, 500)}
+      {error ? (
+        <CircleAlert size={18} aria-hidden="true" />
+      ) : (
+        <CircleCheck size={18} aria-hidden="true" />
+      )}
+      <span>{(error || success).slice(0, 500)}</span>
     </div>
   );
 }
@@ -61,14 +73,15 @@ export function Metric({
   tone?: string;
 }) {
   return (
-    <section className={`metric ${featured ? "metric-featured" : ""}`}>
+    <section
+      className={`metric metric-${tone} ${featured ? "metric-featured" : ""}`}
+    >
       <div className="metric-top">
         <span>{label}</span>
         <span className={`metric-icon ${tone}`}>{icon}</span>
       </div>
       <strong className="metric-value">{value}</strong>
       <div className="metric-detail">{detail}</div>
-      {featured && <span className="metric-decoration" aria-hidden="true" />}
     </section>
   );
 }
@@ -173,6 +186,7 @@ export function Panel({
 export function EntryTable({
   entries,
   running,
+  compact = false,
 }: {
   entries: {
     id: string;
@@ -186,10 +200,58 @@ export function EntryTable({
     documentId: string | null;
   }[];
   running?: bigint[];
+  compact?: boolean;
 }) {
   if (!entries.length)
     return (
       <Empty description="Tiada transaksi untuk pilihan tempoh dan penapis ini." />
+    );
+  if (compact)
+    return (
+      <ul className="recent-entries" aria-label="Transaksi terkini">
+        {entries.map((entry) => (
+          <li key={entry.id}>
+            <span
+              className={`transaction-icon ${entry.amountSen >= 0n ? "in" : "out"}`}
+              aria-hidden="true"
+            >
+              {entry.amountSen >= 0n ? (
+                <ArrowDownLeft size={18} />
+              ) : (
+                <ArrowUpRight size={18} />
+              )}
+            </span>
+            <div className="recent-entry-copy">
+              {entry.documentId ? (
+                <Link
+                  href={`/dashboard/baucer-resit/${entry.documentId}`}
+                  className="table-primary"
+                >
+                  {entry.description}
+                </Link>
+              ) : (
+                <strong className="table-primary">{entry.description}</strong>
+              )}
+              <small>
+                {entry.reference}
+                <span> · </span>
+                {shortDate(entry.date)}
+                {entry.type === "REVERSAL"
+                  ? " · Pembalikan"
+                  : entry.type.startsWith("TRANSFER")
+                    ? " · Pindahan"
+                    : ""}
+              </small>
+            </div>
+            <strong
+              className={`amount ${entry.amountSen >= 0n ? "text-green" : "text-dark"}`}
+            >
+              {entry.amountSen > 0n ? "+" : ""}
+              {money(entry.amountSen)}
+            </strong>
+          </li>
+        ))}
+      </ul>
     );
   return (
     <div className="table-scroll">

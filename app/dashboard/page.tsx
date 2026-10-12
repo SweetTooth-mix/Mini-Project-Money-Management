@@ -7,19 +7,15 @@ import {
   Clock3,
   Plus,
   Wallet,
+  Files,
+  ClipboardCheck,
+  Users,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { balances, ledgerData, param, type Search } from "@/lib/queries";
 import { money, months, shortDate, today } from "@/lib/money";
-import {
-  Empty,
-  EntryTable,
-  Metric,
-  PageHeading,
-  Panel,
-  Status,
-} from "@/components/ui";
+import { Empty, EntryTable, Metric, PageHeading, Panel } from "@/components/ui";
 
 export default async function Dashboard({
   searchParams,
@@ -87,8 +83,15 @@ export default async function Dashboard({
       <PageHeading
         eyebrow={`${shortDate(new Date(`${today()}T00:00:00Z`)).toUpperCase()} · RUANG KERJA ANDA`}
         title={`Selamat datang, ${user.name.split(" ")[0]}.`}
-        description="Ini gambaran kewangan komuniti anda. Semuanya dalam satu tempat."
+        description="Semak kedudukan dana dan urusan yang perlu diselesaikan."
       >
+        <Link
+          href="/dashboard/laporan-excel"
+          className="button button-secondary"
+        >
+          <Files size={17} />
+          Jana laporan
+        </Link>
         <Link
           href="/dashboard/baucer-resit#baharu"
           className="button button-primary"
@@ -115,7 +118,7 @@ export default async function Dashboard({
           </button>
         </form>
       </div>
-      <div className="metrics-grid">
+      <div className="metrics-grid dashboard-metrics">
         <Metric
           featured
           label="Baki akhir bulan"
@@ -144,6 +147,42 @@ export default async function Dashboard({
           icon={<Clock3 size={18} />}
         />
       </div>
+      <nav className="task-strip" aria-label="Urusan kewangan">
+        <Link href="/dashboard/baucer-resit?status=PENDING">
+          <span className="task-icon">
+            <ClipboardCheck size={20} />
+          </span>
+          <span>
+            <strong>
+              {pendingCount
+                ? `${pendingCount} dokumen perlu disemak`
+                : "Tiada dokumen menunggu semakan"}
+            </strong>
+            <small>Buka senarai kelulusan</small>
+          </span>
+          <ArrowUpRight size={17} />
+        </Link>
+        <Link href="/dashboard/yuran">
+          <span className="task-icon">
+            <Users size={20} />
+          </span>
+          <span>
+            <strong>{dues._count} rekod yuran belum selesai</strong>
+            <small>Semak kutipan ahli</small>
+          </span>
+          <ArrowUpRight size={17} />
+        </Link>
+        <Link href="/dashboard/laporan-excel">
+          <span className="task-icon">
+            <Files size={20} />
+          </span>
+          <span>
+            <strong>Laporan untuk dibentangkan</strong>
+            <small>Excel berpaut & PDF format asal</small>
+          </span>
+          <ArrowUpRight size={17} />
+        </Link>
+      </nav>
       <div className="dashboard-main-grid">
         <Panel
           title="Aliran tunai"
@@ -301,7 +340,7 @@ export default async function Dashboard({
             </Link>
           }
         >
-          <EntryTable entries={ledger.entries.slice(-5).reverse()} />
+          <EntryTable entries={ledger.entries.slice(-5).reverse()} compact />
         </Panel>
         <Panel
           title="Perlu perhatian"
