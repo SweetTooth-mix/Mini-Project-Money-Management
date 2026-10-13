@@ -1088,6 +1088,27 @@ export const dictionary = {
     ms: "Ledger transaksi",
     en: "Transaction ledger",
   },
+  "Cari transaksi": {
+    ms: "Cari transaksi",
+    en: "Search transactions",
+  },
+  "Cari butiran, rujukan atau kategori…": {
+    ms: "Cari butiran, rujukan atau kategori…",
+    en: "Search details, reference or category…",
+  },
+  "Baki merangkumi semua transaksi dalam bulan, akaun dan dana yang dipilih, termasuk transaksi di luar hasil carian.":
+    {
+      ms: "Baki merangkumi semua transaksi dalam bulan, akaun dan dana yang dipilih, termasuk transaksi di luar hasil carian.",
+      en: "Balances include every transaction in the selected month, account and fund, including transactions outside the search results.",
+    },
+  "Tiada transaksi sepadan. Cuba carian atau penapis lain.": {
+    ms: "Tiada transaksi sepadan. Cuba carian atau penapis lain.",
+    en: "No matching transactions. Try another search or filter.",
+  },
+  "Halaman {page} daripada {pages} · {count} transaksi": {
+    ms: "Halaman {page} daripada {pages} · {count} transaksi",
+    en: "Page {page} of {pages} · {count} transactions",
+  },
   "Baki dikira mengikut turutan tarikh, termasuk pembalikan dan pindahan.": {
     ms: "Baki dikira mengikut turutan tarikh, termasuk pembalikan dan pindahan.",
     en: "Balances follow date order, including reversals and transfers.",

@@ -1,12 +1,18 @@
 import { uiMonth } from "@/lib/i18n";
 import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
-import { ArrowDownToLine, ArrowLeftRight, Plus } from "lucide-react";
+import {
+  ArrowDownToLine,
+  ArrowLeftRight,
+  Plus,
+  Search as SearchIcon,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { ledgerData, type Search } from "@/lib/queries";
+import { ledgerPageData, type Search } from "@/lib/queries";
 import { money, today } from "@/lib/money";
 import {
   EntryTable,
+  Empty,
   Field,
   Flash,
   Metric,
@@ -25,12 +31,21 @@ export default async function Ledger({
 
   const user = await requireUser(),
     search = await searchParams;
-  const data = await ledgerData(search);
+  const data = await ledgerPageData(search);
   const query = new URLSearchParams({
     month: data.month,
     account: data.accountId,
     fund: data.fundId,
   }).toString();
+  const pageLink = (page: number) =>
+    "?" +
+    new URLSearchParams({
+      month: data.month,
+      account: data.accountId,
+      fund: data.fundId,
+      q: data.query,
+      page: String(page),
+    });
   return (
     <>
       <PageHeading
@@ -82,10 +97,21 @@ export default async function Ledger({
       <Panel
         title={t("Ledger transaksi")}
         description={t(
-          "Baki dikira mengikut turutan tarikh, termasuk pembalikan dan pindahan.",
+          "Baki merangkumi semua transaksi dalam bulan, akaun dan dana yang dipilih, termasuk transaksi di luar hasil carian.",
         )}
       >
         <form className="filter-bar">
+          <div className="search-input">
+            <SearchIcon size={17} aria-hidden="true" />
+            <input
+              type="search"
+              aria-label={t("Cari transaksi")}
+              name="q"
+              defaultValue={data.query}
+              maxLength={200}
+              placeholder={t("Cari butiran, rujukan atau kategori…")}
+            />
+          </div>
           <Field label={t("Bulan")}>
             <input
               type="month"
@@ -118,17 +144,34 @@ export default async function Ledger({
             {t("Tapis rekod")}
           </button>
         </form>
-        <EntryTable entries={data.entries} running={data.running} />
+        {data.query && !data.count ? (
+          <Empty
+            description={t(
+              "Tiada transaksi sepadan. Cuba carian atau penapis lain.",
+            )}
+          />
+        ) : (
+          <EntryTable entries={data.entries} running={data.running} />
+        )}
         <div className="table-footer">
           <span>
-            {t("{count} transaksi · {month}", {
-              count: data.entries.length,
-              month: uiMonth(data.month, language),
+            {t("Halaman {page} daripada {pages} · {count} transaksi", {
+              page: data.page,
+              pages: data.pages,
+              count: data.count,
             })}
           </span>
           <strong>
             {t("Baki akhir:")} {money(data.closing)}
           </strong>
+          <div className="pagination">
+            {data.page > 1 && (
+              <Link href={pageLink(data.page - 1)}>{t("← Sebelum")}</Link>
+            )}
+            {data.page < data.pages && (
+              <Link href={pageLink(data.page + 1)}>{t("Seterusnya →")}</Link>
+            )}
+          </div>
         </div>
       </Panel>
       {user.role !== "USER" && (

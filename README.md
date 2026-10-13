@@ -11,7 +11,7 @@ Aplikasi pengurusan kewangan komuniti dengan UI Bahasa Melayu dan English: buku 
 | Modul | Fungsi |
 | --- | --- |
 | Dashboard | Baki, penerimaan, perbelanjaan, tunggakan yuran, carta enam bulan dan dokumen menunggu semakan |
-| Buku tunai | Ledger berturutan, baki berjalan, penapis bulan/akaun/dana, pindahan dalaman dan eksport CSV |
+| Buku tunai | Ledger berturutan, baki berjalan, carian butiran/rujukan/kategori, 50 transaksi setiap halaman, penapis bulan/akaun/dana, pindahan dalaman dan eksport CSV |
 | Resit & baucer | Cipta/sunting draf, lampiran PDF/PNG/JPEG, kelulusan, rekod bayaran, pembatalan dan cetakan A4 |
 | Yuran ahli | Daftar ahli, kadar bulanan, jana yuran tanpa pendua dan kutipan melalui resit |
 | Akaun & dana | Akaun bank/tunai/lain-lain, baki pembukaan serta dana tersuai |
@@ -19,6 +19,8 @@ Aplikasi pengurusan kewangan komuniti dengan UI Bahasa Melayu dan English: buku 
 | Laporan Excel | Empat workbook berpaut mengikut template asal, laporan 12 bulan, akaun tunjang, rumusan yuran dan PDF A4 |
 | Tetapan | Profil organisasi, penandatangan, pengguna, permohonan akses, kata laluan dan kunci tempoh kewangan |
 | Audit | Rekod tindakan dengan pengguna, masa dan butiran perubahan |
+
+Carian Buku Tunai mengabaikan huruf besar/kecil. Baki berjalan dan jumlah bulanan merangkumi semua transaksi dalam pilihan bulan, akaun dan dana, termasuk transaksi yang tidak muncul dalam hasil carian atau halaman semasa. Pautan Sebelum/Seterusnya mengekalkan penapis; carian baharu bermula pada halaman pertama. Eksport CSV dan rumusan terus menggunakan keseluruhan transaksi bagi pilihan bulan/akaun/dana.
 
 UI korporat moden menyokong desktop dan telefon, dengan **mod siang dan malam**. Butang bulan/matahari di bahagian atas menukar tema; pilihan disimpan dalam browser dan digunakan semula selepas reload. Sebelum pilihan dibuat, tema mengikut tetapan peranti. Cetakan dan PDF kekal berlatar putih.
 
