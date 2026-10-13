@@ -44,6 +44,39 @@ export async function ledgerData(search: Search) {
     ...summarize(before._sum.amountSen ?? 0n, entries),
   };
 }
+
+/** Paginate the cash book view after calculating balances over the full period. */
+export async function ledgerPageData(search: Search) {
+  const data = await ledgerData(search);
+  const query = param(search, "q").trim().slice(0, 200);
+  const needle = query.toLowerCase();
+  const matches = data.entries
+    .map((entry, index) => ({ entry, balance: data.running[index] }))
+    .filter(
+      ({ entry }) =>
+        !needle ||
+        [entry.description, entry.reference, entry.category].some((value) =>
+          value.toLowerCase().includes(needle),
+        ),
+    );
+  const count = matches.length;
+  const pages = Math.max(1, Math.ceil(count / 50));
+  const page = Math.max(
+    1,
+    Math.min(pages, Number.parseInt(param(search, "page")) || 1),
+  );
+  const visible = matches.slice((page - 1) * 50, page * 50);
+  return {
+    ...data,
+    query,
+    count,
+    pages,
+    page,
+    entries: visible.map(({ entry }) => entry),
+    running: visible.map(({ balance }) => balance),
+  };
+}
+
 export async function balances() {
   const [accounts, funds, grouped] = await Promise.all([
     db.account.findMany({ orderBy: { code: "asc" } }),

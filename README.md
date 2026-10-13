@@ -2,7 +2,7 @@
 
 **Urus kewangan dengan lebih rapi.**
 
-Aplikasi pengurusan kewangan komuniti dalam Bahasa Melayu: buku tunai, akaun dan dana, resit/baucer, yuran ahli, rumusan bulanan, serta jejak audit. Versi baharu ini dibina untuk satu organisasi bagi setiap pemasangan.
+Aplikasi pengurusan kewangan komuniti dengan UI Bahasa Melayu dan English: buku tunai, akaun dan dana, resit/baucer, yuran ahli, rumusan bulanan, serta jejak audit. Output Excel/PDF kekal Bahasa Melayu. Versi baharu ini dibina untuk satu organisasi bagi setiap pemasangan.
 
 ![Dashboard Kira Rapi dengan data demonstrasi](docs/screenshots/dashboard.png)
 
@@ -11,7 +11,7 @@ Aplikasi pengurusan kewangan komuniti dalam Bahasa Melayu: buku tunai, akaun dan
 | Modul | Fungsi |
 | --- | --- |
 | Dashboard | Baki, penerimaan, perbelanjaan, tunggakan yuran, carta enam bulan dan dokumen menunggu semakan |
-| Buku tunai | Ledger berturutan, baki berjalan, penapis bulan/akaun/dana, pindahan dalaman dan eksport CSV |
+| Buku tunai | Ledger berturutan, baki berjalan, carian butiran/rujukan/kategori, 50 transaksi setiap halaman, penapis bulan/akaun/dana, pindahan dalaman dan eksport CSV |
 | Resit & baucer | Cipta/sunting draf, lampiran PDF/PNG/JPEG, kelulusan, rekod bayaran, pembatalan dan cetakan A4 |
 | Yuran ahli | Daftar ahli, kadar bulanan, jana yuran tanpa pendua dan kutipan melalui resit |
 | Akaun & dana | Akaun bank/tunai/lain-lain, baki pembukaan serta dana tersuai |
@@ -20,11 +20,23 @@ Aplikasi pengurusan kewangan komuniti dalam Bahasa Melayu: buku tunai, akaun dan
 | Tetapan | Profil organisasi, penandatangan, pengguna, permohonan akses, kata laluan dan kunci tempoh kewangan |
 | Audit | Rekod tindakan dengan pengguna, masa dan butiran perubahan |
 
+Carian Buku Tunai mengabaikan huruf besar/kecil. Baki berjalan dan jumlah bulanan merangkumi semua transaksi dalam pilihan bulan, akaun dan dana, termasuk transaksi yang tidak muncul dalam hasil carian atau halaman semasa. Pautan Sebelum/Seterusnya mengekalkan penapis; carian baharu bermula pada halaman pertama. Eksport CSV dan rumusan terus menggunakan keseluruhan transaksi bagi pilihan bulan/akaun/dana.
+
 UI korporat moden menyokong desktop dan telefon, dengan **mod siang dan malam**. Butang bulan/matahari di bahagian atas menukar tema; pilihan disimpan dalam browser dan digunakan semula selepas reload. Sebelum pilihan dibuat, tema mengikut tetapan peranti. Cetakan dan PDF kekal berlatar putih.
 
 Dashboard menyediakan pintasan kelulusan, yuran dan laporan. Penjana Excel membahagikan pilihan kepada tempoh laporan dan pemetaan dana. Menu telefon menyokong papan kekunci serta kekunci Escape. Font dibekalkan bersama aplikasi; tiada permintaan font pihak ketiga diperlukan semasa digunakan.
 
 Pratonton: [mod siang](docs/screenshots/dashboard.png) · [mod malam](docs/screenshots/dashboard-night.png) · [telefon](docs/screenshots/dashboard-mobile.png). Lihat [panduan reka bentuk UI/UX](docs/UI-UX.md).
+
+## Bahasa antaramuka
+
+Bahasa asal ialah **BM (`ms`)**. Butang **BM / EN** bersebelahan kawalan tema menukar bahasa menu, keterangan, borang dan mesej UI. Pilihan disimpan selama setahun dalam cookie `kira-rapi-lang` (`Path=/`, `SameSite=Lax`, `HttpOnly`; `Secure` apabila `APP_URL` menggunakan HTTPS). Server Components membaca cookie sebelum menghasilkan halaman; bahasa kekal selepas reload, navigasi dan log masuk. Cookie yang tiada atau tidak sah kembali kepada BM.
+
+Kamus tunggal berada dalam [`lib/i18n.ts`](lib/i18n.ts), dengan pasangan `{ ms, en }` dan placeholder bernama. `LanguageToggle` menggunakan Server Action untuk menukar cookie. Tema siang/malam menggunakan preference berasingan.
+
+**Bahasa laporan tidak berubah apabila UI ditukar.** Empat workbook Excel, PDF dan pratonton cetakan resit/baucer/rumusan kekal BM. Nama organisasi, dana, kategori, transaksi dan rekod audit ialah data asal dan tidak diterjemah secara automatik. `lib/excel.ts`, `scripts/excel/*` dan `templates/excel/*` tidak diubah oleh fungsi dwibahasa ini.
+
+Pratonton English: [mod siang](docs/screenshots/dashboard-en-day.png) · [mod malam](docs/screenshots/dashboard-en-night.png) · [laporan pada telefon](docs/screenshots/reports-en-mobile.png).
 
 ## Ketepatan kewangan
 
@@ -114,11 +126,11 @@ Pendaftaran awam menghasilkan pengguna `PENDING` dengan peranan USER. Hanya Supe
 ## Ujian
 
 ```bash
-npm run test               # Pengiraan wang, tarikh, ledger dan eksport CSV
+npm run test               # Pengiraan wang, tarikh, ledger, CSV dan kamus bahasa
 npm run test:integration   # Database test berasingan: transaksi serentak, kelulusan, pembalikan, yuran, kunci tempoh
 npm run test:reports       # Template Excel, pautan formula, baki 12 bulan dan PDF
 npm run build             # Build production dan semakan TypeScript
-npm run test:e2e           # Chromium: aliran dokumen, Excel/PDF, tema dan navigasi telefon
+npm run test:e2e           # Chromium: dokumen, Excel/PDF, tema, bahasa/cookie dan telefon
 npm run typecheck
 npm audit
 ```

@@ -1,3 +1,5 @@
+import { uiMonthName } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import {
   Files,
   FileSpreadsheet,
@@ -14,6 +16,8 @@ import { Field, PageHeading, Panel } from "@/components/ui";
 import { ExcelExport } from "@/components/excel-export";
 
 export default async function ExcelReports() {
+  const { t, language } = await getI18n();
+
   await requireUser();
   const funds = await db.fund.findMany({ orderBy: { code: "asc" } });
   const current = today();
@@ -27,40 +31,46 @@ export default async function ExcelReports() {
   return (
     <>
       <PageHeading
-        eyebrow="LAPORAN & DOKUMEN"
-        title="Jana laporan Excel"
-        description="Rekod yang sama, dalam format yang anda kenal. Jana fail boleh edit atau PDF sedia cetak."
+        eyebrow={t("LAPORAN & DOKUMEN")}
+        title={t("Jana laporan Excel")}
+        description={t(
+          "Rekod yang sama, dalam format yang anda kenal. Jana fail boleh edit atau PDF sedia cetak.",
+        )}
       >
         <span className="report-format-tag">
-          <Link2 size={16} />4 workbook berpaut
+          <Link2 size={16} />
+          {t("4 workbook berpaut")}
         </span>
       </PageHeading>
-      <section className="report-connection" aria-label="Aliran pautan laporan">
+      <section
+        className="report-connection"
+        aria-label={t("Aliran pautan laporan")}
+      >
         <div className="report-connection-heading">
           <Files size={18} />
-          <strong>Satu rekod. Empat laporan.</strong>
-          <span>Susun atur template asal dikekalkan.</span>
+          <strong>{t("Satu rekod. Empat laporan.")}</strong>
+          <span>{t("Susun atur template asal dikekalkan.")}</span>
         </div>
         <div className="excel-report-map">
           {[
             {
-              name: "Baucer & resit",
-              detail: "Butiran dan amaun sumber",
+              name: t("Baucer & resit"),
+              detail: t("Butiran dan amaun sumber"),
               icon: ReceiptText,
             },
             {
-              name: "Buku kewangan",
-              detail: "Baki berjalan & pecahan dana",
+              name: t("Buku kewangan"),
+              detail: t("Baki berjalan & pecahan dana"),
               icon: BookOpen,
             },
             {
-              name: "Bulanan & tahunan",
-              detail: "12 bulan dan rumusan setahun",
+              name: t("Bulanan & tahunan"),
+              detail: t("12 bulan dan rumusan setahun"),
               icon: ChartNoAxesCombined,
             },
             {
-              name: "Akaun tunjang",
-              detail: "Dana GAB dan rumusan yuran",
+              name: t("Akaun tunjang"),
+              detail: t("Dana GAB dan rumusan yuran"),
               icon: Wallet,
             },
           ].map(({ name, detail, icon: Icon }, i) => (
@@ -77,19 +87,20 @@ export default async function ExcelReports() {
       </section>
       <div className="report-generation-layout">
         <Panel
-          title="Pilihan penjanaan"
-          description="Tetapkan tempoh dan dana sebelum memuat turun."
+          title={t("Pilihan penjanaan")}
+          description={t("Tetapkan tempoh dan dana sebelum memuat turun.")}
           className="report-options-panel"
         >
           <form className="report-form">
             <fieldset className="report-fieldset">
               <legend>
-                <span>01</span>Tempoh & jenis laporan
+                <span>01</span>
+                {t("Tempoh & jenis laporan")}
               </legend>
               <div className="form-grid">
                 <Field
-                  label="Tahun laporan"
-                  hint="Excel meliputi Januari–Disember."
+                  label={t("Tahun laporan")}
+                  hint={t("Excel meliputi Januari–Disember.")}
                 >
                   <input
                     name="year"
@@ -101,77 +112,89 @@ export default async function ExcelReports() {
                   />
                 </Field>
                 <Field
-                  label="Bulan untuk PDF"
-                  hint="Digunakan untuk laporan bulanan."
+                  label={t("Bulan untuk PDF")}
+                  hint={t("Digunakan untuk laporan bulanan.")}
                 >
                   <select
                     name="month"
                     defaultValue={Number(current.slice(5, 7))}
                   >
                     {months.map((m, i) => (
-                      <option key={m} value={i + 1}>
-                        {m}
+                      <option key={uiMonthName(i, language)} value={i + 1}>
+                        {uiMonthName(i, language)}
                       </option>
                     ))}
                   </select>
                 </Field>
-                <Field label="Jenis PDF" wide>
+                <Field label={t("Jenis PDF")} wide>
                   <select name="report" defaultValue="monthly">
-                    <option value="cash">Buku kewangan / buku tunai</option>
-                    <option value="monthly">Laporan kewangan bulanan</option>
-                    <option value="annual">Rumusan kewangan tahunan</option>
-                    <option value="tunjang">Akaun tunjang bulanan</option>
-                    <option value="tunjang-annual">
-                      Akaun tunjang tahunan
+                    <option value="cash">
+                      {t("Buku kewangan / buku tunai")}
                     </option>
-                    <option value="dues">Rumusan yuran</option>
+                    <option value="monthly">
+                      {t("Laporan kewangan bulanan")}
+                    </option>
+                    <option value="annual">
+                      {t("Rumusan kewangan tahunan")}
+                    </option>
+                    <option value="tunjang">
+                      {t("Akaun tunjang bulanan")}
+                    </option>
+                    <option value="tunjang-annual">
+                      {t("Akaun tunjang tahunan")}
+                    </option>
+                    <option value="dues">{t("Rumusan yuran")}</option>
                   </select>
                 </Field>
               </div>
             </fieldset>
             <fieldset className="report-fieldset">
               <legend>
-                <span>02</span>Dana & pemetaan kolum
+                <span>02</span>
+                {t("Dana & pemetaan kolum")}
               </legend>
               <div className="form-grid">
                 <Field
-                  label="Dana akaun tunjang"
+                  label={t("Dana akaun tunjang")}
                   wide
-                  hint="Gabungan JKKR dipilih secara asal. Tukar jika laporan menggunakan dana lain."
+                  hint={t(
+                    "Gabungan JKKR dipilih secara asal. Tukar jika laporan menggunakan dana lain.",
+                  )}
                 >
                   <select
                     name="tunjang"
                     defaultValue={defaultFund("GAB_JKKR", "GAB")}
                     required
                   >
-                    <option value="none">Pilih dana</option>
+                    <option value="none">{t("Pilih dana")}</option>
                     {choices}
                   </select>
                 </Field>
                 <details className="report-mapping field-wide">
                   <summary>
-                    Semak pemetaan kolum Excel<span>3 kolum dana</span>
+                    {t("Semak pemetaan kolum Excel")}
+                    <span>{t("3 kolum dana")}</span>
                   </summary>
                   <div className="form-grid">
-                    <Field label="Kolum GAB JKKR" wide>
+                    <Field label={t("Kolum GAB JKKR")} wide>
                       <select
                         name="gab"
                         defaultValue={defaultFund("GAB_JKKR", "GAB")}
                       >
-                        <option value="none">Tiada</option>
+                        <option value="none">{t("Tiada")}</option>
                         {choices}
                       </select>
                     </Field>
-                    <Field label="Kolum AC Tumpang">
+                    <Field label={t("Kolum AC Tumpang")}>
                       <select
                         name="tumpang"
                         defaultValue={defaultFund("AC_TUMPANG", "TUMPANG")}
                       >
-                        <option value="none">Tiada</option>
+                        <option value="none">{t("Tiada")}</option>
                         {choices}
                       </select>
                     </Field>
-                    <Field label="Kolum Dana Kerohanian">
+                    <Field label={t("Kolum Dana Kerohanian")}>
                       <select
                         name="rohani"
                         defaultValue={defaultFund(
@@ -179,15 +202,15 @@ export default async function ExcelReports() {
                           "KEROHANIAN",
                         )}
                       >
-                        <option value="none">Tiada</option>
+                        <option value="none">{t("Tiada")}</option>
                         {choices}
                       </select>
                     </Field>
                   </div>
                 </details>
                 <p className="field-wide report-field-note">
-                  Dana selain pilihan di atas digabungkan dalam kolum{" "}
-                  <strong>Lain2</strong>.
+                  {t("Dana selain pilihan di atas digabungkan dalam kolum")}{" "}
+                  <strong>{t("Lain2")}</strong>.
                 </p>
               </div>
             </fieldset>
@@ -195,49 +218,57 @@ export default async function ExcelReports() {
               <div className="report-download-heading">
                 <FileSpreadsheet size={21} />
                 <div>
-                  <strong>Sedia untuk dijana</strong>
+                  <strong>{t("Sedia untuk dijana")}</strong>
                   <p>
-                    Pilih Excel boleh edit atau PDF mengikut pilihan di atas.
+                    {t(
+                      "Pilih Excel boleh edit atau PDF mengikut pilihan di atas.",
+                    )}
                   </p>
                 </div>
               </div>
+              <p className="report-field-note">
+                {t("Laporan Excel dan PDF dijana dalam Bahasa Melayu.")}
+              </p>
               <ExcelExport />
             </div>
           </form>
         </Panel>
         <aside className="report-guide">
           <Panel
-            title="Cara guna fail yang dijana"
-            description="Pastikan pautan antara fail terus berfungsi."
+            title={t("Cara guna fail yang dijana")}
+            description={t("Pastikan pautan antara fail terus berfungsi.")}
           >
             <ol className="excel-instructions">
               <li>
-                <strong>Simpan dalam satu folder</strong>
+                <strong>{t("Simpan dalam satu folder")}</strong>
                 <p>
-                  Ekstrak keempat-empat fail ke folder yang sama. Kekalkan nama
-                  fail, buka semuanya dalam Excel dan kemas kini pautan.
+                  {t(
+                    "Ekstrak keempat-empat fail ke folder yang sama. Kekalkan nama fail, buka semuanya dalam Excel dan kemas kini pautan.",
+                  )}
                 </p>
               </li>
               <li>
-                <strong>Edit pada helaian Data</strong>
+                <strong>{t("Edit pada helaian Data")}</strong>
                 <p>
-                  Ubah amaun, nama, butiran atau rujukan pada fail 1. Formula
-                  menghubungkan buku kewangan, laporan bulanan dan rumusan.
+                  {t(
+                    "Ubah amaun, nama, butiran atau rujukan pada fail 1. Formula menghubungkan buku kewangan, laporan bulanan dan rumusan.",
+                  )}
                 </p>
               </li>
               <li>
-                <strong>Jana semula untuk rekod baharu</strong>
+                <strong>{t("Jana semula untuk rekod baharu")}</strong>
                 <p>
-                  Tambah transaksi atau ubah bulan, dana dan jenis akaun dalam
-                  aplikasi. Jika amaun diedit dalam Excel, kemas kini amaun
-                  dalam perkataan juga.
+                  {t(
+                    "Tambah transaksi atau ubah bulan, dana dan jenis akaun dalam aplikasi. Jika amaun diedit dalam Excel, kemas kini amaun dalam perkataan juga.",
+                  )}
                 </p>
               </li>
               <li>
-                <strong>Cetak daripada PDF</strong>
+                <strong>{t("Cetak daripada PDF")}</strong>
                 <p>
-                  PDF menggunakan template Excel yang sama. Baucer/resit
-                  individu tersedia pada halaman dokumen.
+                  {t(
+                    "PDF menggunakan template Excel yang sama. Baucer/resit individu tersedia pada halaman dokumen.",
+                  )}
                 </p>
               </li>
             </ol>
@@ -245,16 +276,18 @@ export default async function ExcelReports() {
           <div className="report-note">
             <Link2 size={19} />
             <div>
-              <strong>Salinan boleh edit</strong>
+              <strong>{t("Salinan boleh edit")}</strong>
               <p>
-                Perubahan dalam Excel tidak diselaraskan semula ke aplikasi.
-                Simpan fail asal sebelum membuat suntingan.
+                {t(
+                  "Perubahan dalam Excel tidak diselaraskan semula ke aplikasi. Simpan fail asal sebelum membuat suntingan.",
+                )}
               </p>
             </div>
           </div>
           <p className="report-ledger-note">
-            Draf tidak masuk buku kewangan. Pindahan, pembalikan dan baki
-            pembukaan dipaparkan mengikut jenis catatan.
+            {t(
+              "Draf tidak masuk buku kewangan. Pindahan, pembalikan dan baki pembukaan dipaparkan mengikut jenis catatan.",
+            )}
           </p>
         </aside>
       </div>

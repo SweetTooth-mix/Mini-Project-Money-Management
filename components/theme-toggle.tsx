@@ -1,4 +1,5 @@
 "use client";
+import { useI18n } from "@/components/language-provider";
 
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
@@ -7,6 +8,8 @@ const preferenceKey = "kira-rapi-theme";
 type Theme = "light" | "dark";
 
 export function ThemeToggle() {
+  const { t } = useI18n();
+
   const [theme, setTheme] = useState<Theme | null>(null);
   useEffect(() => {
     const system = window.matchMedia("(prefers-color-scheme: dark)");
@@ -34,7 +37,8 @@ export function ThemeToggle() {
       window.removeEventListener("storage", apply);
     };
   }, []);
-  const label = theme === "dark" ? "Aktifkan mod siang" : "Aktifkan mod malam";
+  const label =
+    theme === "dark" ? t("Aktifkan mod siang") : t("Aktifkan mod malam");
   return (
     <button
       type="button"
@@ -56,7 +60,7 @@ export function ThemeToggle() {
       <Moon size={18} className="theme-moon" aria-hidden="true" />
       <Sun size={18} className="theme-sun" aria-hidden="true" />
       <span className="theme-label">
-        {theme === "dark" ? "Mod malam" : "Mod siang"}
+        {theme === "dark" ? t("Mod malam") : t("Mod siang")}
       </span>
     </button>
   );

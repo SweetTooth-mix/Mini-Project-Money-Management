@@ -1,10 +1,18 @@
+import { uiMonth } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
-import { ArrowDownToLine, ArrowLeftRight, Plus } from "lucide-react";
+import {
+  ArrowDownToLine,
+  ArrowLeftRight,
+  Plus,
+  Search as SearchIcon,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { ledgerData, type Search } from "@/lib/queries";
+import { ledgerPageData, type Search } from "@/lib/queries";
 import { money, today } from "@/lib/money";
 import {
   EntryTable,
+  Empty,
   Field,
   Flash,
   Metric,
@@ -19,62 +27,92 @@ export default async function Ledger({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   const user = await requireUser(),
     search = await searchParams;
-  const data = await ledgerData(search);
+  const data = await ledgerPageData(search);
   const query = new URLSearchParams({
     month: data.month,
     account: data.accountId,
     fund: data.fundId,
   }).toString();
+  const pageLink = (page: number) =>
+    "?" +
+    new URLSearchParams({
+      month: data.month,
+      account: data.accountId,
+      fund: data.fundId,
+      q: data.query,
+      page: String(page),
+    });
   return (
     <>
       <PageHeading
-        title="Buku tunai"
-        description="Setiap pergerakan wang, direkod dengan jelas dan tersusun."
+        title={t("Buku tunai")}
+        description={t(
+          "Setiap pergerakan wang, direkod dengan jelas dan tersusun.",
+        )}
       >
         <a className="button button-secondary" href={`/api/export?${query}`}>
           <ArrowDownToLine size={16} />
-          Eksport CSV
+          {t("Eksport CSV")}
         </a>
         <Link
           href="/dashboard/baucer-resit#baharu"
           className="button button-primary"
         >
           <Plus size={16} />
-          Rekod baharu
+          {t("Rekod baharu")}
         </Link>
       </PageHeading>
       <Flash search={search} />
       <div className="metrics-grid">
         <Metric
-          label="Baki awal"
+          label={t("Baki awal")}
           value={money(data.opening)}
-          detail={`Sebelum ${data.label}`}
+          detail={t("Sebelum {month}", {
+            month: uiMonth(data.month, language),
+          })}
         />
         <Metric
-          label="Penerimaan"
+          label={t("Penerimaan")}
           value={money(data.income)}
-          detail="Resit yang telah selesai"
+          detail={t("Resit yang telah selesai")}
         />
         <Metric
-          label="Perbelanjaan"
+          label={t("Perbelanjaan")}
           value={money(data.expense)}
-          detail="Baucer yang telah dibayar"
+          detail={t("Baucer yang telah dibayar")}
         />
         <Metric
           featured
-          label="Baki akhir"
+          label={t("Baki akhir")}
           value={money(data.closing)}
-          detail={`Pelarasan / pindahan: ${money(data.adjustment)}`}
+          detail={t("Pelarasan / pindahan: {amount}", {
+            amount: money(data.adjustment),
+          })}
         />
       </div>
       <Panel
-        title="Ledger transaksi"
-        description="Baki dikira mengikut turutan tarikh, termasuk pembalikan dan pindahan."
+        title={t("Ledger transaksi")}
+        description={t(
+          "Baki merangkumi semua transaksi dalam bulan, akaun dan dana yang dipilih, termasuk transaksi di luar hasil carian.",
+        )}
       >
         <form className="filter-bar">
-          <Field label="Bulan">
+          <div className="search-input">
+            <SearchIcon size={17} aria-hidden="true" />
+            <input
+              type="search"
+              aria-label={t("Cari transaksi")}
+              name="q"
+              defaultValue={data.query}
+              maxLength={200}
+              placeholder={t("Cari butiran, rujukan atau kategori…")}
+            />
+          </div>
+          <Field label={t("Bulan")}>
             <input
               type="month"
               name="month"
@@ -82,9 +120,9 @@ export default async function Ledger({
               required
             />
           </Field>
-          <Field label="Akaun">
+          <Field label={t("Akaun")}>
             <select name="account" defaultValue={data.accountId}>
-              <option value="">Semua akaun</option>
+              <option value="">{t("Semua akaun")}</option>
               {data.accounts.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name}
@@ -92,9 +130,9 @@ export default async function Ledger({
               ))}
             </select>
           </Field>
-          <Field label="Dana">
+          <Field label={t("Dana")}>
             <select name="fund" defaultValue={data.fundId}>
-              <option value="">Semua dana</option>
+              <option value="">{t("Semua dana")}</option>
               {data.funds.map((f) => (
                 <option key={f.id} value={f.id}>
                   {f.name}
@@ -102,14 +140,38 @@ export default async function Ledger({
               ))}
             </select>
           </Field>
-          <button className="button button-secondary">Tapis rekod</button>
+          <button className="button button-secondary">
+            {t("Tapis rekod")}
+          </button>
         </form>
-        <EntryTable entries={data.entries} running={data.running} />
+        {data.query && !data.count ? (
+          <Empty
+            description={t(
+              "Tiada transaksi sepadan. Cuba carian atau penapis lain.",
+            )}
+          />
+        ) : (
+          <EntryTable entries={data.entries} running={data.running} />
+        )}
         <div className="table-footer">
           <span>
-            {data.entries.length} transaksi · {data.label}
+            {t("Halaman {page} daripada {pages} · {count} transaksi", {
+              page: data.page,
+              pages: data.pages,
+              count: data.count,
+            })}
           </span>
-          <strong>Baki akhir: {money(data.closing)}</strong>
+          <strong>
+            {t("Baki akhir:")} {money(data.closing)}
+          </strong>
+          <div className="pagination">
+            {data.page > 1 && (
+              <Link href={pageLink(data.page - 1)}>{t("← Sebelum")}</Link>
+            )}
+            {data.page < data.pages && (
+              <Link href={pageLink(data.page + 1)}>{t("Seterusnya →")}</Link>
+            )}
+          </div>
         </div>
       </Panel>
       {user.role !== "USER" && (
@@ -117,15 +179,17 @@ export default async function Ledger({
           <summary>
             <ArrowLeftRight size={18} />
             <span>
-              Pindahan antara akaun
+              {t("Pindahan antara akaun")}
               <small>
-                Pindahkan wang tanpa menambah pendapatan atau perbelanjaan.
+                {t(
+                  "Pindahkan wang tanpa menambah pendapatan atau perbelanjaan.",
+                )}
               </small>
             </span>
             <Plus size={18} />
           </summary>
           <form action={transferAction} className="form-grid">
-            <Field label="Dari akaun">
+            <Field label={t("Dari akaun")}>
               <select name="fromId" required>
                 {data.accounts
                   .filter((a) => a.active)
@@ -136,7 +200,7 @@ export default async function Ledger({
                   ))}
               </select>
             </Field>
-            <Field label="Ke akaun">
+            <Field label={t("Ke akaun")}>
               <select name="toId" defaultValue={data.accounts[1]?.id} required>
                 {data.accounts
                   .filter((a) => a.active)
@@ -147,7 +211,7 @@ export default async function Ledger({
                   ))}
               </select>
             </Field>
-            <Field label="Dana">
+            <Field label={t("Dana")}>
               <select name="fundId">
                 {data.funds
                   .filter((f) => f.active)
@@ -158,7 +222,7 @@ export default async function Ledger({
                   ))}
               </select>
             </Field>
-            <Field label="Amaun (RM)">
+            <Field label={t("Amaun (RM)")}>
               <input
                 type="number"
                 name="amount"
@@ -167,7 +231,7 @@ export default async function Ledger({
                 required
               />
             </Field>
-            <Field label="Tarikh pindahan">
+            <Field label={t("Tarikh pindahan")}>
               <input
                 type="date"
                 name="date"
@@ -176,16 +240,16 @@ export default async function Ledger({
                 required
               />
             </Field>
-            <Field label="Butiran">
+            <Field label={t("Butiran")}>
               <input
                 name="description"
-                placeholder="Contoh: Tambah wang peti tunai"
+                placeholder={t("Contoh: Tambah wang peti tunai")}
                 maxLength={200}
                 required
               />
             </Field>
             <div className="form-footer field-wide">
-              <Submit>Rekod pindahan</Submit>
+              <Submit>{t("Rekod pindahan")}</Submit>
             </div>
           </form>
         </details>

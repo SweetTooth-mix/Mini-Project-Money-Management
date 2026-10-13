@@ -1,6 +1,8 @@
 "use client";
+import { useI18n } from "@/components/language-provider";
 
 import { useState } from "react";
+import { translateMessage } from "@/lib/i18n";
 
 export function ExcelExport({
   document,
@@ -9,6 +11,8 @@ export function ExcelExport({
   document?: string;
   year?: number;
 }) {
+  const { t, language } = useI18n();
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function generate(button: HTMLButtonElement, format: string) {
@@ -31,7 +35,7 @@ export function ExcelExport({
       const response = await fetch(`/api/reports?${query}`);
       if (!response.ok)
         throw new Error(
-          (await response.json()).error || "Laporan gagal dijana.",
+          (await response.json()).error || t("Laporan gagal dijana."),
         );
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -44,7 +48,7 @@ export function ExcelExport({
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Laporan gagal dijana.");
+      setError(e instanceof Error ? e.message : t("Laporan gagal dijana."));
     } finally {
       setBusy(false);
     }
@@ -58,10 +62,10 @@ export function ExcelExport({
         onClick={(e) => generate(e.currentTarget, document ? "xlsx" : "zip")}
       >
         {busy
-          ? "Sedang menjana…"
+          ? t("Sedang menjana…")
           : document
-            ? "Excel format asal"
-            : "Jana 4 Excel berpaut (.zip)"}
+            ? t("Excel format asal")
+            : t("Jana 4 Excel berpaut (.zip)")}
       </button>
       <button
         type="button"
@@ -69,16 +73,18 @@ export function ExcelExport({
         disabled={busy}
         onClick={(e) => generate(e.currentTarget, "pdf")}
       >
-        PDF format asal
+        {t("PDF format asal")}
       </button>
       <span role="status" className="excel-status">
         {busy
-          ? "Menyediakan fail daripada rekod semasa. PDF mungkin mengambil masa sehingga satu minit."
+          ? t(
+              "Menyediakan fail daripada rekod semasa. PDF mungkin mengambil masa sehingga satu minit.",
+            )
           : ""}
       </span>
       {error && (
         <p role="alert" className="excel-error">
-          {error}
+          {translateMessage(error, language)}
         </p>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import { registerAction } from "@/app/actions";
 import { Brand } from "@/components/shell";
@@ -5,31 +6,37 @@ import { Field, Flash } from "@/components/ui";
 import { Submit } from "@/components/form-controls";
 import type { Search } from "@/lib/queries";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 export default async function Register({
   searchParams,
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t } = await getI18n();
+
   return (
     <main className="register-page" id="main-content">
       <div className="auth-theme">
         <ThemeToggle />
+        <LanguageToggle />
       </div>
       <Link href="/login">
         <Brand />
       </Link>
       <section className="register-card">
-        <p className="eyebrow">SERTAI RUANG KERJA</p>
-        <h1>Mohon akses.</h1>
+        <p className="eyebrow">{t("SERTAI RUANG KERJA")}</p>
+        <h1>{t("Mohon akses.")}</h1>
         <p className="muted">
-          Pentadbir akan menyemak permohonan sebelum akaun anda diaktifkan.
+          {t(
+            "Pentadbir akan menyemak permohonan sebelum akaun anda diaktifkan.",
+          )}
         </p>
         <Flash search={await searchParams} />
         <form action={registerAction}>
-          <Field label="Nama penuh">
+          <Field label={t("Nama penuh")}>
             <input name="name" autoComplete="name" maxLength={100} required />
           </Field>
-          <Field label="Alamat e-mel">
+          <Field label={t("Alamat e-mel")}>
             <input
               name="email"
               type="email"
@@ -38,7 +45,7 @@ export default async function Register({
               required
             />
           </Field>
-          <Field label="Kata laluan" hint="Gunakan 12–72 aksara.">
+          <Field label={t("Kata laluan")} hint={t("Gunakan 12–72 aksara.")}>
             <input
               name="password"
               type="password"
@@ -48,10 +55,10 @@ export default async function Register({
               required
             />
           </Field>
-          <Submit>Hantar permohonan</Submit>
+          <Submit>{t("Hantar permohonan")}</Submit>
         </form>
         <Link href="/login" className="back-link">
-          ← Kembali ke log masuk
+          {t("← Kembali ke log masuk")}
         </Link>
       </section>
     </main>

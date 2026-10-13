@@ -1,3 +1,4 @@
+import { getI18n } from "@/lib/i18n-server";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ledgerData, type Search } from "@/lib/queries";
@@ -10,6 +11,8 @@ export default async function Report({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t } = await getI18n();
+
   await requireUser();
   const [data, org] = await Promise.all([
     ledgerData(await searchParams),
@@ -32,28 +35,28 @@ export default async function Report({
     <>
       <div className="no-print">
         <PageHeading
-          title="Rumusan kewangan"
-          description="Laporan yang mudah disemak, dibentang dan dicetak."
+          title={t("Rumusan kewangan")}
+          description={t("Laporan yang mudah disemak, dibentang dan dicetak.")}
         >
           <a
             href="/dashboard/laporan-excel"
             className="button button-secondary"
           >
-            Excel & PDF format asal
+            {t("Excel & PDF format asal")}
           </a>
           <a href={`/api/export?${query}`} className="button button-secondary">
-            Eksport ledger CSV
+            {t("Eksport ledger CSV")}
           </a>
-          <PrintButton label="Cetak ringkasan" />
+          <PrintButton label={t("Cetak ringkasan")} />
         </PageHeading>
-        <Panel title="Pilihan laporan">
+        <Panel title={t("Pilihan laporan")}>
           <form className="filter-bar">
-            <Field label="Bulan">
+            <Field label={t("Bulan")}>
               <input name="month" type="month" defaultValue={data.month} />
             </Field>
-            <Field label="Akaun">
+            <Field label={t("Akaun")}>
               <select name="account" defaultValue={data.accountId}>
-                <option value="">Semua akaun</option>
+                <option value="">{t("Semua akaun")}</option>
                 {data.accounts.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name}
@@ -61,9 +64,9 @@ export default async function Report({
                 ))}
               </select>
             </Field>
-            <Field label="Dana">
+            <Field label={t("Dana")}>
               <select name="fund" defaultValue={data.fundId}>
-                <option value="">Semua dana</option>
+                <option value="">{t("Semua dana")}</option>
                 {data.funds.map((f) => (
                   <option key={f.id} value={f.id}>
                     {f.name}
@@ -71,11 +74,13 @@ export default async function Report({
                 ))}
               </select>
             </Field>
-            <button className="button button-primary">Jana rumusan</button>
+            <button className="button button-primary">
+              {t("Jana rumusan")}
+            </button>
           </form>
         </Panel>
       </div>
-      <article className="print-sheet report-sheet">
+      <article className="print-sheet report-sheet" lang="ms">
         <header className="report-letterhead">
           <span className="eyebrow">LAPORAN KEWANGAN BULANAN</span>
           <h2>{org.name}</h2>
