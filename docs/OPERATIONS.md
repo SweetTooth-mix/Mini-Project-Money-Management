@@ -110,6 +110,16 @@ Ujian unit dan integrasi berada dalam `tests/`; senario browser berada dalam `te
 
 Redesign UI disahkan dengan build production dan lapan senario browser. Fail template Excel, penjana laporan, logik kewangan dan schema dibandingkan menggunakan SHA-256 dan kekal sama seperti sebelum redesign. Semakan kontras teks terpilih pada dashboard, buku tunai, resit/baucer, laporan Excel dan tetapan tidak menemukan kegagalan ambang kontras dalam kedua-dua tema; ini bukan audit aksesibiliti menyeluruh.
 
+Semakan tambahan UI dwibahasa pada **13 Oktober 2026 (Asia/Kuala_Lumpur)**:
+
+- Build production, TypeScript dan **11 ujian unit** lulus.
+- **12 senario browser** lulus, termasuk bahasa pada server tanpa JavaScript, cookie selepas reload/log masuk, navigasi modul, penapis, input borang dan paparan telefon.
+- Muat turun daripada UI BM dan English menghasilkan empat workbook dengan XML kandungan, formula, gaya dan pautan yang sama. Perbandingan mengecualikan metadata masa penjanaan, termasuk salinannya dalam cache pautan luar. Fail `BACA DAHULU.txt` juga sama.
+- Teks PDF daripada UI English dan kandungan pratonton cetakan resit/baucer/rumusan kekal BM. Kawalan bahasa disembunyikan semasa mencetak.
+- SHA-256 bagi `lib/excel.ts`, `scripts/excel/*` dan `templates/excel/*` sepadan dengan versi sebelum penambahan bahasa. Tiada perubahan schema atau migration.
+
+Senario bahasa berada dalam `tests/e2e/i18n.spec.ts`; screenshot English berada dalam `docs/screenshots/`. Gunakan `APP_URL` HTTPS pada production supaya cookie bahasa menerima atribut `Secure`.
+
 Screenshot dan PDF di `.data/screenshots` menggunakan data rekaan. Screenshot README disalin daripada run browser yang disahkan.
 
 Override `deepmerge-ts@8.0.2` dalam `package.json` membetulkan advisory GHSA-ggr8-5vv4-36mx pada dependency konfigurasi Prisma. CLI Prisma, migration, build dan ujian digunakan untuk menyemak keserasiannya.

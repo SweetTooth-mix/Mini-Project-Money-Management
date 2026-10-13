@@ -1,3 +1,5 @@
+import { uiDate, uiLocale } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Check, Download, FileCheck2, Paperclip, Send } from "lucide-react";
@@ -19,6 +21,8 @@ export default async function DocumentPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   const user = await requireUser(),
     { id } = await params;
   const [doc, currentOrg, events] = await Promise.all([
@@ -56,10 +60,10 @@ export default async function DocumentPage({
     : [[], []];
   const amount = `${doc.amountSen / 100n}.${(doc.amountSen % 100n).toString().padStart(2, "0")}`;
   const steps = [
-    "Draf disediakan",
-    "Dihantar",
-    "Diluluskan",
-    "Bayaran direkod",
+    t("Draf disediakan"),
+    t("Dihantar"),
+    t("Diluluskan"),
+    t("Bayaran direkod"),
   ];
   const currentStep = ["DRAFT", "PENDING", "APPROVED", "PAID"].indexOf(
     doc.status,
@@ -68,14 +72,17 @@ export default async function DocumentPage({
     <>
       <div className="no-print">
         <Link href="/dashboard/baucer-resit" className="back-link">
-          ← Semua dokumen
+          {t("← Semua dokumen")}
         </Link>
         <PageHeading
           eyebrow={
-            doc.type === "BAUCER" ? "BAUCER BAYARAN" : "RESIT PENERIMAAN"
+            doc.type === "BAUCER" ? t("BAUCER BAYARAN") : t("RESIT PENERIMAAN")
           }
           title={doc.number}
-          description={`Disediakan oleh ${doc.createdBy.name} · ${shortDate(doc.date)}`}
+          description={t("Disediakan oleh {name} · {date}", {
+            name: doc.createdBy.name,
+            date: uiDate(doc.date, language),
+          })}
         >
           <Status value={doc.status} />
         </PageHeading>
@@ -91,7 +98,7 @@ export default async function DocumentPage({
         </div>
       </div>
       <div className="document-layout">
-        <article className="print-sheet">
+        <article className="print-sheet" lang="ms">
           <header className="document-letterhead">
             <div>
               <span className="document-org-mark">KR</span>
@@ -200,8 +207,8 @@ export default async function DocumentPage({
         </article>
         <aside className="document-actions no-print">
           <Panel
-            title="Tindakan dokumen"
-            description="Setiap tindakan direkod untuk audit."
+            title={t("Tindakan dokumen")}
+            description={t("Setiap tindakan direkod untuk audit.")}
           >
             <div className="action-stack">
               {doc.status === "DRAFT" && doc.createdById === user.id && (
@@ -209,11 +216,13 @@ export default async function DocumentPage({
                   <input type="hidden" name="id" value={id} />
                   <input type="hidden" name="action" value="submit" />
                   <p className="muted">
-                    Pastikan butiran dan lampiran lengkap sebelum dihantar.
+                    {t(
+                      "Pastikan butiran dan lampiran lengkap sebelum dihantar.",
+                    )}
                   </p>
                   <Submit>
                     <Send size={16} />
-                    Hantar untuk kelulusan
+                    {t("Hantar untuk kelulusan")}
                   </Submit>
                 </form>
               )}
@@ -226,13 +235,13 @@ export default async function DocumentPage({
                       <input type="hidden" name="action" value="approve" />
                       <Submit>
                         <FileCheck2 size={16} />
-                        Luluskan dokumen
+                        {t("Luluskan dokumen")}
                       </Submit>
                     </form>
                     <form action={documentAction}>
                       <input type="hidden" name="id" value={id} />
                       <input type="hidden" name="action" value="reject" />
-                      <Field label="Sebab penolakan">
+                      <Field label={t("Sebab penolakan")}>
                         <textarea
                           name="reason"
                           minLength={5}
@@ -242,21 +251,21 @@ export default async function DocumentPage({
                         />
                       </Field>
                       <Submit className="button button-danger">
-                        Tolak dokumen
+                        {t("Tolak dokumen")}
                       </Submit>
                     </form>
                   </>
                 )}
               {doc.status === "PENDING" && doc.createdById === user.id && (
                 <p className="info-note">
-                  Dokumen anda perlu diluluskan oleh pentadbir lain.
+                  {t("Dokumen anda perlu diluluskan oleh pentadbir lain.")}
                 </p>
               )}
               {doc.status === "APPROVED" && admin && (
                 <form action={documentAction}>
                   <input type="hidden" name="id" value={id} />
                   <input type="hidden" name="action" value="pay" />
-                  <Field label="Tarikh bayaran sebenar">
+                  <Field label={t("Tarikh bayaran sebenar")}>
                     <input
                       name="date"
                       type="date"
@@ -267,29 +276,35 @@ export default async function DocumentPage({
                     />
                   </Field>
                   <p className="muted">
-                    Rekodkan selepas wang benar-benar{" "}
-                    {doc.type === "RESIT" ? "diterima" : "dibayar"}. Baki akan
-                    dikemas kini sekali sahaja.
+                    {t(
+                      doc.type === "RESIT"
+                        ? "Rekodkan selepas wang benar-benar diterima. Baki akan dikemas kini sekali sahaja."
+                        : "Rekodkan selepas wang benar-benar dibayar. Baki akan dikemas kini sekali sahaja.",
+                    )}
                   </p>
                   <Submit>
-                    Sahkan {doc.type === "RESIT" ? "penerimaan" : "bayaran"}
+                    {t(
+                      doc.type === "RESIT"
+                        ? "Sahkan penerimaan"
+                        : "Sahkan bayaran",
+                    )}
                   </Submit>
                 </form>
               )}
               {doc.status === "PAID" && (
                 <div className="paid-notice">
                   <Check size={20} />
-                  <strong>Telah direkod dalam buku tunai</strong>
-                  <span>{doc.paidAt && shortDate(doc.paidAt)}</span>
+                  <strong>{t("Telah direkod dalam buku tunai")}</strong>
+                  <span>{doc.paidAt && uiDate(doc.paidAt, language)}</span>
                 </div>
               )}
               {admin && !["VOID", "REJECTED"].includes(doc.status) && (
                 <details className="danger-disclosure">
-                  <summary>Batalkan dokumen</summary>
+                  <summary>{t("Batalkan dokumen")}</summary>
                   <form action={documentAction}>
                     <input type="hidden" name="id" value={id} />
                     <input type="hidden" name="action" value="void" />
-                    <Field label="Sebab pembatalan">
+                    <Field label={t("Sebab pembatalan")}>
                       <textarea
                         name="reason"
                         minLength={5}
@@ -300,7 +315,7 @@ export default async function DocumentPage({
                     </Field>
                     {doc.status === "PAID" && (
                       <>
-                        <Field label="Tarikh pembalikan">
+                        <Field label={t("Tarikh pembalikan")}>
                           <input
                             name="date"
                             type="date"
@@ -310,26 +325,28 @@ export default async function DocumentPage({
                           />
                         </Field>
                         <p className="muted">
-                          Rekod asal dikekalkan. Entri pembalikan akan ditambah
-                          ke buku tunai.
+                          {t(
+                            "Rekod asal dikekalkan. Entri pembalikan akan ditambah ke buku tunai.",
+                          )}
                         </p>
                       </>
                     )}
                     <Submit className="button button-danger">
-                      Sahkan pembatalan
+                      {t("Sahkan pembatalan")}
                     </Submit>
                   </form>
                 </details>
               )}
               {["VOID", "REJECTED"].includes(doc.status) && (
                 <p className="muted">
-                  Dokumen ini telah ditutup. Cipta draf baharu jika pembetulan
-                  diperlukan.
+                  {t(
+                    "Dokumen ini telah ditutup. Cipta draf baharu jika pembetulan diperlukan.",
+                  )}
                 </p>
               )}
             </div>
           </Panel>
-          <Panel title="Lampiran" action={<Paperclip size={17} />}>
+          <Panel title={t("Lampiran")} action={<Paperclip size={17} />}>
             <div className="action-stack">
               {doc.attachment ? (
                 <a
@@ -340,12 +357,12 @@ export default async function DocumentPage({
                   {doc.attachment.fileName}
                 </a>
               ) : (
-                <p className="muted">Tiada lampiran.</p>
+                <p className="muted">{t("Tiada lampiran.")}</p>
               )}
               {doc.status === "DRAFT" && doc.createdById === user.id && (
                 <form action={uploadAction}>
                   <input type="hidden" name="id" value={id} />
-                  <Field label="PDF, PNG atau JPEG · maks. 5 MB">
+                  <Field label={t("PDF, PNG atau JPEG · maks. 5 MB")}>
                     <input
                       name="file"
                       type="file"
@@ -354,7 +371,7 @@ export default async function DocumentPage({
                     />
                   </Field>
                   <Submit className="button button-secondary">
-                    Simpan lampiran
+                    {t("Simpan lampiran")}
                   </Submit>
                 </form>
               )}
@@ -366,8 +383,10 @@ export default async function DocumentPage({
         {editable && (
           <Disclosure
             id="sunting"
-            title="Sunting draf"
-            description="Butiran boleh diubah sebelum dihantar untuk kelulusan."
+            title={t("Sunting draf")}
+            description={t(
+              "Butiran boleh diubah sebelum dihantar untuk kelulusan.",
+            )}
           >
             <DocumentForm
               accounts={accounts}
@@ -393,7 +412,7 @@ export default async function DocumentPage({
             />
           </Disclosure>
         )}
-        <Panel title="Jejak dokumen">
+        <Panel title={t("Jejak dokumen")}>
           <ol className="timeline">
             {events.map((e) => (
               <li key={e.id}>
@@ -406,7 +425,7 @@ export default async function DocumentPage({
                     {e.user.name} · {e.detail}
                   </p>
                   <small>
-                    {new Intl.DateTimeFormat("ms-MY", {
+                    {new Intl.DateTimeFormat(uiLocale(language), {
                       dateStyle: "medium",
                       timeStyle: "short",
                       timeZone: "Asia/Kuala_Lumpur",

@@ -1,3 +1,5 @@
+import { uiDate, uiMonth, uiMonthName, uiLocale } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import {
   ArrowDownLeft,
@@ -14,7 +16,7 @@ import {
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { balances, ledgerData, param, type Search } from "@/lib/queries";
-import { money, months, shortDate, today } from "@/lib/money";
+import { money, today } from "@/lib/money";
 import { Empty, EntryTable, Metric, PageHeading, Panel } from "@/components/ui";
 
 export default async function Dashboard({
@@ -22,6 +24,8 @@ export default async function Dashboard({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   const user = await requireUser();
   const search = await searchParams;
   const [ledger, balance, pending, dues, recentAudit, pendingCount] =
@@ -61,7 +65,7 @@ export default async function Dashboard({
     const prefix = d.toISOString().slice(0, 7),
       rows = history.filter((e) => e.date.toISOString().startsWith(prefix));
     return {
-      label: months[d.getUTCMonth()].slice(0, 3),
+      label: uiMonthName(d.getUTCMonth(), language, true),
       income: rows
         .filter((e) => e.type === "INCOME")
         .reduce((n, e) => n + e.amountSen, 0n),
@@ -81,73 +85,85 @@ export default async function Dashboard({
   return (
     <>
       <PageHeading
-        eyebrow={`${shortDate(new Date(`${today()}T00:00:00Z`)).toUpperCase()} · RUANG KERJA ANDA`}
-        title={`Selamat datang, ${user.name.split(" ")[0]}.`}
-        description="Semak kedudukan dana dan urusan yang perlu diselesaikan."
+        eyebrow={t("{date} · RUANG KERJA ANDA", {
+          date: uiDate(
+            new Date(`${today()}T00:00:00Z`),
+            language,
+          ).toUpperCase(),
+        })}
+        title={t("Selamat datang, {name}.", { name: user.name.split(" ")[0] })}
+        description={t(
+          "Semak kedudukan dana dan urusan yang perlu diselesaikan.",
+        )}
       >
         <Link
           href="/dashboard/laporan-excel"
           className="button button-secondary"
         >
           <Files size={17} />
-          Jana laporan
+          {t("Jana laporan")}
         </Link>
         <Link
           href="/dashboard/baucer-resit#baharu"
           className="button button-primary"
         >
           <Plus size={17} />
-          Rekod baharu
+          {t("Rekod baharu")}
         </Link>
       </PageHeading>
       <div className="section-toolbar">
         <div className="section-title-inline">
           <span className="section-dot" />
-          Ringkasan kewangan <span className="subtle-tag">{ledger.label}</span>
+          {t("Ringkasan kewangan")}{" "}
+          <span className="subtle-tag">{uiMonth(ledger.month, language)}</span>
         </div>
         <form className="month-filter">
           <CalendarDays size={16} />
           <input
-            aria-label="Bulan ringkasan"
+            aria-label={t("Bulan ringkasan")}
             type="month"
             name="month"
             defaultValue={ledger.month}
           />
           <button type="submit" className="text-button">
-            Lihat <ArrowRight size={14} />
+            {t("Lihat")} <ArrowRight size={14} />
           </button>
         </form>
       </div>
       <div className="metrics-grid dashboard-metrics">
         <Metric
           featured
-          label="Baki akhir bulan"
+          label={t("Baki akhir bulan")}
           value={money(ledger.closing)}
-          detail="Semua akaun dan dana"
+          detail={t("Semua akaun dan dana")}
           icon={<Wallet size={18} />}
         />
         <Metric
-          label="Jumlah penerimaan"
+          label={t("Jumlah penerimaan")}
           value={money(ledger.income)}
-          detail={`${ledger.entries.filter((e) => e.type === "INCOME").length} penerimaan dalam tempoh`}
+          detail={t("{count} penerimaan dalam tempoh", {
+            count: ledger.entries.filter((e) => e.type === "INCOME").length,
+          })}
           icon={<ArrowDownLeft size={18} />}
         />
         <Metric
-          label="Jumlah perbelanjaan"
+          label={t("Jumlah perbelanjaan")}
           value={money(ledger.expense)}
-          detail={`${ledger.entries.filter((e) => e.type === "EXPENSE").length} bayaran dalam tempoh`}
+          detail={t("{count} bayaran dalam tempoh", {
+            count: ledger.entries.filter((e) => e.type === "EXPENSE").length,
+          })}
           tone="orange"
           icon={<ArrowUpRight size={18} />}
         />
         <Metric
-          label="Yuran belum selesai"
+          label={t("Yuran belum selesai")}
           value={money(dues._sum.amountSen ?? 0n)}
-          detail={`${dues._count} rekod · semua bulan`}
+          detail={t("{count} rekod · semua bulan", { count: dues._count })}
           tone="gold"
           icon={<Clock3 size={18} />}
         />
       </div>
-      <nav className="task-strip" aria-label="Urusan kewangan">
+      <nav className="task-strip" aria-label={t("Urusan kewangan")}>
         <Link href="/dashboard/baucer-resit?status=PENDING">
           <span className="task-icon">
             <ClipboardCheck size={20} />
@@ -155,10 +171,10 @@ export default async function Dashboard({
           <span>
             <strong>
               {pendingCount
-                ? `${pendingCount} dokumen perlu disemak`
-                : "Tiada dokumen menunggu semakan"}
+                ? t("{count} dokumen perlu disemak", { count: pendingCount })
+                : t("Tiada dokumen menunggu semakan")}
             </strong>
-            <small>Buka senarai kelulusan</small>
+            <small>{t("Buka senarai kelulusan")}</small>
           </span>
           <ArrowUpRight size={17} />
         </Link>
@@ -167,8 +183,10 @@ export default async function Dashboard({
             <Users size={20} />
           </span>
           <span>
-            <strong>{dues._count} rekod yuran belum selesai</strong>
-            <small>Semak kutipan ahli</small>
+            <strong>
+              {t("{count} rekod yuran belum selesai", { count: dues._count })}
+            </strong>
+            <small>{t("Semak kutipan ahli")}</small>
           </span>
           <ArrowUpRight size={17} />
         </Link>
@@ -177,25 +195,25 @@ export default async function Dashboard({
             <Files size={20} />
           </span>
           <span>
-            <strong>Laporan untuk dibentangkan</strong>
-            <small>Excel berpaut & PDF format asal</small>
+            <strong>{t("Laporan untuk dibentangkan")}</strong>
+            <small>{t("Excel berpaut & PDF format asal")}</small>
           </span>
           <ArrowUpRight size={17} />
         </Link>
       </nav>
       <div className="dashboard-main-grid">
         <Panel
-          title="Aliran tunai"
-          description="Penerimaan dan perbelanjaan sepanjang 6 bulan"
+          title={t("Aliran tunai")}
+          description={t("Penerimaan dan perbelanjaan sepanjang 6 bulan")}
           action={
             <div className="chart-legend">
               <span>
                 <i className="legend-income" />
-                Masuk
+                {t("Masuk")}
               </span>
               <span>
                 <i className="legend-expense" />
-                Keluar
+                {t("Keluar")}
               </span>
             </div>
           }
@@ -227,7 +245,10 @@ export default async function Dashboard({
                           height: `${(Number(b.income) / max) * 100}%`,
                           minHeight: b.income > 0n ? 3 : 0,
                         }}
-                        title={`${b.label}: penerimaan ${money(b.income)}`}
+                        title={t("{month}: penerimaan {amount}", {
+                          month: b.label,
+                          amount: money(b.income),
+                        })}
                       />
                       <div
                         className="bar bar-expense"
@@ -235,7 +256,10 @@ export default async function Dashboard({
                           height: `${(Number(b.expense) / max) * 100}%`,
                           minHeight: b.expense > 0n ? 3 : 0,
                         }}
-                        title={`${b.label}: perbelanjaan ${money(b.expense)}`}
+                        title={t("{month}: perbelanjaan {amount}", {
+                          month: b.label,
+                          amount: money(b.expense),
+                        })}
                       />
                     </div>
                     <span>{b.label}</span>
@@ -247,7 +271,7 @@ export default async function Dashboard({
           <div className="chart-summary">
             <span>
               <i className="section-dot" />
-              Lebihan / defisit bulan dipilih
+              {t("Lebihan / defisit bulan dipilih")}
             </span>
             <strong
               className={
@@ -258,14 +282,14 @@ export default async function Dashboard({
             </strong>
           </div>
           <details className="accessible-chart">
-            <summary>Lihat data carta</summary>
+            <summary>{t("Lihat data carta")}</summary>
             <table>
-              <caption>Aliran tunai enam bulan</caption>
+              <caption>{t("Aliran tunai enam bulan")}</caption>
               <thead>
                 <tr>
-                  <th>Bulan</th>
-                  <th>Penerimaan</th>
-                  <th>Perbelanjaan</th>
+                  <th>{t("Bulan")}</th>
+                  <th>{t("Penerimaan")}</th>
+                  <th>{t("Perbelanjaan")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,13 +305,13 @@ export default async function Dashboard({
           </details>
         </Panel>
         <Panel
-          title="Baki mengikut dana"
-          description="Kedudukan semasa semua dana"
+          title={t("Baki mengikut dana")}
+          description={t("Kedudukan semasa semua dana")}
           action={
             <Link
               href="/dashboard/akaun"
               className="icon-link"
-              aria-label="Lihat akaun dan dana"
+              aria-label={t("Lihat akaun dan dana")}
             >
               <ArrowUpRight size={20} />
             </Link>
@@ -317,34 +341,36 @@ export default async function Dashboard({
             ))}
           </div>
           <div className="fund-total">
-            <span>Jumlah baki semasa</span>
+            <span>{t("Jumlah baki semasa")}</span>
             <strong>
               {money(balance.funds.reduce((s, f) => s + f.balance, 0n))}
             </strong>
           </div>
           <div className="panel-footnote">
-            Setiap transaksi dikaitkan kepada satu dana.
+            {t("Setiap transaksi dikaitkan kepada satu dana.")}
           </div>
         </Panel>
       </div>
       <div className="dashboard-lower-grid">
         <Panel
-          title="Transaksi terkini"
-          description={`Rekod dalam ${ledger.label}`}
+          title={t("Transaksi terkini")}
+          description={t("Rekod dalam {month}", {
+            month: uiMonth(ledger.month, language),
+          })}
           action={
             <Link
               className="text-link"
               href={`/dashboard/buku-tunai?month=${ledger.month}`}
             >
-              Semua transaksi <ArrowRight size={15} />
+              {t("Semua transaksi")} <ArrowRight size={15} />
             </Link>
           }
         >
           <EntryTable entries={ledger.entries.slice(-5).reverse()} compact />
         </Panel>
         <Panel
-          title="Perlu perhatian"
-          description="Dokumen menunggu semakan"
+          title={t("Perlu perhatian")}
+          description={t("Dokumen menunggu semakan")}
           action={<span className="count-pill">{pendingCount}</span>}
         >
           <div className="approval-list">
@@ -368,8 +394,8 @@ export default async function Dashboard({
               ))
             ) : (
               <Empty
-                title="Semua sudah disemak"
-                description="Tiada dokumen menunggu kelulusan."
+                title={t("Semua sudah disemak")}
+                description={t("Tiada dokumen menunggu kelulusan.")}
               />
             )}
           </div>
@@ -377,16 +403,16 @@ export default async function Dashboard({
             className="panel-bottom-link"
             href="/dashboard/baucer-resit?status=PENDING"
           >
-            Buka senarai kelulusan <ArrowRight size={16} />
+            {t("Buka senarai kelulusan")} <ArrowRight size={16} />
           </Link>
         </Panel>
       </div>
       <Panel
-        title="Aktiviti terkini"
-        description="Jejak perubahan untuk ketelusan bersama"
+        title={t("Aktiviti terkini")}
+        description={t("Jejak perubahan untuk ketelusan bersama")}
         action={
           <Link href="/dashboard/audit" className="text-link">
-            Lihat jejak audit <ArrowRight size={15} />
+            {t("Lihat jejak audit")} <ArrowRight size={15} />
           </Link>
         }
       >
@@ -398,7 +424,7 @@ export default async function Dashboard({
                 <strong>{a.user.name}</strong>
                 <p>{a.detail}</p>
                 <small>
-                  {new Intl.DateTimeFormat("ms-MY", {
+                  {new Intl.DateTimeFormat(uiLocale(language), {
                     day: "numeric",
                     month: "short",
                     hour: "2-digit",

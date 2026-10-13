@@ -1,3 +1,4 @@
+import { getI18n } from "@/lib/i18n-server";
 import { Landmark, Plus, Wallet } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { balances, type Search } from "@/lib/queries";
@@ -11,13 +12,17 @@ export default async function Accounts({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t } = await getI18n();
+
   const user = await requireUser(),
     data = await balances();
   return (
     <>
       <PageHeading
-        title="Akaun & dana"
-        description="Asingkan tempat wang disimpan dan tujuan wang digunakan."
+        title={t("Akaun & dana")}
+        description={t(
+          "Asingkan tempat wang disimpan dan tujuan wang digunakan.",
+        )}
       />
       <Flash search={await searchParams} />
       <div className="account-grid">
@@ -32,7 +37,11 @@ export default async function Accounts({
                 )}
               </span>
               <span className="subtle-tag">
-                {{ BANK: "Bank", CASH: "Tunai", OTHER: "Lain-lain" }[a.type]}
+                {
+                  { BANK: t("Bank"), CASH: t("Tunai"), OTHER: t("Lain-lain") }[
+                    a.type
+                  ]
+                }
               </span>
             </div>
             <p>{a.code}</p>
@@ -40,21 +49,23 @@ export default async function Accounts({
             <strong className={a.balance < 0n ? "text-red" : ""}>
               {money(a.balance)}
             </strong>
-            <small>Baki semasa daripada buku tunai</small>
+            <small>{t("Baki semasa daripada buku tunai")}</small>
           </section>
         ))}
       </div>
       <Panel
-        title="Dana organisasi"
-        description="Dana ialah tujuan peruntukan. Satu akaun boleh menyimpan wang daripada beberapa dana."
+        title={t("Dana organisasi")}
+        description={t(
+          "Dana ialah tujuan peruntukan. Satu akaun boleh menyimpan wang daripada beberapa dana.",
+        )}
       >
         <div className="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Dana</th>
-                <th>Kod</th>
-                <th className="align-right">Baki semasa</th>
+                <th>{t("Dana")}</th>
+                <th>{t("Kod")}</th>
+                <th className="align-right">{t("Baki semasa")}</th>
               </tr>
             </thead>
             <tbody>
@@ -77,7 +88,7 @@ export default async function Accounts({
             </tbody>
             <tfoot>
               <tr>
-                <th colSpan={2}>Jumlah</th>
+                <th colSpan={2}>{t("Jumlah")}</th>
                 <td className="align-right amount">
                   {money(data.funds.reduce((s, f) => s + f.balance, 0n))}
                 </td>
@@ -89,11 +100,11 @@ export default async function Accounts({
       {user.role !== "USER" && (
         <div className="two-column-forms">
           <Panel
-            title="Tambah akaun"
-            description="Baki pembukaan disimpan sebagai rekod ledger."
+            title={t("Tambah akaun")}
+            description={t("Baki pembukaan disimpan sebagai rekod ledger.")}
           >
             <form action={createAccountAction} className="form-grid">
-              <Field label="Kod akaun">
+              <Field label={t("Kod akaun")}>
                 <input
                   name="code"
                   placeholder="BANK-02"
@@ -101,17 +112,17 @@ export default async function Accounts({
                   required
                 />
               </Field>
-              <Field label="Jenis akaun">
+              <Field label={t("Jenis akaun")}>
                 <select name="type">
-                  <option value="BANK">Bank</option>
-                  <option value="CASH">Tunai</option>
-                  <option value="OTHER">Lain-lain</option>
+                  <option value="BANK">{t("Bank")}</option>
+                  <option value="CASH">{t("Tunai")}</option>
+                  <option value="OTHER">{t("Lain-lain")}</option>
                 </select>
               </Field>
-              <Field label="Nama akaun" wide>
+              <Field label={t("Nama akaun")} wide>
                 <input name="name" maxLength={100} required />
               </Field>
-              <Field label="Baki pembukaan (RM)">
+              <Field label={t("Baki pembukaan (RM)")}>
                 <input
                   name="opening"
                   type="number"
@@ -121,7 +132,7 @@ export default async function Accounts({
                   required
                 />
               </Field>
-              <Field label="Tarikh pembukaan">
+              <Field label={t("Tarikh pembukaan")}>
                 <input
                   name="date"
                   type="date"
@@ -130,7 +141,7 @@ export default async function Accounts({
                   required
                 />
               </Field>
-              <Field label="Dana baki pembukaan" wide>
+              <Field label={t("Dana baki pembukaan")} wide>
                 <select name="fundId">
                   {data.funds
                     .filter((f) => f.active)
@@ -144,17 +155,17 @@ export default async function Accounts({
               <div className="form-footer field-wide">
                 <Submit>
                   <Plus size={16} />
-                  Simpan akaun
+                  {t("Simpan akaun")}
                 </Submit>
               </div>
             </form>
           </Panel>
           <Panel
-            title="Tambah dana"
-            description="Pilihan dana boleh ditambah tanpa mengubah kod."
+            title={t("Tambah dana")}
+            description={t("Pilihan dana boleh ditambah tanpa mengubah kod.")}
           >
             <form action={createFundAction} className="form-grid">
-              <Field label="Kod dana" wide>
+              <Field label={t("Kod dana")} wide>
                 <input
                   name="code"
                   placeholder="DANA_BELIA"
@@ -162,21 +173,21 @@ export default async function Accounts({
                   required
                 />
               </Field>
-              <Field label="Nama dana" wide>
+              <Field label={t("Nama dana")} wide>
                 <input
                   name="name"
-                  placeholder="Dana Aktiviti Belia"
+                  placeholder={t("Dana Aktiviti Belia")}
                   maxLength={100}
                   required
                 />
               </Field>
-              <Field label="Warna penanda">
+              <Field label={t("Warna penanda")}>
                 <input name="color" type="color" defaultValue="#247657" />
               </Field>
               <div className="form-footer field-wide">
                 <Submit>
                   <Plus size={16} />
-                  Simpan dana
+                  {t("Simpan dana")}
                 </Submit>
               </div>
             </form>

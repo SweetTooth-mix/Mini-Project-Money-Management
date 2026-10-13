@@ -1,4 +1,5 @@
 "use client";
+import { useI18n } from "@/components/language-provider";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,6 +24,8 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/app/actions";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
+import { translateMessage } from "@/lib/i18n";
 
 const links = [
   { href: "/dashboard", label: "Gambaran keseluruhan", icon: LayoutDashboard },
@@ -43,6 +46,8 @@ const roleNames: Record<string, string> = {
   USER: "Pengguna",
 };
 export function Brand({ compact = false }: { compact?: boolean }) {
+  const { t } = useI18n();
+
   return (
     <span className={`brand ${compact ? "brand-compact" : ""}`}>
       <span className="brand-symbol" aria-hidden="true">
@@ -52,7 +57,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
       </span>
       <span>
         Kira<span className="brand-light">Rapi</span>
-        <small>KEWANGAN KOMUNITI</small>
+        <small>{t("KEWANGAN KOMUNITI")}</small>
       </span>
     </span>
   );
@@ -72,6 +77,8 @@ export function Shell({
   pending: number;
   demo: boolean;
 }) {
+  const { t, language } = useI18n();
+
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const sidebar = useRef<HTMLElement>(null);
@@ -120,14 +127,14 @@ export function Shell({
   const current =
     links.find((l) =>
       l.href === "/dashboard" ? path === l.href : path.startsWith(l.href),
-    )?.label ?? (path.includes("audit") ? "Jejak audit" : "Tetapan");
+    )?.label ?? (path.includes("audit") ? t("Jejak audit") : t("Tetapan"));
   return (
     <div className="app-shell">
       {open && (
         <button
           className="nav-backdrop"
           onClick={() => setOpen(false)}
-          aria-label="Tutup lapisan menu"
+          aria-label={t("Tutup lapisan menu")}
           tabIndex={-1}
         />
       )}
@@ -137,12 +144,12 @@ export function Shell({
         className={`sidebar ${open ? "is-open" : ""}`}
         role={open ? "dialog" : undefined}
         aria-modal={open ? true : undefined}
-        aria-label={open ? "Menu ruang kerja" : "Ruang kerja organisasi"}
+        aria-label={open ? t("Menu ruang kerja") : t("Ruang kerja organisasi")}
       >
         <Link
           href="/dashboard"
           className="brand-link"
-          aria-label="Kira Rapi — dashboard"
+          aria-label={t("Kira Rapi — dashboard")}
           onClick={() => setOpen(false)}
         >
           <Brand />
@@ -150,7 +157,7 @@ export function Shell({
         <button
           className="icon-button mobile-close"
           onClick={() => setOpen(false)}
-          aria-label="Tutup menu"
+          aria-label={t("Tutup menu")}
         >
           <X size={20} />
         </button>
@@ -160,11 +167,11 @@ export function Shell({
           </span>
           <div>
             <strong>{organization}</strong>
-            <small>Ruang kerja organisasi</small>
+            <small>{t("Ruang kerja organisasi")}</small>
           </div>
         </div>
-        <p className="nav-caption">KEWANGAN</p>
-        <nav aria-label="Navigasi utama">
+        <p className="nav-caption">{t("KEWANGAN")}</p>
+        <nav aria-label={t("Navigasi utama")}>
           {links.map(({ href, label, icon: Icon }) => {
             const active =
               href === "/dashboard" ? path === href : path.startsWith(href);
@@ -177,7 +184,7 @@ export function Shell({
                 aria-current={active ? "page" : undefined}
               >
                 <Icon size={19} strokeWidth={1.7} />
-                <span>{label}</span>
+                <span>{translateMessage(label, language)}</span>
                 {href.endsWith("baucer-resit") && pending > 0 && (
                   <span className="nav-count">{pending}</span>
                 )}
@@ -185,8 +192,8 @@ export function Shell({
             );
           })}
         </nav>
-        <p className="nav-caption">PENGURUSAN</p>
-        <nav aria-label="Pengurusan">
+        <p className="nav-caption">{t("PENGURUSAN")}</p>
+        <nav aria-label={t("Pengurusan")}>
           <Link
             href="/dashboard/audit"
             onClick={() => setOpen(false)}
@@ -194,7 +201,7 @@ export function Shell({
             aria-current={path.includes("audit") ? "page" : undefined}
           >
             <ShieldCheck size={19} strokeWidth={1.7} />
-            Jejak audit
+            {t("Jejak audit")}
           </Link>
           <Link
             href="/dashboard/settings"
@@ -203,15 +210,15 @@ export function Shell({
             aria-current={path.includes("settings") ? "page" : undefined}
           >
             <Settings size={19} strokeWidth={1.7} />
-            Tetapan
+            {t("Tetapan")}
           </Link>
         </nav>
         <div className="sidebar-note">
           <Files size={20} aria-hidden="true" />
-          <strong>Laporan, sedia dibentang.</strong>
-          <p>Jana Excel berpaut atau PDF dalam format organisasi.</p>
+          <strong>{t("Laporan, sedia dibentang.")}</strong>
+          <p>{t("Jana Excel berpaut atau PDF dalam format organisasi.")}</p>
           <Link href="/dashboard/laporan-excel" onClick={() => setOpen(false)}>
-            Buka laporan <ArrowUpRight size={16} />
+            {t("Buka laporan")} <ArrowUpRight size={16} />
           </Link>
         </div>
         <form action={logoutAction} className="sidebar-user">
@@ -224,12 +231,12 @@ export function Shell({
           </span>
           <div>
             <strong>{name}</strong>
-            <small>{roleNames[role]}</small>
+            <small>{translateMessage(roleNames[role], language)}</small>
           </div>
           <button
             className="icon-button"
-            title="Log keluar"
-            aria-label="Log keluar"
+            title={t("Log keluar")}
+            aria-label={t("Log keluar")}
           >
             <LogOut size={18} />
           </button>
@@ -242,28 +249,31 @@ export function Shell({
               className="icon-button mobile-menu"
               ref={menuButton}
               onClick={() => setOpen(true)}
-              aria-label="Buka menu"
+              aria-label={t("Buka menu")}
               aria-expanded={open}
               aria-controls="workspace-navigation"
             >
               <Menu size={22} />
             </button>
             <div className="breadcrumb">
-              <span className="breadcrumb-root">Ruang kerja</span>
+              <span className="breadcrumb-root">{t("Ruang kerja")}</span>
               <ChevronRight size={14} aria-hidden="true" />
-              <strong>{current}</strong>
+              <strong>{translateMessage(current, language)}</strong>
             </div>
           </div>
           <div className="topbar-right">
             <span className="workspace-state">
               <i />
-              {demo ? "Ruang demonstrasi" : "Ruang organisasi"}
+              {demo ? t("Ruang demonstrasi") : t("Ruang organisasi")}
             </span>
             <ThemeToggle />
+            <LanguageToggle />
             <Link
               className="notification"
               href="/dashboard/baucer-resit?status=PENDING"
-              aria-label={`${pending} dokumen menunggu kelulusan`}
+              aria-label={t("{count} dokumen menunggu kelulusan", {
+                count: pending,
+              })}
             >
               <Bell size={20} />
               {pending > 0 && <i />}
@@ -271,12 +281,12 @@ export function Shell({
             <Link
               href="/dashboard/settings"
               className="topbar-profile"
-              aria-label={`Tetapan akaun ${name}`}
+              aria-label={t("Tetapan akaun {name}", { name })}
             >
               <span className="avatar avatar-small">{name[0]}</span>
               <span>
                 <strong>{name.split(" ")[0]}</strong>
-                <small>{roleNames[role]}</small>
+                <small>{translateMessage(roleNames[role], language)}</small>
               </span>
             </Link>
           </div>
@@ -286,7 +296,7 @@ export function Shell({
         </main>
         <footer className="app-footer">
           <span>© {new Date().getFullYear()} Kira Rapi</span>
-          <span>Kewangan komuniti, diurus bersama.</span>
+          <span>{t("Kewangan komuniti, diurus bersama.")}</span>
         </footer>
       </div>
     </div>

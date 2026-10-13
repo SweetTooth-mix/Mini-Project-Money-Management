@@ -1,3 +1,4 @@
+import { getI18n } from "@/lib/i18n-server";
 import { createDocumentAction, updateDocumentAction } from "@/app/actions";
 import { Field } from "./ui";
 import { Submit } from "./form-controls";
@@ -17,7 +18,7 @@ type Initial = {
   paymentMethod: string;
   reference: string;
 };
-export function DocumentForm({
+export async function DocumentForm({
   accounts,
   funds,
   due,
@@ -28,6 +29,8 @@ export function DocumentForm({
   due?: { id: string; name: string; amount: string };
   initial?: Initial;
 }) {
+  const { t } = await getI18n();
+
   return (
     <form
       action={initial ? updateDocumentAction : createDocumentAction}
@@ -35,20 +38,20 @@ export function DocumentForm({
     >
       {initial && <input type="hidden" name="id" value={initial.id} />}
       {due && <input type="hidden" name="dueId" value={due.id} />}
-      <Field label="Jenis dokumen">
+      <Field label={t("Jenis dokumen")}>
         <select
           name="type"
           defaultValue={initial?.type ?? (due ? "RESIT" : "BAUCER")}
         >
           {!due && (!initial || initial.type === "BAUCER") && (
-            <option value="BAUCER">Baucer — wang keluar</option>
+            <option value="BAUCER">{t("Baucer — wang keluar")}</option>
           )}
           {(!initial || initial.type === "RESIT") && (
-            <option value="RESIT">Resit — wang masuk</option>
+            <option value="RESIT">{t("Resit — wang masuk")}</option>
           )}
         </select>
       </Field>
-      <Field label="Tarikh dokumen">
+      <Field label={t("Tarikh dokumen")}>
         <input
           type="date"
           name="date"
@@ -57,17 +60,17 @@ export function DocumentForm({
           required
         />
       </Field>
-      <Field label="Nama pembayar / penerima">
+      <Field label={t("Nama pembayar / penerima")}>
         <input
           name="party"
-          placeholder="Contoh: Pejabat Daerah"
+          placeholder={t("Contoh: Pejabat Daerah")}
           defaultValue={initial?.party ?? due?.name}
           readOnly={!!due}
           maxLength={200}
           required
         />
       </Field>
-      <Field label="Amaun (RM)">
+      <Field label={t("Amaun (RM)")}>
         <input
           name="amount"
           type="number"
@@ -81,10 +84,10 @@ export function DocumentForm({
           required
         />
       </Field>
-      <Field label="Butiran transaksi" wide>
+      <Field label={t("Butiran transaksi")} wide>
         <textarea
           name="description"
-          placeholder="Nyatakan tujuan bayaran atau penerimaan…"
+          placeholder={t("Nyatakan tujuan bayaran atau penerimaan…")}
           defaultValue={
             initial?.description ?? (due ? `Yuran ahli — ${due.name}` : "")
           }
@@ -93,7 +96,7 @@ export function DocumentForm({
           required
         />
       </Field>
-      <Field label="Akaun kewangan">
+      <Field label={t("Akaun kewangan")}>
         <select name="accountId" defaultValue={initial?.accountId} required>
           {accounts.map((a) => (
             <option key={a.id} value={a.id}>
@@ -102,7 +105,7 @@ export function DocumentForm({
           ))}
         </select>
       </Field>
-      <Field label="Dana">
+      <Field label={t("Dana")}>
         <select name="fundId" defaultValue={initial?.fundId} required>
           {funds.map((f) => (
             <option key={f.id} value={f.id}>
@@ -111,12 +114,12 @@ export function DocumentForm({
           ))}
         </select>
       </Field>
-      <Field label="Kategori">
+      <Field label={t("Kategori")}>
         <input
           name="category"
           list="categories"
           defaultValue={initial?.category ?? (due ? "Yuran ahli" : "")}
-          placeholder="Pilih atau masukkan kategori"
+          placeholder={t("Pilih atau masukkan kategori")}
           maxLength={100}
           required
         />
@@ -136,23 +139,29 @@ export function DocumentForm({
           ))}
         </datalist>
       </Field>
-      <Field label="Kaedah bayaran">
+      <Field label={t("Kaedah bayaran")}>
         <select name="paymentMethod" defaultValue={initial?.paymentMethod}>
-          <option value="BANK">Pindahan bank</option>
-          <option value="TUNAI">Tunai</option>
+          <option value="BANK">{t("Pindahan bank")}</option>
+          <option value="TUNAI">{t("Tunai")}</option>
         </select>
       </Field>
-      <Field label="No. rujukan bank / cek (pilihan)" wide>
+      <Field label={t("No. rujukan bank / cek (pilihan)")} wide>
         <input
           name="reference"
           defaultValue={initial?.reference}
           maxLength={100}
-          placeholder="Contoh: nombor transaksi e-banker"
+          placeholder={t("Contoh: nombor transaksi e-banker")}
         />
       </Field>
       <div className="form-footer field-wide">
-        <p>Draf tidak mengubah baki. Hantar untuk semakan selepas disimpan.</p>
-        <Submit>{initial ? "Simpan perubahan draf" : "Simpan draf"}</Submit>
+        <p>
+          {t(
+            "Draf tidak mengubah baki. Hantar untuk semakan selepas disimpan.",
+          )}
+        </p>
+        <Submit>
+          {initial ? t("Simpan perubahan draf") : t("Simpan draf")}
+        </Submit>
       </div>
     </form>
   );

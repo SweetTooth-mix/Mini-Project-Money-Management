@@ -1,3 +1,4 @@
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import {
   Children,
@@ -14,10 +15,11 @@ import {
   FileText,
   Plus,
 } from "lucide-react";
-import { money, shortDate } from "@/lib/money";
+import { money } from "@/lib/money";
 import type { Search } from "@/lib/queries";
+import { translateMessage, uiDate } from "@/lib/i18n";
 
-export function PageHeading({
+export async function PageHeading({
   eyebrow = "KEWANGAN KOMUNITI",
   title,
   description,
@@ -28,10 +30,12 @@ export function PageHeading({
   description: string;
   children?: React.ReactNode;
 }) {
+  const { language } = await getI18n();
+
   return (
     <div className="page-heading">
       <div>
-        <p className="eyebrow">{eyebrow}</p>
+        <p className="eyebrow">{translateMessage(eyebrow, language)}</p>
         <h1>{title}</h1>
         <p className="page-description">{description}</p>
       </div>
@@ -39,7 +43,9 @@ export function PageHeading({
     </div>
   );
 }
-export function Flash({ search }: { search: Search }) {
+export async function Flash({ search }: { search: Search }) {
+  const { language } = await getI18n();
+
   const error = typeof search.error === "string" ? search.error : "";
   const success = typeof search.success === "string" ? search.success : "";
   if (!error && !success) return null;
@@ -53,7 +59,9 @@ export function Flash({ search }: { search: Search }) {
       ) : (
         <CircleCheck size={18} aria-hidden="true" />
       )}
-      <span>{(error || success).slice(0, 500)}</span>
+      <span>
+        {translateMessage((error || success).slice(0, 500), language)}
+      </span>
     </div>
   );
 }
@@ -85,7 +93,7 @@ export function Metric({
     </section>
   );
 }
-export function Empty({
+export async function Empty({
   title = "Belum ada rekod",
   description = "Rekod baharu akan dipaparkan di sini.",
   href,
@@ -96,17 +104,19 @@ export function Empty({
   href?: string;
   label?: string;
 }) {
+  const { t, language } = await getI18n();
+
   return (
     <div className="empty-state">
       <span>
         <FileText size={26} />
       </span>
-      <h3>{title}</h3>
-      <p>{description}</p>
+      <h3>{translateMessage(title, language)}</h3>
+      <p>{translateMessage(description, language)}</p>
       {href && (
         <Link href={href} className="button button-primary">
           <Plus size={16} />
-          {label ?? "Tambah rekod"}
+          {label ?? t("Tambah rekod")}
         </Link>
       )}
     </div>
@@ -122,11 +132,13 @@ const statusNames: Record<string, string> = {
   ACTIVE: "Aktif",
   DISABLED: "Tidak aktif",
 };
-export function Status({ value }: { value: string }) {
+export async function Status({ value }: { value: string }) {
+  const { language } = await getI18n();
+
   return (
     <span className={`status status-${value.toLowerCase()}`}>
       <i />
-      {statusNames[value] ?? value}
+      {translateMessage(statusNames[value] ?? value, language)}
     </span>
   );
 }
@@ -183,7 +195,7 @@ export function Panel({
     </section>
   );
 }
-export function EntryTable({
+export async function EntryTable({
   entries,
   running,
   compact = false,
@@ -202,13 +214,17 @@ export function EntryTable({
   running?: bigint[];
   compact?: boolean;
 }) {
+  const { t, language } = await getI18n();
+
   if (!entries.length)
     return (
-      <Empty description="Tiada transaksi untuk pilihan tempoh dan penapis ini." />
+      <Empty
+        description={t("Tiada transaksi untuk pilihan tempoh dan penapis ini.")}
+      />
     );
   if (compact)
     return (
-      <ul className="recent-entries" aria-label="Transaksi terkini">
+      <ul className="recent-entries" aria-label={t("Transaksi terkini")}>
         {entries.map((entry) => (
           <li key={entry.id}>
             <span
@@ -235,11 +251,11 @@ export function EntryTable({
               <small>
                 {entry.reference}
                 <span> · </span>
-                {shortDate(entry.date)}
+                {uiDate(entry.date, language)}
                 {entry.type === "REVERSAL"
-                  ? " · Pembalikan"
+                  ? t(" · Pembalikan")
                   : entry.type.startsWith("TRANSFER")
-                    ? " · Pindahan"
+                    ? t(" · Pindahan")
                     : ""}
               </small>
             </div>
@@ -258,11 +274,11 @@ export function EntryTable({
       <table>
         <thead>
           <tr>
-            <th>Transaksi</th>
-            <th>Tarikh</th>
-            <th>Dana / Akaun</th>
-            <th className="align-right">Amaun</th>
-            {running && <th className="align-right">Baki</th>}
+            <th>{t("Transaksi")}</th>
+            <th>{t("Tarikh")}</th>
+            <th>{t("Dana / Akaun")}</th>
+            <th className="align-right">{t("Amaun")}</th>
+            {running && <th className="align-right">{t("Baki")}</th>}
           </tr>
         </thead>
         <tbody>
@@ -293,15 +309,15 @@ export function EntryTable({
                     <small>
                       {e.reference}
                       {e.type === "REVERSAL"
-                        ? " · Pembalikan"
+                        ? t(" · Pembalikan")
                         : e.type.startsWith("TRANSFER")
-                          ? " · Pindahan"
+                          ? t(" · Pindahan")
                           : ""}
                     </small>
                   </div>
                 </div>
               </td>
-              <td className="nowrap muted">{shortDate(e.date)}</td>
+              <td className="nowrap muted">{uiDate(e.date, language)}</td>
               <td>
                 <span className="fund-label">
                   <i style={{ background: e.fund.color }} />

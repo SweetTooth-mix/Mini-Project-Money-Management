@@ -1,10 +1,12 @@
+import { uiDate } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import { DocumentStatus, DocumentType } from "@prisma/client";
 import { FilePlus2, Search as SearchIcon } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { param, type Search } from "@/lib/queries";
-import { money, shortDate } from "@/lib/money";
+import { money } from "@/lib/money";
 import { DocumentForm } from "@/components/document-form";
 import { Disclosure } from "@/components/disclosure";
 import { Empty, Flash, PageHeading, Panel, Status } from "@/components/ui";
@@ -14,6 +16,8 @@ export default async function Documents({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   await requireUser();
   const search = await searchParams,
     status = param(search, "status"),
@@ -57,69 +61,77 @@ export default async function Documents({
   return (
     <>
       <PageHeading
-        title="Resit & baucer"
-        description="Dari draf hingga bayaran. Setiap dokumen mempunyai jejak yang jelas."
+        title={t("Resit & baucer")}
+        description={t(
+          "Dari draf hingga bayaran. Setiap dokumen mempunyai jejak yang jelas.",
+        )}
       >
         <a href="#baharu" className="button button-primary">
           <FilePlus2 size={17} />
-          Dokumen baharu
+          {t("Dokumen baharu")}
         </a>
       </PageHeading>
       <Flash search={search} />
       <Panel
-        title="Semua dokumen"
-        action={<span className="subtle-tag">{count} rekod</span>}
+        title={t("Semua dokumen")}
+        action={
+          <span className="subtle-tag">{t("{count} rekod", { count })}</span>
+        }
       >
         <form className="document-filters">
           <div className="search-input">
             <SearchIcon size={17} />
             <input
-              aria-label="Cari dokumen"
+              aria-label={t("Cari dokumen")}
               name="q"
               defaultValue={query}
-              placeholder="Cari nombor, nama atau butiran…"
+              placeholder={t("Cari nombor, nama atau butiran…")}
             />
           </div>
-          <select name="type" aria-label="Jenis dokumen" defaultValue={type}>
-            <option value="">Semua jenis</option>
-            <option value="RESIT">Resit</option>
-            <option value="BAUCER">Baucer</option>
+          <select
+            name="type"
+            aria-label={t("Jenis dokumen")}
+            defaultValue={type}
+          >
+            <option value="">{t("Semua jenis")}</option>
+            <option value="RESIT">{t("Resit")}</option>
+            <option value="BAUCER">{t("Baucer")}</option>
           </select>
           <select
             name="status"
-            aria-label="Status dokumen"
+            aria-label={t("Status dokumen")}
             defaultValue={status}
           >
-            <option value="">Semua status</option>
+            <option value="">{t("Semua status")}</option>
             {Object.values(DocumentStatus).map((s) => (
               <option key={s} value={s}>
                 {
                   {
-                    DRAFT: "Draf",
-                    PENDING: "Menunggu kelulusan",
-                    APPROVED: "Diluluskan",
-                    REJECTED: "Ditolak",
-                    PAID: "Selesai",
-                    VOID: "Dibatalkan",
+                    DRAFT: t("Draf"),
+                    PENDING: t("Menunggu kelulusan"),
+                    APPROVED: t("Diluluskan"),
+                    REJECTED: t("Ditolak"),
+                    PAID: t("Selesai"),
+                    VOID: t("Dibatalkan"),
                   }[s]
                 }
               </option>
             ))}
           </select>
-          <button className="button button-secondary">Cari</button>
+          <button className="button button-secondary">{t("Cari")}</button>
         </form>
         {documents.length ? (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Dokumen / Penerima</th>
-                  <th>Tarikh</th>
-                  <th>Dana</th>
-                  <th>Status</th>
-                  <th className="align-right">Amaun</th>
+                  <th>{t("Dokumen / Penerima")}</th>
+                  <th>{t("Tarikh")}</th>
+                  <th>{t("Dana")}</th>
+                  <th>{t("Status")}</th>
+                  <th className="align-right">{t("Amaun")}</th>
                   <th>
-                    <span className="sr-only">Tindakan</span>
+                    <span className="sr-only">{t("Tindakan")}</span>
                   </th>
                 </tr>
               </thead>
@@ -140,7 +152,7 @@ export default async function Documents({
                       </Link>
                       <small className="table-sub">{d.party}</small>
                     </td>
-                    <td className="nowrap muted">{shortDate(d.date)}</td>
+                    <td className="nowrap muted">{uiDate(d.date, language)}</td>
                     <td>
                       <span className="fund-label">
                         <i style={{ background: d.fund.color }} />
@@ -156,7 +168,7 @@ export default async function Documents({
                         href={`/dashboard/baucer-resit/${d.id}`}
                         className="text-link"
                       >
-                        Lihat →
+                        {t("Lihat →")}
                       </Link>
                     </td>
                   </tr>
@@ -165,24 +177,28 @@ export default async function Documents({
             </table>
           </div>
         ) : (
-          <Empty description="Tiada dokumen sepadan. Cuba penapis lain atau cipta dokumen baharu." />
+          <Empty
+            description={t(
+              "Tiada dokumen sepadan. Cuba penapis lain atau cipta dokumen baharu.",
+            )}
+          />
         )}
         <div className="table-footer">
-          <span>
-            Halaman {page} · {count} dokumen
-          </span>
+          <span>{t("Halaman {page} · {count} dokumen", { page, count })}</span>
           <div className="pagination">
-            {page > 1 && <Link href={pageLink(page - 1)}>← Sebelum</Link>}
+            {page > 1 && (
+              <Link href={pageLink(page - 1)}>{t("← Sebelum")}</Link>
+            )}
             {page * 20 < count && (
-              <Link href={pageLink(page + 1)}>Seterusnya →</Link>
+              <Link href={pageLink(page + 1)}>{t("Seterusnya →")}</Link>
             )}
           </div>
         </div>
       </Panel>
       <Disclosure
         id="baharu"
-        title="Dokumen baharu"
-        description="Sediakan resit penerimaan atau baucer bayaran."
+        title={t("Dokumen baharu")}
+        description={t("Sediakan resit penerimaan atau baucer bayaran.")}
       >
         <DocumentForm accounts={accounts} funds={funds} />
       </Disclosure>

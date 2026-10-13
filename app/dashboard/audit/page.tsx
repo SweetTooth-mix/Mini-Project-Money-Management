@@ -1,3 +1,5 @@
+import { uiLocale } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
@@ -9,6 +11,8 @@ export default async function Audit({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   await requireUser();
   const search = await searchParams,
     page = Math.max(1, Math.min(100000, parseInt(param(search, "page")) || 1));
@@ -24,29 +28,33 @@ export default async function Audit({
   return (
     <>
       <PageHeading
-        title="Jejak audit"
-        description="Siapa, bila dan apa yang berubah. Rekod untuk ketelusan organisasi."
+        title={t("Jejak audit")}
+        description={t(
+          "Siapa, bila dan apa yang berubah. Rekod untuk ketelusan organisasi.",
+        )}
       />
       <Panel
-        title="Log aktiviti"
-        description="Tindakan kewangan dan perubahan akses direkodkan bersama transaksi berkaitan."
+        title={t("Log aktiviti")}
+        description={t(
+          "Tindakan kewangan dan perubahan akses direkodkan bersama transaksi berkaitan.",
+        )}
       >
         {logs.length ? (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Masa (Malaysia)</th>
-                  <th>Pengguna</th>
-                  <th>Tindakan</th>
-                  <th>Butiran</th>
+                  <th>{t("Masa (Malaysia)")}</th>
+                  <th>{t("Pengguna")}</th>
+                  <th>{t("Tindakan")}</th>
+                  <th>{t("Butiran")}</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map((l) => (
                   <tr key={l.id}>
                     <td className="nowrap muted">
-                      {new Intl.DateTimeFormat("ms-MY", {
+                      {new Intl.DateTimeFormat(uiLocale(language), {
                         dateStyle: "medium",
                         timeStyle: "short",
                         timeZone: "Asia/Kuala_Lumpur",
@@ -65,16 +73,16 @@ export default async function Audit({
             </table>
           </div>
         ) : (
-          <Empty description="Aktiviti organisasi akan direkod di sini." />
+          <Empty description={t("Aktiviti organisasi akan direkod di sini.")} />
         )}
         <div className="table-footer">
-          <span>
-            {count} rekod · Halaman {page}
-          </span>
+          <span>{t("{count} rekod · Halaman {page}", { count, page })}</span>
           <div className="pagination">
-            {page > 1 && <Link href={`?page=${page - 1}`}>← Sebelum</Link>}
+            {page > 1 && (
+              <Link href={`?page=${page - 1}`}>{t("← Sebelum")}</Link>
+            )}
             {page * 30 < count && (
-              <Link href={`?page=${page + 1}`}>Seterusnya →</Link>
+              <Link href={`?page=${page + 1}`}>{t("Seterusnya →")}</Link>
             )}
           </div>
         </div>

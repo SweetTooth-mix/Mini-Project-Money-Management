@@ -1,3 +1,5 @@
+import { uiMonth } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus, UserPlus, Users } from "lucide-react";
@@ -23,6 +25,8 @@ export default async function Dues({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   const user = await requireUser(),
     search = await searchParams,
     range = monthRange(param(search, "month"));
@@ -56,13 +60,13 @@ export default async function Dues({
   return (
     <>
       <PageHeading
-        title="Yuran ahli"
-        description="Pantau kutipan bulanan dan urus ahli komuniti anda."
+        title={t("Yuran ahli")}
+        description={t("Pantau kutipan bulanan dan urus ahli komuniti anda.")}
       >
         {user.role !== "USER" && (
           <a className="button button-primary" href="#ahli">
             <UserPlus size={17} />
-            Tambah ahli
+            {t("Tambah ahli")}
           </a>
         )}
       </PageHeading>
@@ -70,31 +74,38 @@ export default async function Dues({
       <div className="metrics-grid">
         <Metric
           featured
-          label="Yuran diterima"
+          label={t("Yuran diterima")}
           value={money(collected)}
-          detail={range.label}
+          detail={uiMonth(range.month, language)}
         />
         <Metric
-          label="Belum selesai"
+          label={t("Belum selesai")}
           value={money(unpaid)}
-          detail={`${dues.filter((d) => !d.paidAt).length} rekod belum selesai`}
+          detail={t("{count} rekod belum selesai", {
+            count: dues.filter((d) => !d.paidAt).length,
+          })}
         />
         <Metric
-          label="Sudah membayar"
+          label={t("Sudah membayar")}
           value={`${dues.filter((d) => d.paidAt).length} / ${dues.length}`}
-          detail="Resit yang telah selesai"
+          detail={t("Resit yang telah selesai")}
         />
         <Metric
-          label="Jumlah ahli aktif"
+          label={t("Jumlah ahli aktif")}
           value={String(members.filter((m) => m.active).length)}
-          detail="Dalam daftar organisasi"
+          detail={t("Dalam daftar organisasi")}
           icon={<Users size={18} />}
         />
       </div>
       {selectedDue && !selectedDue.documentId && !selectedDue.paidAt && (
         <Panel
-          title={`Sediakan resit — ${selectedDue.member.name}`}
-          description={`Yuran ${selectedDue.month}/${selectedDue.year}. Resit perlu diluluskan dan disahkan diterima sebelum yuran dikira dibayar.`}
+          title={t("Sediakan resit — {name}", {
+            name: selectedDue.member.name,
+          })}
+          description={t(
+            "Yuran {month}/{year}. Resit perlu diluluskan dan disahkan diterima sebelum yuran dikira dibayar.",
+            { month: selectedDue.month, year: selectedDue.year },
+          )}
         >
           <DocumentForm
             accounts={accounts}
@@ -108,22 +119,22 @@ export default async function Dues({
         </Panel>
       )}
       <Panel
-        title="Kutipan bulanan"
-        description={range.label}
+        title={t("Kutipan bulanan")}
+        description={uiMonth(range.month, language)}
         action={
           user.role !== "USER" ? (
             <form action={generateDuesAction}>
               <input type="hidden" name="month" value={range.month} />
               <Submit className="button button-secondary">
                 <Plus size={16} />
-                Jana yuran bulan ini
+                {t("Jana yuran bulan ini")}
               </Submit>
             </form>
           ) : undefined
         }
       >
         <form className="filter-bar">
-          <Field label="Bulan yuran">
+          <Field label={t("Bulan yuran")}>
             <input
               type="month"
               name="month"
@@ -131,17 +142,19 @@ export default async function Dues({
               required
             />
           </Field>
-          <button className="button button-secondary">Lihat bulan</button>
+          <button className="button button-secondary">
+            {t("Lihat bulan")}
+          </button>
         </form>
         {dues.length ? (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Ahli</th>
-                  <th>Yuran</th>
-                  <th>Status</th>
-                  <th>Resit / Tindakan</th>
+                  <th>{t("Ahli")}</th>
+                  <th>{t("Yuran")}</th>
+                  <th>{t("Status")}</th>
+                  <th>{t("Resit / Tindakan")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,7 +173,7 @@ export default async function Dues({
                       ) : (
                         <span className="status status-pending">
                           <i />
-                          Belum dibayar
+                          {t("Belum dibayar")}
                         </span>
                       )}
                     </td>
@@ -177,7 +190,7 @@ export default async function Dues({
                           className="button button-small button-secondary"
                           href={`?month=${range.month}&pay=${d.id}`}
                         >
-                          Sediakan resit
+                          {t("Sediakan resit")}
                         </Link>
                       )}
                     </td>
@@ -188,8 +201,10 @@ export default async function Dues({
           </div>
         ) : (
           <Empty
-            title="Yuran belum dijana"
-            description="Pentadbir boleh menjana yuran untuk semua ahli aktif bagi bulan ini."
+            title={t("Yuran belum dijana")}
+            description={t(
+              "Pentadbir boleh menjana yuran untuk semua ahli aktif bagi bulan ini.",
+            )}
           />
         )}
       </Panel>
@@ -198,22 +213,22 @@ export default async function Dues({
           <summary>
             <UserPlus size={20} />
             <span>
-              Daftar ahli baharu
-              <small>Tetapkan kadar yuran bulanan ahli.</small>
+              {t("Daftar ahli baharu")}
+              <small>{t("Tetapkan kadar yuran bulanan ahli.")}</small>
             </span>
             <Plus size={18} />
           </summary>
           <form action={createMemberAction} className="form-grid">
-            <Field label="Kod ahli">
+            <Field label={t("Kod ahli")}>
               <input name="code" maxLength={30} placeholder="AH-009" required />
             </Field>
-            <Field label="Nama penuh">
+            <Field label={t("Nama penuh")}>
               <input name="name" maxLength={100} required />
             </Field>
-            <Field label="Nombor telefon (pilihan)">
+            <Field label={t("Nombor telefon (pilihan)")}>
               <input name="phone" type="tel" maxLength={30} />
             </Field>
-            <Field label="Yuran bulanan (RM)">
+            <Field label={t("Yuran bulanan (RM)")}>
               <input
                 name="amount"
                 type="number"
@@ -224,24 +239,24 @@ export default async function Dues({
               />
             </Field>
             <div className="form-footer field-wide">
-              <Submit>Daftar ahli</Submit>
+              <Submit>{t("member.register")}</Submit>
             </div>
           </form>
         </details>
       )}
       <Panel
-        title="Daftar ahli"
-        description={`${members.length} ahli berdaftar`}
+        title={t("Daftar ahli")}
+        description={t("{count} ahli berdaftar", { count: members.length })}
       >
         {members.length ? (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Kod</th>
-                  <th>Nama</th>
-                  <th>Telefon</th>
-                  <th className="align-right">Yuran bulanan</th>
+                  <th>{t("Kod")}</th>
+                  <th>{t("Nama")}</th>
+                  <th>{t("Telefon")}</th>
+                  <th className="align-right">{t("Yuran bulanan")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -261,7 +276,9 @@ export default async function Dues({
             </table>
           </div>
         ) : (
-          <Empty description="Daftar ahli pertama untuk mula mengurus yuran." />
+          <Empty
+            description={t("Daftar ahli pertama untuk mula mengurus yuran.")}
+          />
         )}
       </Panel>
     </>

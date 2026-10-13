@@ -1,3 +1,5 @@
+import { uiDate } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
@@ -9,7 +11,7 @@ import {
 } from "@/app/actions";
 import { Field, Flash, PageHeading, Panel, Status } from "@/components/ui";
 import { Submit } from "@/components/form-controls";
-import { shortDate, today } from "@/lib/money";
+import { today } from "@/lib/money";
 import type { Search } from "@/lib/queries";
 
 export default async function Settings({
@@ -17,6 +19,8 @@ export default async function Settings({
 }: {
   searchParams: Promise<Search>;
 }) {
+  const { t, language } = await getI18n();
+
   const user = await requireUser();
   const org = await db.organization.findUniqueOrThrow({
     where: { id: "main" },
@@ -37,18 +41,22 @@ export default async function Settings({
   return (
     <>
       <PageHeading
-        title="Tetapan ruang kerja"
-        description="Urus profil organisasi, akses pengguna dan kawalan kewangan."
+        title={t("Tetapan ruang kerja")}
+        description={t(
+          "Urus profil organisasi, akses pengguna dan kawalan kewangan.",
+        )}
       />
       <Flash search={await searchParams} />
       {user.role === "SUPER_ADMIN" && (
         <>
           <Panel
-            title="Profil & template organisasi"
-            description="Maklumat ini digunakan pada cetakan. Dokumen yang telah diluluskan mengekalkan maklumat ketika kelulusan."
+            title={t("Profil & template organisasi")}
+            description={t(
+              "Maklumat ini digunakan pada cetakan. Dokumen yang telah diluluskan mengekalkan maklumat ketika kelulusan.",
+            )}
           >
             <form action={organizationAction} className="form-grid">
-              <Field label="Nama organisasi" wide>
+              <Field label={t("Nama organisasi")} wide>
                 <input
                   name="name"
                   defaultValue={org.name}
@@ -56,7 +64,7 @@ export default async function Settings({
                   required
                 />
               </Field>
-              <Field label="Alamat" wide>
+              <Field label={t("Alamat")} wide>
                 <textarea
                   name="address"
                   defaultValue={org.address}
@@ -64,7 +72,7 @@ export default async function Settings({
                   rows={2}
                 />
               </Field>
-              <Field label="E-mel">
+              <Field label={t("E-mel")}>
                 <input
                   name="email"
                   type="email"
@@ -72,24 +80,24 @@ export default async function Settings({
                   maxLength={150}
                 />
               </Field>
-              <Field label="Telefon">
+              <Field label={t("Telefon")}>
                 <input name="phone" defaultValue={org.phone} maxLength={30} />
               </Field>
-              <Field label="Jawatan penyedia">
+              <Field label={t("Jawatan penyedia")}>
                 <input
                   name="preparedBy"
                   defaultValue={org.preparedBy}
                   maxLength={100}
                 />
               </Field>
-              <Field label="Jawatan pemeriksa">
+              <Field label={t("Jawatan pemeriksa")}>
                 <input
                   name="checkedBy"
                   defaultValue={org.checkedBy}
                   maxLength={100}
                 />
               </Field>
-              <Field label="Nama / jawatan pengesahan">
+              <Field label={t("Nama / jawatan pengesahan")}>
                 <input
                   name="approvedBy"
                   defaultValue={org.approvedBy}
@@ -97,25 +105,31 @@ export default async function Settings({
                 />
               </Field>
               <div className="form-footer field-wide">
-                <Submit>Simpan profil organisasi</Submit>
+                <Submit>{t("Simpan profil organisasi")}</Submit>
               </div>
             </form>
           </Panel>
           <div className="two-column-forms">
             <Panel
-              title="Kunci tempoh kewangan"
-              description="Halang catatan dan pindahan baharu dalam tempoh yang telah ditutup."
+              title={t("Kunci tempoh kewangan")}
+              description={t(
+                "Halang catatan dan pindahan baharu dalam tempoh yang telah ditutup.",
+              )}
             >
               <form action={closePeriodAction} className="form-grid">
                 <div className="info-note field-wide">
                   {org.closedThrough
-                    ? `Tempoh dikunci sehingga ${shortDate(org.closedThrough)}.`
-                    : "Tiada tempoh dikunci."}
+                    ? t("Tempoh dikunci sehingga {date}.", {
+                        date: uiDate(org.closedThrough, language),
+                      })
+                    : t("Tiada tempoh dikunci.")}
                 </div>
                 <Field
-                  label="Kunci sehingga tarikh"
+                  label={t("Kunci sehingga tarikh")}
                   wide
-                  hint="Kosongkan medan untuk membuka semula tempoh. Perubahan direkod dalam audit."
+                  hint={t(
+                    "Kosongkan medan untuk membuka semula tempoh. Perubahan direkod dalam audit.",
+                  )}
                 >
                   <input
                     name="date"
@@ -125,35 +139,37 @@ export default async function Settings({
                   />
                 </Field>
                 <div className="form-footer field-wide">
-                  <Submit>Simpan kawalan tempoh</Submit>
+                  <Submit>{t("Simpan kawalan tempoh")}</Submit>
                 </div>
               </form>
             </Panel>
             <Panel
-              title="Cipta akaun pengguna"
-              description="Sediakan pentadbir lain untuk menyemak dan meluluskan dokumen."
+              title={t("Cipta akaun pengguna")}
+              description={t(
+                "Sediakan pentadbir lain untuk menyemak dan meluluskan dokumen.",
+              )}
             >
               <form action={createUserAction} className="form-grid">
-                <Field label="Nama">
+                <Field label={t("Nama")}>
                   <input name="name" maxLength={100} required />
                 </Field>
-                <Field label="E-mel">
+                <Field label={t("E-mel")}>
                   <input name="email" type="email" maxLength={200} required />
                 </Field>
-                <Field label="Peranan">
+                <Field label={t("Peranan")}>
                   <select name="role" defaultValue="USER">
                     <option value="USER">
-                      Pengguna — lihat & sediakan draf
+                      {t("Pengguna — lihat & sediakan draf")}
                     </option>
                     <option value="ADMIN">
-                      Pentadbir — kelulusan & bayaran
+                      {t("Pentadbir — kelulusan & bayaran")}
                     </option>
                     <option value="SUPER_ADMIN">
-                      Super Admin — semua tetapan
+                      {t("Super Admin — semua tetapan")}
                     </option>
                   </select>
                 </Field>
-                <Field label="Kata laluan awal">
+                <Field label={t("Kata laluan awal")}>
                   <input
                     name="password"
                     type="password"
@@ -164,23 +180,25 @@ export default async function Settings({
                   />
                 </Field>
                 <div className="form-footer field-wide">
-                  <Submit>Cipta pengguna</Submit>
+                  <Submit>{t("Cipta pengguna")}</Submit>
                 </div>
               </form>
             </Panel>
           </div>
           <Panel
-            title="Akses pengguna"
-            description="Permohonan baharu perlu diaktifkan. Menyahaktifkan pengguna turut menamatkan sesinya."
+            title={t("Akses pengguna")}
+            description={t(
+              "Permohonan baharu perlu diaktifkan. Menyahaktifkan pengguna turut menamatkan sesinya.",
+            )}
           >
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Pengguna</th>
-                    <th>Peranan</th>
-                    <th>Status</th>
-                    <th>Tindakan</th>
+                    <th>{t("Pengguna")}</th>
+                    <th>{t("Peranan")}</th>
+                    <th>{t("Status")}</th>
+                    <th>{t("Tindakan")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -189,16 +207,16 @@ export default async function Settings({
                       <td>
                         <strong className="table-primary">
                           {u.name}
-                          {u.id === user.id ? " (anda)" : ""}
+                          {u.id === user.id ? t(" (anda)") : ""}
                         </strong>
                         <small className="table-sub">{u.email}</small>
                       </td>
                       <td>
                         {
                           {
-                            SUPER_ADMIN: "Super Admin",
-                            ADMIN: "Pentadbir",
-                            USER: "Pengguna",
+                            SUPER_ADMIN: t("Super Admin"),
+                            ADMIN: t("Pentadbir"),
+                            USER: t("Pengguna"),
                           }[u.role]
                         }
                       </td>
@@ -217,7 +235,9 @@ export default async function Settings({
                               }
                             />
                             <Submit className="button button-small button-secondary">
-                              {u.status === "ACTIVE" ? "Nyahaktif" : "Aktifkan"}
+                              {u.status === "ACTIVE"
+                                ? t("Nyahaktif")
+                                : t("Aktifkan")}
                             </Submit>
                           </form>
                         )}
@@ -231,11 +251,13 @@ export default async function Settings({
         </>
       )}
       <Panel
-        title="Kata laluan anda"
-        description="Menukar kata laluan akan menamatkan sesi terdahulu pada peranti lain."
+        title={t("Kata laluan anda")}
+        description={t(
+          "Menukar kata laluan akan menamatkan sesi terdahulu pada peranti lain.",
+        )}
       >
         <form action={passwordAction} className="form-grid">
-          <Field label="Kata laluan semasa">
+          <Field label={t("Kata laluan semasa")}>
             <input
               name="currentPassword"
               type="password"
@@ -244,7 +266,7 @@ export default async function Settings({
               required
             />
           </Field>
-          <Field label="Kata laluan baharu" hint="Minimum 12 aksara.">
+          <Field label={t("Kata laluan baharu")} hint={t("Minimum 12 aksara.")}>
             <input
               name="password"
               type="password"
@@ -255,7 +277,7 @@ export default async function Settings({
             />
           </Field>
           <div className="form-footer field-wide">
-            <Submit>Tukar kata laluan</Submit>
+            <Submit>{t("Tukar kata laluan")}</Submit>
           </div>
         </form>
       </Panel>

@@ -1,22 +1,29 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getI18n } from "@/lib/i18n-server";
+import { LanguageProvider } from "@/components/language-provider";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Kira Rapi — Kewangan Komuniti",
-    template: "%s · Kira Rapi",
-  },
-  description:
-    "Urus buku tunai, resit, baucer dan yuran komuniti dengan lebih rapi.",
-  robots: { index: false, follow: false },
-};
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: {
+      default: t("Kira Rapi — Kewangan Komuniti"),
+      template: "%s · Kira Rapi",
+    },
+    description: t(
+      "Urus buku tunai, resit, baucer dan yuran komuniti dengan lebih rapi.",
+    ),
+    robots: { index: false, follow: false },
+  };
+}
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { language, t } = await getI18n();
   return (
-    <html lang="ms" suppressHydrationWarning>
+    <html lang={language} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -25,10 +32,12 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <a className="skip-link" href="#main-content">
-          Langkau ke kandungan
-        </a>
-        {children}
+        <LanguageProvider language={language}>
+          <a className="skip-link" href="#main-content">
+            {t("Langkau ke kandungan")}
+          </a>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );
