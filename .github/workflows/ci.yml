@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97
         env:
           POSTGRES_USER: kira
           POSTGRES_PASSWORD: kira_ci_password
@@ -156,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97
         env:
           POSTGRES_USER: kira
           POSTGRES_PASSWORD: kira_ci_password
@@ -176,7 +176,7 @@ jobs:
 
       - name: Resolve base image digest
         run: |
-          for image in node:22-bookworm-slim postgres:16; do
+          for image in postgres:16-bookworm; do
             digest=$(docker buildx imagetools inspect "$image" --format '{{json .Manifest}}' | jq -r .digest)
             echo "::warning::DIGEST ${image} ${digest}"
           done
@@ -268,7 +268,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97
         env:
           POSTGRES_USER: kira
           POSTGRES_PASSWORD: kira_ci_password
