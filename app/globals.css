@@ -96,7 +96,7 @@ h3 {
   font-weight: 600;
 }
 p {
-  margin-bottom: 12px;
+  margin-bottom: var(--s-5);
 }
 small {
   font-size: 12px;
@@ -147,8 +147,8 @@ svg {
   top: -60px;
   left: 20px;
   background: white;
-  padding: 12px;
-  border-radius: 8px;
+  padding: var(--s-5);
+  border-radius: var(--r-md);
 }
 .skip-link:focus {
   top: 12px;
@@ -224,10 +224,10 @@ svg {
 .org-switch {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-4);
   border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 12px 10px;
+  border-radius: var(--r-lg);
+  padding: var(--s-5) var(--s-4);
   margin-bottom: 30px;
 }
 .org-switch div {
@@ -248,7 +248,7 @@ svg {
   display: grid;
   place-items: center;
   background: #f0f3ed;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   width: 32px;
   height: 34px;
   font-size: 10px;
@@ -273,11 +273,11 @@ svg {
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-5);
   color: #78817f;
   font-size: 12px;
-  padding: 12px 13px;
-  border-radius: 8px;
+  padding: var(--s-5) 13px;
+  border-radius: var(--r-md);
   font-weight: 500;
   transition:
     background 0.15s,
@@ -300,19 +300,19 @@ svg {
   height: 19px;
   text-align: center;
   line-height: 19px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
 }
 .sidebar-note {
   margin-top: auto;
-  padding: 16px;
+  padding: var(--s-6);
   background: #f7f8f1;
   border: 1px solid #eef0e5;
-  border-radius: 10px;
+  border-radius: var(--r-lg);
 }
 .note-spark {
-  color: #879b62;
+  color: #6f8a4e;
   font-size: 25px;
-  margin-bottom: 6px;
+  margin-bottom: var(--s-2);
 }
 .sidebar-note strong {
   font-size: 11px;
@@ -342,11 +342,11 @@ svg {
 .avatar {
   width: 34px;
   height: 34px;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   display: grid;
   place-items: center;
   background: #eadcca;
-  color: #766149;
+  color: #6a5537;
   font-size: 10px;
   font-weight: 600;
   flex-shrink: 0;
@@ -374,7 +374,7 @@ svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
 }
 .icon-button:hover {
   background: #eef2ef;
@@ -400,14 +400,14 @@ svg {
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: var(--s-8);
 }
 .breadcrumb {
   font-size: 11px;
   color: #929a97;
 }
 .breadcrumb > span {
-  margin: 0 16px;
+  margin: 0 var(--s-6);
   color: #c0c8c3;
 }
 .breadcrumb strong {
@@ -424,13 +424,13 @@ svg {
 .workspace-state i {
   height: 6px;
   width: 6px;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   background: #5a9974;
 }
 .notification {
   position: relative;
-  color: #7a8880;
-  padding-top: 4px;
+  color: var(--muted);
+  padding-top: var(--s-1);
 }
 .notification i {
   position: absolute;
@@ -440,7 +440,7 @@ svg {
   width: 5px;
   height: 5px;
   border: 1px solid white;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
 }
 .avatar-small {
   width: 29px;
@@ -449,7 +449,7 @@ svg {
   color: #69835b;
 }
 .main-content {
-  padding: 35px 38px 20px;
+  padding: 35px 38px var(--s-7);
   max-width: 1600px;
   width: 100%;
   margin: auto;
@@ -473,7 +473,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--s-7);
   margin-bottom: 30px;
 }
 .eyebrow {
@@ -491,7 +491,7 @@ svg {
 }
 .heading-actions {
   display: flex;
-  gap: 10px;
+  gap: var(--s-4);
   align-items: center;
   flex-shrink: 0;
 }
@@ -499,11 +499,11 @@ svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--s-3);
   min-height: 40px;
-  padding: 10px 15px;
+  padding: var(--s-4) 15px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--r-md);
   font-size: 11px;
   font-weight: 600;
   line-height: 1.4;
@@ -539,7 +539,7 @@ svg {
 .button-small {
   font-size: 10px;
   min-height: 31px;
-  padding: 6px 11px;
+  padding: var(--s-2) 11px;
 }
 .text-button {
   display: flex;
@@ -571,12 +571,12 @@ svg {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
-  gap: 10px;
+  gap: var(--s-4);
 }
 .section-title-inline {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-3);
   font-size: 12px;
   font-weight: 600;
 }
@@ -584,7 +584,7 @@ svg {
   width: 7px;
   height: 7px;
   background: var(--green);
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   display: inline-block;
   flex-shrink: 0;
 }
@@ -594,9 +594,9 @@ svg {
   color: #849187;
   background: #edf1ed;
   border: 1px solid #e2e9e2;
-  border-radius: 5px;
-  padding: 4px 8px;
-  margin-left: 4px;
+  border-radius: var(--r-sm);
+  padding: var(--s-1) var(--s-3);
+  margin-left: var(--s-1);
   white-space: nowrap;
 }
 .month-filter {
@@ -608,7 +608,7 @@ svg {
 .month-filter input {
   font-size: 11px;
   border: 1px solid #e0e6e1;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   padding: 7px;
   background: white;
   color: #607568;
@@ -618,7 +618,7 @@ svg {
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: var(--s-6);
   margin-bottom: 25px;
 }
 .metric {
@@ -649,18 +649,18 @@ svg {
   justify-content: center;
   color: #46866a;
   background: #eef6ef;
-  border-radius: 8px;
+  border-radius: var(--r-md);
 }
 .metric-icon:empty {
   display: none;
 }
 .metric-icon.orange {
   background: #fcf0e9;
-  color: #c18b69;
+  color: #9c6b2c;
 }
 .metric-icon.gold {
   background: #f8f3e6;
-  color: #ad965d;
+  color: #8a6d2f;
 }
 .metric-value {
   display: block;
@@ -777,7 +777,7 @@ svg {
 }
 .chart {
   height: 228px;
-  margin: 10px 23px 7px;
+  margin: var(--s-4) 23px 7px;
   display: flex;
   gap: 13px;
 }
@@ -815,14 +815,14 @@ svg {
   height: 100%;
   align-items: stretch;
   justify-content: space-around;
-  gap: 10px;
+  gap: var(--s-4);
 }
 .bar-group {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1;
-  gap: 10px;
+  gap: var(--s-4);
   min-width: 0;
 }
 .bar-group > span {
@@ -892,10 +892,10 @@ svg {
   cursor: pointer;
 }
 .accessible-chart table {
-  margin-top: 10px;
+  margin-top: var(--s-4);
 }
 .fund-list {
-  padding: 10px 23px 0;
+  padding: var(--s-4) 23px 0;
 }
 .fund-item {
   margin: 0 0 21px;
@@ -904,7 +904,7 @@ svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-3);
 }
 .fund-item strong {
   font-size: 11px;
@@ -940,7 +940,7 @@ svg {
   display: flex;
   justify-content: space-between;
   margin: 0 23px;
-  padding: 16px 0 12px;
+  padding: var(--s-6) 0 var(--s-5);
   border-top: 1px solid var(--line);
   font-size: 11px;
 }
@@ -995,7 +995,7 @@ th {
   color: #8a968e;
   background: #f8faf8;
   letter-spacing: 0.2px;
-  padding: 12px 18px;
+  padding: var(--s-5) 18px;
   white-space: nowrap;
 }
 td {
@@ -1028,29 +1028,29 @@ tfoot td {
 }
 .table-sub {
   display: block;
-  color: #95a098;
+  color: var(--muted);
   margin-top: 5px;
   font-size: 9px;
 }
 .transaction-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-4);
   min-width: 210px;
   max-width: 340px;
 }
 .transaction-cell small {
   font-size: 9px;
-  color: #9aa49c;
+  color: var(--muted);
   display: block;
-  margin-top: 4px;
+  margin-top: var(--s-1);
 }
 .transaction-icon {
   height: 30px;
   width: 30px;
   display: grid;
   place-items: center;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   flex-shrink: 0;
 }
 .transaction-icon.in {
@@ -1064,7 +1064,7 @@ tfoot td {
 .dashboard-lower-grid th,
 .dashboard-lower-grid td {
   padding-left: 18px;
-  padding-right: 10px;
+  padding-right: var(--s-4);
 }
 .dashboard-lower-grid th:nth-child(3),
 .dashboard-lower-grid td:nth-child(3) {
@@ -1102,19 +1102,19 @@ tfoot td {
   place-items: center;
   background: #f6eee2;
   border: 1px solid #f0e6d3;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   color: #b09564;
   font-size: 10px;
 }
 .approval-list {
-  padding: 0 20px;
+  padding: 0 var(--s-7);
 }
 .approval-card {
   display: block;
   border: 1px solid #edf0e9;
-  border-radius: 9px;
-  padding: 12px 13px;
-  margin-bottom: 10px;
+  border-radius: var(--r-lg);
+  padding: var(--s-5) 13px;
+  margin-bottom: var(--s-4);
 }
 .approval-card:hover {
   border-color: #bdd1c1;
@@ -1124,7 +1124,7 @@ tfoot td {
   display: flex;
   justify-content: space-between;
   color: #9b9b82;
-  margin-bottom: 6px;
+  margin-bottom: var(--s-2);
 }
 .approval-card-top small {
   font-size: 9px;
@@ -1148,7 +1148,7 @@ tfoot td {
   font-weight: 600;
 }
 .panel-bottom-link {
-  padding: 16px 22px;
+  padding: var(--s-6) 22px;
   margin-top: 5px;
   border-top: 1px solid var(--line);
   display: flex;
@@ -1160,13 +1160,13 @@ tfoot td {
 .activity-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  padding: 6px 23px 24px;
+  padding: var(--s-2) 23px var(--s-8);
   gap: 22px;
 }
 .activity-item {
   display: flex;
-  gap: 10px;
-  padding-right: 12px;
+  gap: var(--s-4);
+  padding-right: var(--s-5);
 }
 .activity-item:not(:last-child) {
   border-right: 1px solid var(--line);
@@ -1176,7 +1176,7 @@ tfoot td {
   height: 7px;
   border: 2px solid #b1c6ab;
   outline: 4px solid #f6f8f3;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   margin-top: 5px;
   flex-shrink: 0;
 }
@@ -1187,7 +1187,7 @@ tfoot td {
 .activity-item p {
   font-size: 10px;
   color: #8b968d;
-  margin: 4px 0;
+  margin: var(--s-1) 0;
   line-height: 1.6;
 }
 .activity-item small {
@@ -1196,10 +1196,10 @@ tfoot td {
 }
 .flash {
   border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 12px 16px;
+  border-radius: var(--r-md);
+  padding: var(--s-5) var(--s-6);
   font-size: 12px;
-  margin: 0 0 20px;
+  margin: 0 0 var(--s-7);
 }
 .flash-success {
   color: #356c4b;
@@ -1235,8 +1235,8 @@ textarea,
 select {
   width: 100%;
   min-height: 40px;
-  padding: 10px 12px;
-  border-radius: 6px;
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-sm);
   border: 1px solid #dde5dd;
   background: white;
   color: #344b3b;
@@ -1263,7 +1263,7 @@ input[type="file"] {
   font-size: 10px;
 }
 input[type="color"] {
-  padding: 4px;
+  padding: var(--s-1);
   width: 75px;
 }
 input[type="checkbox"] {
@@ -1280,7 +1280,7 @@ select {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 19px;
-  padding: 6px 24px 25px;
+  padding: var(--s-2) var(--s-8) 25px;
 }
 .form-footer {
   padding-top: 18px;
@@ -1288,7 +1288,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 20px;
+  gap: var(--s-7);
   margin-top: 2px;
 }
 .form-footer p {
@@ -1301,7 +1301,7 @@ select {
   display: flex;
   align-items: flex-end;
   gap: 14px;
-  padding: 8px 23px 22px;
+  padding: var(--s-3) 23px 22px;
   flex-wrap: wrap;
 }
 .filter-bar .field {
@@ -1313,13 +1313,13 @@ select {
   flex-shrink: 0;
 }
 .filter-hint {
-  margin: -10px 23px 16px;
+  margin: -10px 23px var(--s-6);
   font-size: 10px;
   color: var(--muted);
 }
 .document-filters {
   display: flex;
-  gap: 10px;
+  gap: var(--s-4);
   padding: 2px 23px 22px;
 }
 .document-filters > select {
@@ -1353,7 +1353,7 @@ select {
   display: grid;
   place-items: center;
   font-size: 10px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
 }
 .type-tag.receipt {
   background: #e9f3eb;
@@ -1368,17 +1368,17 @@ select {
   align-items: center;
   gap: 5px;
   font-size: 9px;
-  padding: 5px 8px;
-  border-radius: 5px;
+  padding: 5px var(--s-3);
+  border-radius: var(--r-sm);
   font-weight: 500;
   white-space: nowrap;
   background: #f1f3ef;
-  color: #899281;
+  color: var(--muted);
 }
 .status i {
   width: 4px;
   height: 4px;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   background: currentColor;
 }
 .status-draft {
@@ -1405,7 +1405,7 @@ select {
   background: #fbeee9;
 }
 .form-disclosure {
-  margin: 0 0 24px;
+  margin: 0 0 var(--s-8);
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -1413,7 +1413,7 @@ select {
   scroll-margin-top: 25px;
 }
 .form-disclosure > summary {
-  padding: 21px 24px;
+  padding: 21px var(--s-8);
   list-style: none;
   cursor: pointer;
   display: flex;
@@ -1434,7 +1434,7 @@ select {
   color: #8c998a;
   font-weight: 400;
   font-size: 10px;
-  margin-top: 4px;
+  margin-top: var(--s-1);
 }
 .form-disclosure[open] > summary {
   border-bottom: 1px solid var(--line);
@@ -1452,7 +1452,7 @@ select {
 .account-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  gap: var(--s-7);
   margin-bottom: 25px;
 }
 .account-card {
@@ -1472,7 +1472,7 @@ select {
   border: 1px solid #dbe9da;
   width: 46px;
   height: 46px;
-  border-radius: 11px;
+  border-radius: var(--r-xl);
   display: grid;
   place-items: center;
   color: var(--green);
@@ -1499,20 +1499,20 @@ select {
   color: #9ba597;
 }
 .info-note {
-  padding: 12px 14px;
+  padding: var(--s-5) 14px;
   border: 1px solid #e2eada;
   background: #f5f8ef;
   font-size: 11px;
   color: #7f8c6b;
-  border-radius: 7px;
+  border-radius: var(--r-md);
 }
 .audit-action {
   font-family: monospace;
   font-size: 10px;
   letter-spacing: -0.3px;
   background: #f4f6f1;
-  padding: 4px 6px;
-  border-radius: 4px;
+  padding: var(--s-1) var(--s-2);
+  border-radius: var(--r-xs);
   color: #7d8c75;
 }
 .empty-state {
@@ -1520,14 +1520,14 @@ select {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 55px 20px;
+  gap: var(--s-3);
+  padding: 55px var(--s-7);
   color: #899584;
 }
 .empty-state > span {
   width: 52px;
   height: 52px;
-  border-radius: 14px;
+  border-radius: var(--r-xl);
   background: #f2f6ee;
   display: grid;
   place-items: center;
@@ -1542,10 +1542,10 @@ select {
 .empty-state p {
   font-size: 12px;
   max-width: 350px;
-  margin: 0 0 8px;
+  margin: 0 0 var(--s-3);
 }
 .empty-state .button {
-  margin-top: 8px;
+  margin-top: var(--s-3);
 }
 .back-link {
   display: inline-block;
@@ -1559,8 +1559,8 @@ select {
 .document-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: var(--s-8);
+  margin-bottom: var(--s-8);
   align-items: start;
 }
 .document-actions .panel-heading {
@@ -1570,10 +1570,10 @@ select {
   font-size: 13px;
 }
 .action-stack {
-  padding: 0 18px 20px;
+  padding: 0 18px var(--s-7);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--s-6);
 }
 .action-stack form {
   display: flex;
@@ -1604,19 +1604,19 @@ select {
   font-size: 11px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-3);
   color: var(--green);
   word-break: break-all;
 }
 .paid-notice {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-3);
   text-align: center;
   align-items: center;
   background: #f1f8ed;
-  padding: 18px 10px;
-  border-radius: 8px;
+  padding: 18px var(--s-4);
+  border-radius: var(--r-md);
   color: #5c8651;
 }
 .paid-notice strong {
@@ -1635,7 +1635,7 @@ select {
 .workflow-steps > div {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-3);
   color: #acb4a6;
   font-size: 10px;
   flex: 1;
@@ -1655,7 +1655,7 @@ select {
   height: 23px;
   flex-shrink: 0;
   border: 1px solid #dce3d6;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   font-size: 9px;
   background: white;
 }
@@ -1670,7 +1670,7 @@ select {
 .print-sheet {
   background: white;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--r-xl);
   padding: 35px;
   min-width: 0;
   box-shadow: var(--shadow);
@@ -1680,15 +1680,15 @@ select {
   align-items: flex-start;
   justify-content: space-between;
   border-bottom: 2px solid var(--green);
-  padding-bottom: 24px;
-  gap: 20px;
+  padding-bottom: var(--s-8);
+  gap: var(--s-7);
 }
 .document-org-mark {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -1px;
   color: var(--green);
-  margin-bottom: 8px;
+  margin-bottom: var(--s-3);
   display: block;
 }
 .document-letterhead h2 {
@@ -1723,7 +1723,7 @@ select {
   color: #5f6d54;
 }
 .document-watermark {
-  padding: 10px;
+  padding: var(--s-4);
   border: 1px dashed #dac9af;
   background: #fffcf5;
   /* A status word ("DRAF"), not decoration: 5.1:1 on its own background. */
@@ -1742,7 +1742,7 @@ select {
 .document-parties > div {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--s-2);
 }
 .document-parties small,
 .amount-words small {
@@ -1769,7 +1769,7 @@ select {
   color: #5f6d54;
 }
 .document-lines td {
-  padding: 24px 16px;
+  padding: var(--s-8) var(--s-6);
 }
 .document-lines td strong {
   font-size: 11px;
@@ -1797,10 +1797,10 @@ select {
   text-transform: capitalize;
   line-height: 1.8;
   color: #62774e;
-  margin: 6px 0 0;
+  margin: var(--s-2) 0 0;
 }
 .document-note {
-  margin-top: 20px;
+  margin-top: var(--s-7);
   font-size: 11px;
   color: #5f6d54;
 }
@@ -1846,13 +1846,13 @@ select {
 .timeline {
   list-style: none;
   margin: 0;
-  padding: 0 24px 25px;
+  padding: 0 var(--s-8) 25px;
 }
 .timeline li {
   display: flex;
   gap: 15px;
   position: relative;
-  padding-bottom: 20px;
+  padding-bottom: var(--s-7);
 }
 .timeline li:not(:last-child):before {
   content: "";
@@ -1867,8 +1867,8 @@ select {
   height: 9px;
   border: 2px solid #9dbd8d;
   background: white;
-  border-radius: 50%;
-  margin-top: 4px;
+  border-radius: var(--r-circle);
+  margin-top: var(--s-1);
   flex-shrink: 0;
   z-index: 1;
 }
@@ -1898,22 +1898,22 @@ select {
 }
 .report-letterhead h2 {
   font-size: 23px;
-  margin-bottom: 6px;
+  margin-bottom: var(--s-2);
 }
 .report-letterhead p {
   font-size: 11px;
   /* 5.2:1 on the report paper: the old #859979 was 2.9:1 at 11px. */
   color: #5f6d54;
-  margin-bottom: 6px;
+  margin-bottom: var(--s-2);
 }
 .report-letterhead h3 {
   font-size: 16px;
-  margin: 17px 0 6px;
+  margin: 17px 0 var(--s-2);
 }
 .report-opening {
   display: flex;
   justify-content: space-between;
-  padding: 20px 0;
+  padding: var(--s-7) 0;
   font-size: 13px;
 }
 .report-opening > span {
@@ -1921,13 +1921,13 @@ select {
   color: #5f6d54;
 }
 .report-totals {
-  margin-top: 20px;
+  margin-top: var(--s-7);
 }
 .report-totals > div {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  padding: 12px 15px;
+  gap: var(--s-7);
+  padding: var(--s-5) 15px;
   font-size: 12px;
 }
 .report-totals span {
@@ -1936,9 +1936,9 @@ select {
 }
 .report-totals .report-closing {
   background: #eaf3e3;
-  padding: 20px 15px;
-  margin-top: 8px;
-  border-radius: 7px;
+  padding: var(--s-7) 15px;
+  margin-top: var(--s-3);
+  border-radius: var(--r-md);
   font-size: 17px;
 }
 .report-closing > span {
@@ -1953,11 +1953,11 @@ select {
   /* 5.2:1 on the report paper: the old #9aaa8b was 2.3:1. */
   color: #5f6d54;
   line-height: 1.8;
-  margin-top: 20px;
+  margin-top: var(--s-7);
 }
 .report-adjustment-heading {
   font-size: 12px;
-  margin-top: 20px;
+  margin-top: var(--s-7);
 }
 .report-table td {
   font-size: 12px;
@@ -1993,7 +1993,7 @@ select {
 .auth-tag {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-3);
   font-size: 8px;
   letter-spacing: 1.7px;
   color: #a6c8b3;
@@ -2003,7 +2003,7 @@ select {
 .auth-tag i {
   width: 5px;
   height: 5px;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   background: #c1b079;
 }
 .auth-story h1 {
@@ -2025,7 +2025,7 @@ select {
 }
 .auth-preview {
   border: 1px solid #ffffff1a;
-  border-radius: 13px;
+  border-radius: var(--r-xl);
   padding: 23px;
   margin-top: 38px;
   background: #ffffff06;
@@ -2047,8 +2047,8 @@ select {
 .preview-line {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 12px;
+  gap: var(--s-4);
+  margin-top: var(--s-5);
   color: #b8c9b5;
   font-size: 11px;
 }
@@ -2068,7 +2068,7 @@ select {
   width: 480px;
   height: 480px;
   border: 1px solid #ffffff07;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   bottom: -180px;
   right: -190px;
 }
@@ -2078,7 +2078,7 @@ select {
   position: absolute;
   inset: 35px;
   border: 1px solid #ffffff09;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
 }
 .auth-orbit:after {
   inset: -35px;
@@ -2098,7 +2098,7 @@ select {
   line-height: 1.3;
   font-weight: 500;
   letter-spacing: -1px;
-  margin-bottom: 10px;
+  margin-bottom: var(--s-4);
 }
 .auth-form > .muted {
   font-size: 12px;
@@ -2119,7 +2119,7 @@ select {
 .auth-form .button {
   width: 100%;
   min-height: 47px;
-  margin-top: 6px;
+  margin-top: var(--s-2);
   font-size: 12px;
 }
 .auth-bottom {
@@ -2136,7 +2136,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--s-2);
   color: #acb5a0;
   font-size: 9px;
   border-top: 1px solid #e7ebdf;
@@ -2147,7 +2147,7 @@ select {
   color: #93a481;
 }
 .register-page {
-  padding: 45px 20px;
+  padding: 45px var(--s-7);
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -2161,7 +2161,7 @@ select {
   max-width: 480px;
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-2xl);
   padding: 35px;
 }
 .register-card h1 {
@@ -2170,12 +2170,12 @@ select {
 .register-card > .muted {
   font-size: 12px;
   line-height: 1.8;
-  margin-bottom: 24px;
+  margin-bottom: var(--s-8);
 }
 .register-card form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--s-7);
 }
 .register-card .back-link {
   margin: 23px 0 0;
@@ -2184,7 +2184,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: var(--s-5);
   min-height: 50vh;
   color: #92a380;
   font-size: 13px;
@@ -2192,7 +2192,7 @@ select {
 .loading-dot {
   height: 10px;
   width: 10px;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   background: var(--green);
   animation: pulse 1s infinite;
 }
@@ -2224,8 +2224,8 @@ select {
   }
   .sidebar {
     width: 270px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: var(--s-8);
+    padding-right: var(--s-8);
   }
   .workspace {
     margin-left: 270px;
@@ -2243,13 +2243,13 @@ select {
     width: calc(100% - 220px);
   }
   .main-content {
-    padding: 28px 25px 20px;
+    padding: 28px 25px var(--s-7);
   }
   .topbar {
     padding: 0 25px;
   }
   .metric {
-    padding: 18px 16px;
+    padding: 18px var(--s-6);
   }
   .metric-value {
     font-size: 24px;
@@ -2267,7 +2267,7 @@ select {
   .dashboard-lower-grid .panel:nth-child(2) .approval-list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: var(--s-5);
   }
   .dashboard-lower-grid th:nth-child(3),
   .dashboard-lower-grid td:nth-child(3) {
@@ -2278,7 +2278,7 @@ select {
     gap: 17px;
   }
   .print-sheet {
-    padding: 24px;
+    padding: var(--s-8);
   }
   .document-letterhead {
     flex-direction: column;
@@ -2314,7 +2314,7 @@ select {
   .nav-link {
     font-size: 11px;
     gap: 9px;
-    padding: 12px 9px;
+    padding: var(--s-5) 9px;
   }
   .brand {
     font-size: 24px;
@@ -2338,7 +2338,7 @@ select {
   .dashboard-main-grid .fund-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 30px;
+    gap: var(--s-4) 30px;
   }
   .dashboard-main-grid .panel-heading {
     padding-bottom: 17px;
@@ -2398,7 +2398,7 @@ select {
     font-size: 10px;
   }
   .topbar-right {
-    gap: 16px;
+    gap: var(--s-6);
   }
   .workspace-state {
     display: none;
@@ -2456,7 +2456,7 @@ select {
     right: 14px;
   }
   .main-content {
-    padding: 26px 18px 16px;
+    padding: 26px 18px var(--s-6);
   }
   .topbar {
     height: 62px;
@@ -2469,19 +2469,19 @@ select {
     font-size: 10px;
   }
   .breadcrumb > span {
-    margin: 0 8px;
+    margin: 0 var(--s-3);
   }
   .topbar-right {
-    gap: 16px;
+    gap: var(--s-6);
   }
   .avatar-small {
     width: 27px;
     height: 27px;
   }
   .page-heading {
-    margin-bottom: 24px;
+    margin-bottom: var(--s-8);
     flex-direction: column;
-    gap: 16px;
+    gap: var(--s-6);
   }
   .page-description {
     font-size: 11px;
@@ -2491,7 +2491,7 @@ select {
   .heading-actions {
     max-width: 100%;
     justify-content: flex-start;
-    gap: 10px;
+    gap: var(--s-4);
   }
   .section-toolbar {
     flex-wrap: wrap;
@@ -2508,12 +2508,12 @@ select {
   }
   .metrics-grid {
     gap: 11px;
-    margin-bottom: 20px;
+    margin-bottom: var(--s-7);
   }
   .metric {
     padding: 15px 14px;
     min-height: 141px;
-    border-radius: 11px;
+    border-radius: var(--r-xl);
   }
   .metric-value {
     font-size: 24px;
@@ -2526,21 +2526,21 @@ select {
   .metric-icon {
     height: 25px;
     width: 25px;
-    border-radius: 6px;
+    border-radius: var(--r-sm);
   }
   .metric-icon svg {
     width: 15px;
   }
   .metric-detail {
     font-size: 9px;
-    margin-top: 12px;
+    margin-top: var(--s-5);
   }
   .panel {
-    margin-bottom: 20px;
-    border-radius: 11px;
+    margin-bottom: var(--s-7);
+    border-radius: var(--r-xl);
   }
   .panel-heading {
-    padding: 19px 18px 16px;
+    padding: 19px 18px var(--s-6);
   }
   .panel-heading h2 {
     font-size: 13px;
@@ -2554,9 +2554,9 @@ select {
     gap: 0;
   }
   .chart {
-    margin: 8px 17px 7px;
+    margin: var(--s-3) 17px 7px;
     height: 210px;
-    gap: 8px;
+    gap: var(--s-3);
   }
   .chart-y-labels {
     width: 55px;
@@ -2569,10 +2569,10 @@ select {
     gap: 3px;
   }
   .bar-groups {
-    gap: 4px;
+    gap: var(--s-1);
   }
   .chart-legend {
-    gap: 10px;
+    gap: var(--s-4);
     font-size: 8px;
   }
   .chart-summary {
@@ -2607,7 +2607,7 @@ select {
     display: none;
   }
   .activity-strip {
-    padding: 2px 18px 20px;
+    padding: 2px 18px var(--s-7);
     gap: 15px;
   }
   .table-footer {
@@ -2616,11 +2616,11 @@ select {
     flex-wrap: wrap;
   }
   .app-footer {
-    margin: 20px 18px 0;
+    margin: var(--s-7) 18px 0;
     font-size: 8px;
   }
   .form-grid {
-    padding: 2px 18px 20px;
+    padding: 2px 18px var(--s-7);
     gap: 17px;
     grid-template-columns: 1fr;
   }
@@ -2647,8 +2647,8 @@ select {
     font-size: 9px;
   }
   .filter-bar {
-    padding: 3px 18px 20px;
-    gap: 12px;
+    padding: 3px 18px var(--s-7);
+    gap: var(--s-5);
   }
   .filter-bar .field {
     min-width: 130px;
@@ -2658,7 +2658,7 @@ select {
     flex: 1;
   }
   .document-filters {
-    padding: 0 18px 20px;
+    padding: 0 18px var(--s-7);
     gap: 9px;
   }
   .document-filters select {
@@ -2672,7 +2672,7 @@ select {
     padding: 23px;
   }
   .account-card-top {
-    margin-bottom: 20px;
+    margin-bottom: var(--s-7);
   }
   .account-card > strong {
     font-size: 30px;
@@ -2683,7 +2683,7 @@ select {
   }
   .workflow-steps {
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--s-5);
   }
   .workflow-steps > div {
     font-size: 9px;
@@ -2693,7 +2693,7 @@ select {
     display: none;
   }
   .print-sheet {
-    padding: 20px 17px;
+    padding: var(--s-7) 17px;
   }
   .document-letterhead {
     flex-direction: column;
@@ -2707,19 +2707,19 @@ select {
     text-align: left;
   }
   .document-parties {
-    gap: 20px;
+    gap: var(--s-7);
     flex-direction: column;
-    margin: 24px 0;
+    margin: var(--s-8) 0;
   }
   .document-parties > div:last-child {
     padding-top: 15px;
     border-top: 1px solid var(--line);
   }
   .document-lines td {
-    padding: 20px 10px;
+    padding: var(--s-7) var(--s-4);
   }
   .document-lines th {
-    padding: 11px 10px;
+    padding: 11px var(--s-4);
   }
   .signatures {
     gap: 15px;
@@ -2745,19 +2745,19 @@ select {
   }
   .report-table th {
     font-size: 8px;
-    padding: 10px;
+    padding: var(--s-4);
   }
   .report-table td {
     font-size: 10px;
-    padding: 14px 10px;
+    padding: 14px var(--s-4);
   }
   .report-totals > div {
     font-size: 11px;
-    padding: 10px 0;
+    padding: var(--s-4) 0;
   }
   .report-totals .report-closing {
     font-size: 14px;
-    padding: 15px 12px;
+    padding: 15px var(--s-5);
   }
   .report-explanation {
     font-size: 9px;
@@ -2926,26 +2926,26 @@ select {
     padding-bottom: 15px;
   }
   .report-sheet .report-letterhead h3 {
-    margin-top: 10px;
+    margin-top: var(--s-4);
   }
   .report-sheet .report-opening {
     padding: 14px 0;
   }
   .report-sheet .report-table td {
-    padding: 9px 12px;
+    padding: 9px var(--s-5);
     font-size: 11px;
   }
   .report-sheet .report-table th {
-    padding: 9px 12px;
+    padding: 9px var(--s-5);
   }
   .report-sheet .report-totals {
-    margin-top: 12px;
+    margin-top: var(--s-5);
   }
   .report-sheet .report-totals > div {
-    padding: 9px 12px;
+    padding: 9px var(--s-5);
   }
   .report-sheet .report-totals .report-closing {
-    padding: 13px 12px;
+    padding: 13px var(--s-5);
   }
   .report-sheet .signatures {
     padding: 22px 0 18px;
@@ -2959,16 +2959,16 @@ select {
 .excel-report-map {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: var(--s-6);
+  margin-bottom: var(--s-8);
 }
 .excel-report-map > div {
-  padding: 20px;
+  padding: var(--s-7);
   border: 1px solid var(--border, #deded5);
   background: #fff;
-  border-radius: 12px;
+  border-radius: var(--r-xl);
   display: grid;
-  gap: 8px;
+  gap: var(--s-3);
 }
 .excel-report-map span {
   color: #377555;
@@ -2985,8 +2985,8 @@ select {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  margin: 8px 0 20px;
+  gap: var(--s-5);
+  margin: var(--s-3) 0 var(--s-7);
 }
 .excel-status {
   flex-basis: 100%;
@@ -3000,12 +3000,12 @@ select {
   color: #a32923;
 }
 .excel-instructions {
-  padding-left: 24px;
+  padding-left: var(--s-8);
   line-height: 1.8;
 }
 .excel-instructions li {
-  padding-left: 6px;
-  margin-bottom: 10px;
+  padding-left: var(--s-2);
+  margin-bottom: var(--s-4);
 }
 @media (max-width: 900px) {
   .excel-report-map {
@@ -3042,7 +3042,7 @@ select {
     --red: #ad3f3f;
     --red-soft: #fbebea;
     --input-border: #c6d2ca;
-    --radius: 12px;
+    --radius: var(--r-xl);
     --shadow: 0 2px 4px #12392a03;
     --sidebar-bg: #142f2b;
     --sidebar-text: #b9ccc4;
@@ -3051,6 +3051,24 @@ select {
     --primary-bg: #17634c;
     --primary-text: #ffffff;
     --focus: #2d876a;
+    /* Radius scale — 6 steps. No ad-hoc px radii. */
+    --r-xs: 4px;
+    --r-sm: 6px;
+    --r-md: 8px;
+    --r-lg: 10px;
+    --r-xl: 12px;
+    --r-2xl: 16px;
+    --r-circle: 50%;
+    /* Spacing scale — 2px steps, 4px rhythm. */
+    --s-1: 4px;
+    --s-2: 6px;
+    --s-3: 8px;
+    --s-4: 10px;
+    --s-5: 12px;
+    --s-6: 16px;
+    --s-7: 20px;
+    --s-8: 24px;
+    --s-9: 32px;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -3091,7 +3109,7 @@ select {
     line-height: 1.22;
     letter-spacing: -1.1px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: var(--s-4);
   }
   h2 {
     font-size: 17px;
@@ -3123,7 +3141,7 @@ select {
   }
   .sidebar {
     width: 258px;
-    padding: 30px 16px 16px;
+    padding: 30px var(--s-6) var(--s-6);
     background: var(--sidebar-bg);
     color: #f3f7f3;
     border: 0;
@@ -3132,14 +3150,14 @@ select {
     padding: 2px 14px 30px;
   }
   .brand {
-    gap: 12px;
+    gap: var(--s-5);
     font-size: 28px;
     letter-spacing: -1.4px;
   }
   .brand small {
     font-size: 8px;
     letter-spacing: 1.7px;
-    margin-top: 8px;
+    margin-top: var(--s-3);
   }
   .sidebar .brand-symbol i {
     background: #b5d6bd;
@@ -3149,9 +3167,9 @@ select {
   }
   .org-switch {
     margin-bottom: 28px;
-    padding: 15px 10px;
+    padding: 15px var(--s-4);
     border-color: var(--sidebar-line);
-    border-radius: 8px;
+    border-radius: var(--r-md);
     gap: 11px;
   }
   .org-switch strong {
@@ -3176,16 +3194,16 @@ select {
     margin-bottom: 9px;
   }
   .sidebar nav {
-    gap: 4px;
+    gap: var(--s-1);
     margin-bottom: 28px;
   }
   .nav-link {
     color: var(--sidebar-text);
-    padding: 12px 13px;
+    padding: var(--s-5) 13px;
     min-height: 44px;
     font-size: 12px;
-    gap: 12px;
-    border-radius: 7px;
+    gap: var(--s-5);
+    border-radius: var(--r-md);
   }
   .nav-link:hover {
     color: #ffffff;
@@ -3209,7 +3227,7 @@ select {
     border: 1px solid var(--sidebar-line);
     background: transparent;
     padding: 17px;
-    border-radius: 8px;
+    border-radius: var(--r-md);
   }
   .sidebar-note > svg {
     color: #bad1af;
@@ -3233,9 +3251,9 @@ select {
   }
   .sidebar-user {
     border-top-color: var(--sidebar-line);
-    margin-top: 24px;
-    padding-top: 20px;
-    gap: 10px;
+    margin-top: var(--s-8);
+    padding-top: var(--s-7);
+    gap: var(--s-4);
   }
   .sidebar-user strong {
     font-size: 12px;
@@ -3247,7 +3265,7 @@ select {
   .sidebar-user .avatar {
     background: #3c5547;
     color: #e5eeda;
-    border-radius: 9px;
+    border-radius: var(--r-lg);
   }
   .sidebar-user .icon-button {
     color: #b5c9bc;
@@ -3268,12 +3286,12 @@ select {
   }
   .topbar-left,
   .topbar-right {
-    gap: 20px;
+    gap: var(--s-7);
   }
   .breadcrumb {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--s-5);
     color: var(--muted);
     font-size: 12px;
   }
@@ -3296,9 +3314,9 @@ select {
   .topbar-profile {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--s-4);
     border-left: 1px solid var(--line);
-    padding-left: 20px;
+    padding-left: var(--s-7);
   }
   .topbar-profile strong,
   .topbar-profile small {
@@ -3316,7 +3334,7 @@ select {
   .avatar-small {
     width: 34px;
     height: 34px;
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     background: var(--accent-soft);
     color: var(--accent);
     font-size: 12px;
@@ -3329,8 +3347,8 @@ select {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
-    border-radius: 7px;
+    padding: var(--s-3);
+    border-radius: var(--r-md);
     color: var(--muted);
   }
   .notification:hover,
@@ -3358,10 +3376,10 @@ select {
     gap: 9px;
     min-height: 40px;
     min-width: 40px;
-    padding: 8px 11px;
+    padding: var(--s-3) 11px;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 7px;
+    border-radius: var(--r-md);
     color: var(--ink);
     font-size: 11px;
     font-weight: 500;
@@ -3381,7 +3399,7 @@ select {
     display: none;
   }
   .main-content {
-    padding: 36px 36px 24px;
+    padding: 36px 36px var(--s-8);
     max-width: 1560px;
     margin: 0 auto;
     outline: none;
@@ -3394,8 +3412,8 @@ select {
   }
   .page-heading {
     align-items: flex-end;
-    margin-bottom: 32px;
-    gap: 24px;
+    margin-bottom: var(--s-9);
+    gap: var(--s-8);
   }
   .page-heading > div:first-child {
     min-width: 0;
@@ -3404,7 +3422,7 @@ select {
     font-size: 10px;
     letter-spacing: 1.55px;
     color: var(--muted);
-    margin-bottom: 12px;
+    margin-bottom: var(--s-5);
     font-weight: 600;
   }
   .page-description {
@@ -3421,8 +3439,8 @@ select {
     min-height: 43px;
     font-size: 12px;
     padding: 11px 15px;
-    border-radius: 7px;
-    gap: 8px;
+    border-radius: var(--r-md);
+    gap: var(--s-3);
     box-shadow: none;
   }
   .button-primary {
@@ -3474,7 +3492,7 @@ select {
   .section-title-inline {
     font-size: 13px;
     font-weight: 600;
-    gap: 10px;
+    gap: var(--s-4);
   }
   .section-dot {
     background: var(--accent);
@@ -3484,28 +3502,28 @@ select {
     border: 1px solid var(--line);
     color: var(--muted);
     font-size: 11px;
-    padding: 4px 8px;
+    padding: var(--s-1) var(--s-3);
   }
   .month-filter {
-    gap: 10px;
+    gap: var(--s-4);
     color: var(--muted);
   }
   .month-filter input {
     font-size: 12px;
     min-height: 38px;
-    padding: 7px 10px;
+    padding: 7px var(--s-4);
     color: var(--ink);
     background: var(--surface);
     border-color: var(--input-border);
   }
   .metrics-grid {
-    gap: 16px;
+    gap: var(--s-6);
     margin-bottom: 25px;
   }
   .metric {
     border: 1px solid var(--line);
     background: var(--surface);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     padding: 22px;
     min-height: 166px;
     box-shadow: var(--shadow);
@@ -3513,13 +3531,13 @@ select {
   .metric-top {
     font-size: 12px;
     color: var(--muted);
-    margin-bottom: 24px;
-    gap: 10px;
+    margin-bottom: var(--s-8);
+    gap: var(--s-4);
   }
   .metric-icon {
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+    border-radius: var(--r-md);
     background: var(--accent-soft);
     color: var(--accent);
   }
@@ -3537,7 +3555,7 @@ select {
   }
   .metric-detail {
     font-size: 11px;
-    margin-top: 12px;
+    margin-top: var(--s-5);
     color: var(--muted);
   }
   .metric-featured {
@@ -3559,15 +3577,15 @@ select {
     margin-bottom: 30px;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     overflow: hidden;
   }
   .task-strip > a {
     min-width: 0;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 18px 20px;
+    gap: var(--s-5);
+    padding: 18px var(--s-7);
   }
   .task-strip > a + a {
     border-left: 1px solid var(--line);
@@ -3604,12 +3622,12 @@ select {
   .panel {
     background: var(--surface);
     border-color: var(--line);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     box-shadow: var(--shadow);
-    margin-bottom: 24px;
+    margin-bottom: var(--s-8);
   }
   .panel-heading {
-    padding: 23px 24px 20px;
+    padding: 23px var(--s-8) var(--s-7);
     gap: 15px;
   }
   .panel-heading h2 {
@@ -3624,21 +3642,21 @@ select {
   }
   .dashboard-main-grid {
     grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-    gap: 24px;
+    gap: var(--s-8);
   }
   .dashboard-lower-grid {
     grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-    gap: 24px;
+    gap: var(--s-8);
   }
   .chart {
-    margin: 10px 24px 12px;
+    margin: var(--s-4) var(--s-8) var(--s-5);
     height: 245px;
     gap: 15px;
   }
   .chart-legend {
     color: var(--muted);
     font-size: 11px;
-    gap: 12px;
+    gap: var(--s-5);
   }
   .chart-legend i {
     width: 8px;
@@ -3690,7 +3708,7 @@ select {
   .chart-summary {
     border-top-color: var(--line);
     font-size: 11px;
-    margin: 0 24px;
+    margin: 0 var(--s-8);
     padding: 18px 0;
     gap: 15px;
   }
@@ -3704,14 +3722,14 @@ select {
   .accessible-chart {
     font-size: 11px;
     color: var(--accent);
-    padding: 0 24px 16px;
+    padding: 0 var(--s-8) var(--s-6);
   }
   .accessible-chart summary {
     width: fit-content;
     min-height: 25px;
   }
   .fund-list {
-    padding: 12px 24px 0;
+    padding: var(--s-5) var(--s-8) 0;
   }
   .fund-item {
     margin-bottom: 25px;
@@ -3725,7 +3743,7 @@ select {
   .fund-label {
     font-size: 11px;
     color: var(--muted);
-    gap: 8px;
+    gap: var(--s-3);
   }
   .fund-label i {
     width: 8px;
@@ -3740,9 +3758,9 @@ select {
     opacity: 1;
   }
   .fund-total {
-    margin: 0 24px;
-    padding: 18px 0 12px;
-    gap: 12px;
+    margin: 0 var(--s-8);
+    padding: 18px 0 var(--s-5);
+    gap: var(--s-5);
     flex-wrap: wrap;
     font-size: 12px;
   }
@@ -3754,7 +3772,7 @@ select {
   }
   .panel-footnote {
     font-size: 10px;
-    padding: 0 24px 20px;
+    padding: 0 var(--s-8) var(--s-7);
     color: var(--muted);
   }
   table {
@@ -3763,14 +3781,14 @@ select {
   th {
     background: var(--surface-soft);
     color: var(--muted);
-    padding: 13px 20px;
+    padding: 13px var(--s-7);
     border-block: 1px solid var(--line);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0;
   }
   td {
-    padding: 18px 20px;
+    padding: 18px var(--s-7);
     border-bottom-color: var(--line);
   }
   tbody tr:hover {
@@ -3795,7 +3813,7 @@ select {
   .transaction-icon {
     width: 35px;
     height: 35px;
-    border-radius: 8px;
+    border-radius: var(--r-md);
   }
   .transaction-icon.in {
     color: var(--accent);
@@ -3811,7 +3829,7 @@ select {
     list-style: none;
   }
   .recent-entries > li {
-    padding: 17px 24px;
+    padding: 17px var(--s-8);
     display: flex;
     align-items: center;
     gap: 13px;
@@ -3839,9 +3857,9 @@ select {
   }
   .table-footer {
     color: var(--muted);
-    padding: 17px 24px;
+    padding: 17px var(--s-8);
     font-size: 11px;
-    gap: 12px;
+    gap: var(--s-5);
   }
   .table-footer strong {
     color: var(--ink);
@@ -3858,10 +3876,10 @@ select {
     min-width: 29px;
     height: 29px;
     font-size: 12px;
-    border-radius: 8px;
+    border-radius: var(--r-md);
   }
   .approval-list {
-    padding: 0 24px;
+    padding: 0 var(--s-8);
   }
   .approval-card {
     padding: 15px 0;
@@ -3885,7 +3903,7 @@ select {
   }
   .approval-card-top {
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: var(--s-3);
   }
   .approval-card-top small {
     font-size: 10px;
@@ -3898,7 +3916,7 @@ select {
   .approval-card > div:last-child {
     font-size: 10px;
     color: var(--muted);
-    gap: 10px;
+    gap: var(--s-4);
   }
   .approval-card b {
     font-size: 12px;
@@ -3906,12 +3924,12 @@ select {
     white-space: nowrap;
   }
   .panel-bottom-link {
-    padding: 16px 24px;
+    padding: var(--s-6) var(--s-8);
     font-size: 11px;
     color: var(--accent);
   }
   .activity-strip {
-    padding: 3px 24px 25px;
+    padding: 3px var(--s-8) 25px;
     gap: 23px;
   }
   .activity-item strong {
@@ -3929,15 +3947,15 @@ select {
   .activity-dot {
     border-color: var(--accent);
     outline-color: var(--accent-soft);
-    margin-top: 6px;
+    margin-top: var(--s-2);
   }
   .flash {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: var(--s-4);
     font-size: 13px;
-    padding: 14px 16px;
-    border-radius: 8px;
+    padding: 14px var(--s-6);
+    border-radius: var(--r-md);
   }
   .flash > svg {
     margin-top: 2px;
@@ -3953,7 +3971,7 @@ select {
     border-color: var(--red);
   }
   .field {
-    gap: 8px;
+    gap: var(--s-3);
   }
   .field > label {
     font-size: 12px;
@@ -3972,9 +3990,9 @@ select {
     color: var(--ink);
     background: var(--surface);
     border: 1px solid var(--input-border);
-    padding: 11px 12px;
+    padding: 11px var(--s-5);
     min-height: 44px;
-    border-radius: 7px;
+    border-radius: var(--r-md);
   }
   input::placeholder,
   textarea::placeholder {
@@ -3994,26 +4012,26 @@ select {
   }
   input[type="file"] {
     font-size: 11px;
-    padding: 8px;
+    padding: var(--s-3);
   }
   input[type="file"]::file-selector-button {
     color: var(--ink);
     background: var(--surface-soft);
     border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 5px 8px;
-    margin-right: 8px;
+    border-radius: var(--r-xs);
+    padding: 5px var(--s-3);
+    margin-right: var(--s-3);
   }
   input[type="checkbox"] {
     accent-color: var(--accent);
   }
   .form-grid {
-    gap: 21px 20px;
-    padding: 5px 24px 25px;
+    gap: 21px var(--s-7);
+    padding: 5px var(--s-8) 25px;
   }
   .form-footer {
-    gap: 16px;
-    padding-top: 20px;
+    gap: var(--s-6);
+    padding-top: var(--s-7);
   }
   .form-footer p {
     font-size: 11px;
@@ -4022,14 +4040,14 @@ select {
   }
   .filter-bar {
     gap: 14px;
-    padding: 3px 24px 23px;
+    padding: 3px var(--s-8) 23px;
   }
   .filter-bar .field {
     min-width: 150px;
   }
   .document-filters {
-    padding: 3px 24px 23px;
-    gap: 10px;
+    padding: 3px var(--s-8) 23px;
+    gap: var(--s-4);
   }
   .search-input svg {
     color: var(--muted);
@@ -4053,9 +4071,9 @@ select {
   }
   .status {
     font-size: 10px;
-    padding: 6px 9px;
-    border-radius: 5px;
-    gap: 6px;
+    padding: var(--s-2) 9px;
+    border-radius: var(--r-sm);
+    gap: var(--s-2);
     font-weight: 500;
   }
   .status i {
@@ -4088,11 +4106,11 @@ select {
   .form-disclosure {
     background: var(--surface);
     border-color: var(--line);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     scroll-margin-top: 25px;
   }
   .form-disclosure > summary {
-    padding: 21px 24px;
+    padding: 21px var(--s-8);
     color: var(--ink);
   }
   .form-disclosure > summary:hover {
@@ -4114,7 +4132,7 @@ select {
     height: 32px;
     color: var(--accent);
     background: var(--accent-soft);
-    border-radius: 7px;
+    border-radius: var(--r-md);
     transition: transform 0.15s;
   }
   .form-disclosure[open] .plus-mark {
@@ -4123,7 +4141,7 @@ select {
   .account-card {
     background: var(--surface);
     border-color: var(--line);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     padding: 25px;
   }
   .account-icon {
@@ -4161,13 +4179,13 @@ select {
   }
   .empty-state {
     color: var(--muted);
-    padding: 46px 24px;
+    padding: 46px var(--s-8);
   }
   .empty-state > span {
     background: var(--surface-soft);
     color: var(--accent);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--r-xl);
   }
   .empty-state h3 {
     color: var(--ink);
@@ -4180,7 +4198,7 @@ select {
     margin: 30px auto;
     max-width: 560px;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--r-xl);
     background: var(--surface);
   }
   .error-state > span {
@@ -4192,13 +4210,13 @@ select {
     color: var(--accent);
   }
   .document-actions .panel-heading {
-    padding: 20px 19px 16px;
+    padding: var(--s-7) 19px var(--s-6);
   }
   .document-actions h2 {
     font-size: 15px;
   }
   .action-stack {
-    padding: 0 19px 20px;
+    padding: 0 19px var(--s-7);
   }
   .action-stack p {
     color: var(--muted);
@@ -4275,25 +4293,25 @@ select {
   .report-format-tag {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--s-3);
     font-size: 12px;
     color: var(--accent);
     background: var(--accent-soft);
     border: 1px solid var(--line);
-    padding: 9px 12px;
-    border-radius: 7px;
+    padding: 9px var(--s-5);
+    border-radius: var(--r-md);
   }
   .report-connection {
     margin-bottom: 26px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     background: var(--surface);
     overflow: hidden;
   }
   .report-connection-heading {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--s-4);
     padding: 17px 22px;
     border-bottom: 1px solid var(--line);
   }
@@ -4353,7 +4371,7 @@ select {
   .report-generation-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.65fr) minmax(280px, 1fr);
-    gap: 24px;
+    gap: var(--s-8);
     align-items: start;
   }
   .report-fieldset {
@@ -4364,14 +4382,14 @@ select {
   }
   .report-fieldset + .report-fieldset {
     border-top: 1px solid var(--line);
-    padding-top: 24px;
+    padding-top: var(--s-8);
   }
   .report-fieldset legend {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 24px 18px;
+    gap: var(--s-4);
+    padding: var(--s-2) var(--s-8) 18px;
     font-size: 13px;
     font-weight: 600;
     float: left;
@@ -4389,7 +4407,7 @@ select {
     background: var(--surface-soft);
     color: var(--muted);
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: var(--r-sm);
   }
   .report-field-note {
     color: var(--muted);
@@ -4399,7 +4417,7 @@ select {
   .report-mapping {
     background: var(--surface-soft);
     border: 1px solid var(--line);
-    border-radius: 7px;
+    border-radius: var(--r-md);
   }
   .report-mapping summary {
     cursor: pointer;
@@ -4418,19 +4436,19 @@ select {
     margin-bottom: 14px;
   }
   .report-mapping .form-grid {
-    padding: 4px 14px 17px;
+    padding: var(--s-1) 14px 17px;
     gap: 17px;
   }
   .report-download {
     border-top: 1px solid var(--line);
-    padding: 22px 24px 24px;
+    padding: 22px var(--s-8) var(--s-8);
     background: var(--surface-soft);
   }
   .report-download-heading {
     display: flex;
-    gap: 12px;
+    gap: var(--s-5);
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: var(--s-7);
   }
   .report-download-heading > svg {
     color: var(--accent);
@@ -4442,10 +4460,10 @@ select {
   .report-download-heading p {
     color: var(--muted);
     font-size: 11px;
-    margin: 4px 0 0;
+    margin: var(--s-1) 0 0;
   }
   .excel-export-actions {
-    gap: 10px;
+    gap: var(--s-4);
     margin: 0;
   }
   .excel-export-actions .button {
@@ -4496,13 +4514,13 @@ select {
   }
   .report-note {
     display: flex;
-    gap: 12px;
+    gap: var(--s-5);
     align-items: flex-start;
-    padding: 18px 20px;
+    padding: 18px var(--s-7);
     color: var(--blue);
     background: var(--blue-soft);
     border: 1px solid var(--line);
-    border-radius: 9px;
+    border-radius: var(--r-lg);
   }
   .report-note svg {
     margin-top: 2px;
@@ -4519,7 +4537,7 @@ select {
     color: var(--muted);
     font-size: 11px;
     line-height: 1.8;
-    padding: 16px 3px;
+    padding: var(--s-6) 3px;
   }
   .auth-layout {
     background: var(--paper);
@@ -4561,14 +4579,14 @@ select {
   .auth-preview {
     background: #ffffff04;
     border-color: #ffffff26;
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     max-width: 410px;
     padding: 25px;
   }
   .preview-title {
     color: #e0ebd6;
     font-size: 14px;
-    margin-bottom: 20px;
+    margin-bottom: var(--s-7);
   }
   .preview-line {
     font-size: 12px;
@@ -4603,7 +4621,7 @@ select {
   .auth-form > .muted {
     color: var(--muted);
     font-size: 13px;
-    margin-bottom: 32px;
+    margin-bottom: var(--s-9);
   }
   .auth-form input,
   .auth-form .button {
@@ -4632,13 +4650,13 @@ select {
   }
   .register-page {
     background: var(--paper);
-    padding: 65px 24px 40px;
+    padding: 65px var(--s-8) 40px;
     position: relative;
   }
   .register-card {
     background: var(--surface);
     border-color: var(--line);
-    border-radius: 12px;
+    border-radius: var(--r-xl);
     padding: 35px;
     max-width: 480px;
   }
@@ -4657,14 +4675,14 @@ select {
   .loading-skeletons {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: var(--s-6);
+    margin-bottom: var(--s-8);
   }
   .loading-skeletons > i,
   .loading-skeleton-panel {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--r-lg);
     height: 155px;
   }
   .loading-skeleton-panel {
@@ -4682,13 +4700,13 @@ select {
     display: none;
   }
   .metric {
-    padding: 20px 17px;
+    padding: var(--s-7) 17px;
   }
   .metric-value {
     font-size: 27px;
   }
   .task-strip > a {
-    padding: 16px;
+    padding: var(--s-6);
     gap: 9px;
   }
   .task-strip strong {
@@ -4706,13 +4724,13 @@ select {
   .dashboard-main-grid,
   .dashboard-lower-grid {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    gap: 20px;
+    gap: var(--s-7);
   }
   .dashboard-lower-grid .panel:nth-child(2) .approval-list {
     display: block;
   }
   .recent-entries > li {
-    gap: 10px;
+    gap: var(--s-4);
     padding-inline: 20px;
   }
   .recent-entries .amount {
@@ -4723,7 +4741,7 @@ select {
   }
   .report-generation-layout {
     grid-template-columns: minmax(0, 1.5fr) minmax(265px, 1fr);
-    gap: 20px;
+    gap: var(--s-7);
   }
   .auth-story {
     padding: 42px;
@@ -4769,11 +4787,11 @@ select {
     width: 100%;
   }
   .topbar {
-    padding: 0 24px;
+    padding: 0 var(--s-8);
     height: 72px;
   }
   .main-content {
-    padding: 30px 24px 20px;
+    padding: 30px var(--s-8) var(--s-7);
   }
   .app-footer {
     margin-inline: 24px;
@@ -4806,18 +4824,18 @@ select {
     display: none;
   }
   .topbar-profile {
-    padding-left: 12px;
+    padding-left: var(--s-5);
   }
   .topbar-left,
   .topbar-right {
-    gap: 10px;
+    gap: var(--s-4);
   }
   .theme-label {
     display: none;
   }
   .theme-toggle {
     width: 40px;
-    padding: 8px;
+    padding: var(--s-3);
   }
   .metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4841,7 +4859,7 @@ select {
     grid-template-columns: 1fr;
   }
   .task-strip > a {
-    padding: 15px 20px;
+    padding: 15px var(--s-7);
     gap: 14px;
   }
   .task-strip > a + a {
@@ -4861,7 +4879,7 @@ select {
     flex-direction: row;
   }
   .recent-entries > li {
-    padding: 17px 24px;
+    padding: 17px var(--s-8);
   }
   .recent-entries .amount {
     font-size: 13px;
@@ -4876,10 +4894,10 @@ select {
     flex-wrap: nowrap;
   }
   .fund-item {
-    margin-bottom: 24px;
+    margin-bottom: var(--s-8);
   }
   .fund-total {
-    margin-top: 4px;
+    margin-top: var(--s-1);
   }
   .report-generation-layout {
     grid-template-columns: 1fr;
@@ -4915,7 +4933,7 @@ select {
     grid-template-columns: 1fr;
   }
   .auth-story {
-    padding: 32px 35px;
+    padding: var(--s-9) 35px;
     min-height: 270px;
   }
   .auth-story-content {
@@ -4995,7 +5013,7 @@ select {
   .eyebrow {
     font-size: 11px;
     letter-spacing: 1.3px;
-    margin-bottom: 12px;
+    margin-bottom: var(--s-5);
   }
   .page-description {
     font-size: 12px;
@@ -5003,7 +5021,7 @@ select {
   }
   .heading-actions {
     width: 100%;
-    gap: 8px;
+    gap: var(--s-3);
   }
   .heading-actions .button {
     flex: 1 1 auto;
@@ -5027,7 +5045,7 @@ select {
   }
   .month-filter {
     justify-content: flex-end;
-    gap: 10px;
+    gap: var(--s-4);
   }
   .month-filter input {
     max-width: 190px;
@@ -5042,7 +5060,7 @@ select {
   .metric {
     padding: 17px 14px;
     min-height: 155px;
-    border-radius: 9px;
+    border-radius: var(--r-lg);
   }
   .metric-top {
     font-size: 11px;
@@ -5054,7 +5072,7 @@ select {
   .metric-icon {
     width: 25px;
     height: 25px;
-    border-radius: 6px;
+    border-radius: var(--r-sm);
     flex-shrink: 0;
   }
   .metric-icon svg {
@@ -5067,7 +5085,7 @@ select {
   }
   .metric-detail {
     font-size: 11px;
-    margin-top: 10px;
+    margin-top: var(--s-4);
     line-height: 1.5;
   }
   .task-strip {
@@ -5084,12 +5102,12 @@ select {
     font-size: 11px;
   }
   .panel {
-    margin-bottom: 20px;
-    border-radius: 10px;
+    margin-bottom: var(--s-7);
+    border-radius: var(--r-lg);
   }
   .panel-heading {
-    padding: 20px 18px 17px;
-    gap: 12px;
+    padding: var(--s-7) 18px 17px;
+    gap: var(--s-5);
     flex-wrap: wrap;
   }
   .panel-heading h2 {
@@ -5103,12 +5121,12 @@ select {
   }
   .chart-legend {
     font-size: 11px;
-    gap: 12px;
+    gap: var(--s-5);
   }
   .chart {
     height: 220px;
-    margin: 12px 18px;
-    gap: 10px;
+    margin: var(--s-5) 18px;
+    gap: var(--s-4);
   }
   .chart-y-labels {
     font-size: 11px;
@@ -5168,16 +5186,16 @@ select {
     font-size: 11px;
   }
   .recent-entries > li {
-    padding: 16px 18px;
+    padding: var(--s-6) 18px;
     display: grid;
     grid-template-columns: 29px minmax(0, 1fr) auto;
-    gap: 10px;
+    gap: var(--s-4);
     align-items: start;
   }
   .recent-entries .transaction-icon {
     width: 29px;
     height: 29px;
-    border-radius: 6px;
+    border-radius: var(--r-sm);
     margin-top: 2px;
   }
   .recent-entry-copy .table-primary {
@@ -5201,11 +5219,11 @@ select {
     font-size: 12px;
   }
   .panel-bottom-link {
-    padding: 16px 18px;
+    padding: var(--s-6) 18px;
   }
   .activity-strip {
     grid-template-columns: 1fr;
-    padding: 4px 22px 24px;
+    padding: var(--s-1) 22px var(--s-8);
     gap: 17px;
   }
   .activity-item {
@@ -5239,13 +5257,13 @@ select {
   }
   .form-grid {
     grid-template-columns: 1fr;
-    padding: 2px 18px 20px;
-    gap: 20px;
+    padding: 2px 18px var(--s-7);
+    gap: var(--s-7);
   }
   .form-footer {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: var(--s-6);
   }
   .form-footer p {
     max-width: none;
@@ -5257,7 +5275,7 @@ select {
     font-size: 13px;
   }
   .filter-bar {
-    padding: 0 18px 20px;
+    padding: 0 18px var(--s-7);
     gap: 13px;
   }
   .filter-bar .field {
@@ -5270,10 +5288,10 @@ select {
     font-size: 12px;
   }
   .document-filters {
-    padding: 0 18px 20px;
+    padding: 0 18px var(--s-7);
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--s-5);
   }
   .document-filters .search-input {
     flex-basis: 100%;
@@ -5294,7 +5312,7 @@ select {
   }
   td {
     font-size: 12px;
-    padding: 16px 17px;
+    padding: var(--s-6) 17px;
   }
   .table-primary {
     font-size: 12px;
@@ -5325,12 +5343,12 @@ select {
     font-size: 32px;
   }
   .workflow-steps {
-    gap: 4px;
+    gap: var(--s-1);
   }
   .workflow-steps > div {
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: var(--s-2);
     font-size: 11px;
     text-align: center;
   }
@@ -5342,18 +5360,18 @@ select {
     height: 27px;
   }
   .document-actions .panel-heading {
-    padding: 20px 18px 16px;
+    padding: var(--s-7) 18px var(--s-6);
   }
   .action-stack {
-    padding: 0 18px 20px;
+    padding: 0 18px var(--s-7);
   }
   .report-format-tag {
     font-size: 11px;
-    padding: 8px 11px;
+    padding: var(--s-3) 11px;
   }
   .report-connection-heading {
     padding: 17px;
-    gap: 8px;
+    gap: var(--s-3);
   }
   .report-connection-heading strong {
     font-size: 12px;
@@ -5363,7 +5381,7 @@ select {
     margin-left: 26px;
   }
   .excel-report-map > div {
-    padding: 18px 16px;
+    padding: 18px var(--s-6);
   }
   .excel-report-map strong {
     font-size: 12px;
@@ -5383,14 +5401,14 @@ select {
   }
   .report-mapping summary {
     font-size: 11px;
-    padding: 14px 12px;
+    padding: 14px var(--s-5);
   }
   .report-mapping summary > span {
     display: none;
   }
   .report-mapping .form-grid {
     grid-template-columns: 1fr;
-    padding: 3px 12px 17px;
+    padding: 3px var(--s-5) 17px;
   }
   .report-download {
     padding: 21px 18px;
@@ -5401,7 +5419,7 @@ select {
   .report-download .excel-export-actions {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: var(--s-5);
   }
   .report-download .excel-export-actions .button {
     min-height: 45px;
@@ -5451,7 +5469,7 @@ select {
     padding: 27px 21px;
   }
   .app-footer {
-    margin: 20px 17px 0;
+    margin: var(--s-7) 17px 0;
     font-size: 11px;
     padding: 22px 0;
     flex-wrap: wrap;
@@ -5485,7 +5503,7 @@ select {
   .auth-theme {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--s-3);
   }
   .language-error {
     color: var(--red);

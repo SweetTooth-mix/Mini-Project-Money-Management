@@ -399,6 +399,7 @@ The steps above have been exercised in a development environment; the applicatio
 | --- | --- |
 | [OPERATIONS.md](docs/OPERATIONS.md) | PM2/nginx and container deployment, backup and recovery, logging, login throttling, audit, operating rules |
 | [UI-UX.md](docs/UI-UX.md) | Design principles, typography, themes and responsive patterns |
+| [DESIGN.md](DESIGN.md) | Binding design rules: palette and contrast, spacing and radius tokens, motion, bans |
 | [EXCEL-REPORTS.md](docs/EXCEL-REPORTS.md) | Excel templates, fund mapping, PDF generation and Python requirements |
 | [legacy-context.md](docs/legacy-context.md) | Context of the original system the requirements were drawn from |
 
