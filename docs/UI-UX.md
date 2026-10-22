@@ -1,42 +1,42 @@
-# Reka bentuk UI/UX Kira Rapi
+# Kira Rapi UI/UX design
 
-Arah visual: korporat moden dengan warna hijau jade, tipografi DM Sans dan paparan kewangan yang mendahulukan baki serta tindakan harian. Antara muka menyediakan Bahasa Melayu dan English.
+Visual direction: modern corporate with jade green, DM Sans typography and financial screens that put balances and daily actions first. The interface supports Malay and English.
 
-## Aliran kerja
+## Workflow
 
-- **Dashboard:** ringkasan kewangan, pintasan dokumen menunggu semakan, yuran belum selesai dan penjana laporan. Carta enam bulan turut menyediakan data dalam bentuk jadual.
-- **Navigasi:** modul kewangan dan pengurusan dipisahkan dalam sidebar. Halaman semasa ditandakan dan butang rekod baharu tersedia pada dashboard.
-- **Laporan Excel:** gambaran empat workbook, pilihan tempoh/jenis laporan, dana akaun tunjang dan pemetaan kolum. Pemetaan lanjut boleh dibuka apabila diperlukan. Panduan penggunaan fail berada bersebelahan pilihan penjanaan.
-- **Borang dan status:** label, penerangan ringkas, mesej kejayaan/ralat berikon dan keadaan loading menggunakan komponen bersama.
+- **Dashboard:** financial summary, shortcuts to documents awaiting review, outstanding dues and the report generator. The six-month chart also provides its data in table form.
+- **Navigation:** financial and management modules are separated in the sidebar. The current page is marked and a new-record button is available on the dashboard.
+- **Excel reports:** an overview of the four workbooks, period and report-type options, the funds-account fund and the column mapping. Further mapping can be expanded when needed. A usage guide sits next to the generation controls.
+- **Forms and status:** labels, short descriptions, icon-based success/error messages and loading states use shared components.
 
-## Mod siang dan malam
+## Day and night mode
 
-Butang bulan/matahari tersedia pada ruang kerja, login dan pendaftaran. Pilihan disimpan pada browser tersebut menggunakan `kira-rapi-theme`. Tanpa pilihan tersimpan, aplikasi mengikuti tetapan tema peranti, termasuk apabila tetapan itu berubah. Perubahan pilihan dalam tab lain turut digunakan.
+The moon/sun button is available on the workspace, sign-in and registration screens. The choice is stored in that browser under `kira-rapi-theme`. Without a stored choice the application follows the device theme setting, including when that setting changes. Choosing a theme in another tab applies here too.
 
-Tema ditetapkan sebelum kandungan pertama dipaparkan untuk mengurangkan kilatan tema yang salah. Warna latar, teks, borang, jadual dan status menggunakan pemboleh ubah CSS yang sama di seluruh aplikasi.
+The theme is applied before the first content renders to reduce flashes of the wrong theme. Background, text, form, table and status colours use the same CSS variables throughout the application.
 
-Peraturan tema terhad kepada paparan skrin. Pratonton dokumen kekal seperti kertas putih; cetakan rumusan dan output Excel/PDF mengekalkan format asal. Pengiraan kewangan, schema database dan empat fail template tidak diubah oleh redesign.
+Theme rules are limited to on-screen presentation. Document previews stay like white paper; summary printing and Excel/PDF output keep their original formatting. Financial calculations, the database schema and the four template files were not changed by the redesign.
 
-## Telefon dan papan kekunci
+## Phone and keyboard
 
-Butang BM/EN tersedia pada desktop dan telefon, termasuk halaman login dan pendaftaran. Bahasa asal ialah BM. Pilihan disimpan dalam cookie `kira-rapi-lang` dan dibaca pada server; pertukaran bahasa mengekalkan URL/penapis, tema dan input borang yang belum dihantar. Kandungan laporan, nilai kategori tersimpan serta rekod pengguna tidak diterjemahkan.
+The BM/EN control is available on desktop and phone, including the sign-in and registration screens. Malay is the primary language. The choice is stored in the `kira-rapi-lang` cookie and read on the server; switching language preserves the URL and filters, the theme and any unsent form input. Report content, stored category values and user records are not translated.
 
-Sidebar menjadi menu boleh buka pada skrin sehingga 1100px. Apabila menu dibuka, fokus masuk ke dalam menu, Tab/Shift+Tab kekal di dalamnya dan kandungan latar tidak boleh diaktifkan. Escape menutup menu dan memulangkan fokus ke butang pembuka. Menu ditutup apabila pautan dipilih atau saiz skrin kembali ke desktop.
+The sidebar becomes an expandable menu at widths up to 1100px. When the menu opens, focus moves inside it, Tab/Shift+Tab stay within it and the background content cannot be activated. Escape closes the menu and returns focus to the opening button. The menu closes when a link is chosen or the viewport returns to desktop size.
 
-Kad dan borang disusun semula mengikut lebar skrin. Jadual panjang boleh ditatal dalam bekasnya. Penanda fokus kelihatan, pautan langkau ke kandungan dan tetapan peranti untuk mengurangkan animasi turut disokong.
+Cards and forms reflow with viewport width. Long tables scroll inside their container. Focus indicators are visible, a skip-to-content link is provided, and the device setting for reduced motion is respected.
 
-## Penyelenggaraan dan pengesahan
+## Maintenance and verification
 
-- Token warna dan peraturan responsif: `app/globals.css`.
-- Tema awal: `app/layout.tsx`; kawalan tema: `components/theme-toggle.tsx`.
-- Bahasa: `lib/i18n.ts` untuk kamus; `lib/i18n-server.ts` membaca cookie; `components/language-toggle.tsx` dan `app/language-actions.ts` menukar pilihan bahasa.
-- Navigasi dan pengurusan fokus: `components/shell.tsx`.
-- Senario tema, desktop/telefon, fokus menu dan cetakan dari mod malam: `tests/e2e/design.spec.ts`.
-- Aliran dokumen serta muat turun Excel/PDF: `tests/e2e/app.spec.ts`.
-- Bahasa pada server tanpa JavaScript, cookie, penapis, borang, telefon dan output BM: `tests/e2e/i18n.spec.ts`. Ujian membandingkan kandungan XML empat workbook antara pilihan bahasa UI, termasuk formula, gaya dan pautan. Hanya metadata masa penjanaan dikecualikan daripada perbandingan.
+- Colour tokens and responsive rules: `app/globals.css`.
+- Initial theme: `app/layout.tsx`; theme control: `components/theme-toggle.tsx`.
+- Language: `lib/i18n.ts` holds the dictionary; `lib/i18n-server.ts` reads the cookie; `components/language-toggle.tsx` and `app/language-actions.ts` change the language choice.
+- Navigation and focus management: `components/shell.tsx`.
+- Theme, desktop/phone, menu focus and printing from night mode scenarios: `tests/e2e/design.spec.ts`.
+- Document flow and Excel/PDF downloads: `tests/e2e/app.spec.ts`.
+- Server-side language without JavaScript, cookies, filters, forms, phone and Malay output: `tests/e2e/i18n.spec.ts`. The tests compare the XML content of the four workbooks between UI language choices, including formulas, styles and links. Only generation-time metadata is excluded from the comparison.
 
-Jalankan `npm run build` diikuti `npm run test:e2e`. Ujian menggunakan database fixture berasingan dan menghasilkan screenshot serta PDF dalam `.data/screenshots`. Keputusan semakan terdapat dalam [panduan operasi](OPERATIONS.md).
+Run `npm run build` followed by `npm run test:e2e`. The tests use a separate fixture database and produce screenshots and PDFs in `.data/screenshots`. Review results are in the [operations guide](OPERATIONS.md).
 
-| Mod siang                                         | Mod malam                                               |
-| ------------------------------------------------- | ------------------------------------------------------- |
-| ![Dashboard mod siang](screenshots/dashboard.png) | ![Dashboard mod malam](screenshots/dashboard-night.png) |
+| Day mode                                         | Night mode                                               |
+| ------------------------------------------------ | -------------------------------------------------------- |
+| ![Day mode dashboard](screenshots/dashboard.png) | ![Night mode dashboard](screenshots/dashboard-night.png) |

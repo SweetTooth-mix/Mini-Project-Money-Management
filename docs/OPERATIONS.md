@@ -1,25 +1,25 @@
-# Operasi Kira Rapi
+# Kira Rapi Operations
 
-## Environment pembangunan
+## Development environment
 
-Direktori cloud: `/workspace/Mini-Project-Money-Management`.
+Cloud directory: `/workspace/Mini-Project-Money-Management`.
 
 ```bash
 npm run setup:local
 npm run dev
 ```
 
-Setup mengekalkan `.env` sedia ada dan data organisasi. PostgreSQL disimpan dalam named volume Docker `kira-data` di bawah project Compose. Jangan gunakan `docker compose down -v` untuk restart biasa: flag tersebut memadam volume data.
+Setup preserves an existing `.env` and the organisation data. PostgreSQL is stored in the Docker named volume `kira-data` under the Compose project. Never use `docker compose down -v` for a normal restart: that flag deletes the data volume.
 
-Fail source, lockfile dan skrip berada dalam repository. Dependencies, hasil build, `.env`, `.data` dan volume Docker ialah state tempatan. Proses Next.js dan PostgreSQL perlu dimulakan semula apabila mesin baharu diwujudkan. Snapshot filesystem sahaja tidak membuktikan volume Docker turut dipulihkan; `setup:local` boleh menyediakan DB demonstrasi baharu jika volume tiada.
+Source files, the lockfile and scripts live in the repository. Dependencies, build output, `.env`, `.data` and Docker volumes are local state. The Next.js process and PostgreSQL must be restarted when a new machine is created. A filesystem snapshot alone does not prove that the Docker volume was also restored; `setup:local` can provision a fresh demo database if the volume is missing.
 
-## Deployment ke host sendiri
+## Deployment to your own host
 
-Konfigurasi PM2 disediakan dalam [`ecosystem.config.cjs`](../ecosystem.config.cjs). Ia menggunakan direktori checkout sendiri dan mengikat Next.js kepada loopback untuk digunakan di belakang reverse proxy.
+PM2 configuration ships in [`ecosystem.config.cjs`](../ecosystem.config.cjs). It uses its own checkout directory and binds Next.js to loopback for use behind a reverse proxy.
 
-Pada checkout versi baharu dengan `.env` production yang lengkap:
+On a checkout of a new version with a complete production `.env`:
 
-Penjana template memerlukan Python 3.10+ dengan venv, LibreOffice Calc dan fon Liberation pada host. Lihat [output Excel dan PDF](EXCEL-REPORTS.md) untuk pemasangan dan cara fail berpaut.
+The template generator needs Python 3.10+ with a virtualenv, LibreOffice Calc and Liberation fonts on the host. See [Excel and PDF output](EXCEL-REPORTS.md) for installation and how the files link together.
 
 ```bash
 npm ci
@@ -32,9 +32,9 @@ pm2 start ecosystem.config.cjs
 pm2 save
 ```
 
-Untuk kemas kini aplikasi, buat backup dahulu, jalankan migration/build yang diperlukan, kemudian `pm2 restart kira-rapi --update-env`. PM2/nginx tidak dipasang atau dikonfigurasi pada host asal oleh task ini; semak contoh berikut mengikut host dan domain sebenar.
+To update the application, take a backup first, run the required migrations and build, then `pm2 restart kira-rapi --update-env`. PM2/nginx were not installed or configured on the original host by this task; review the example below against the real host and domain.
 
-Contoh blok nginx dalam konfigurasi server HTTPS sedia ada:
+Example nginx block inside an existing HTTPS server configuration:
 
 ```nginx
 client_max_body_size 6m;
@@ -50,9 +50,9 @@ location / {
 }
 ```
 
-Gunakan HTTPS dan `APP_URL` yang sepadan sebelum build/start. Kekalkan header Host supaya pemeriksaan origin Server Actions berfungsi. Hadkan kadar permintaan login/pendaftaran di reverse proxy untuk deployment yang boleh dicapai umum; aplikasi turut mengehadkan percubaan mengikut e-mel.
+Use HTTPS and a matching `APP_URL` before building and starting. Keep the Host header so the Server Actions origin check works. Rate-limit login and registration requests at the reverse proxy for any publicly reachable deployment; the application also throttles attempts per email and per address.
 
-Deployment production memerlukan **DB baharu untuk schema versi ini**, `SEED_DEMO=false` dan pengguna awal yang peribadi. Jangan menggunakan DB legacy tanpa proses migrasi berasingan. PostgreSQL tidak perlu dibuka kepada Internet. Jalankan proses aplikasi sebagai pengguna bukan root.
+Production deployment requires a **new database for this schema version**, `SEED_DEMO=false` and private initial users. Do not point it at a legacy database without a separate migration process. PostgreSQL does not need to be reachable from the Internet. Run the application process as a non-root user.
 
 ## Readiness
 
@@ -61,115 +61,115 @@ curl --fail --silent http://127.0.0.1:3000/api/health
 curl --fail --silent --output /dev/null http://127.0.0.1:3000/login
 ```
 
-Health menunjukkan sambungan DB. Untuk semakan fungsi, login dengan akaun ujian, buka dashboard/buku tunai, dan uji dokumen dalam database ujian. PID atau port yang terbuka sahaja tidak mengesahkan aplikasi berfungsi.
+Health reports the database connection. For a functional check, sign in with a test account, open the dashboard and cash book, and exercise a document in a test database. An open PID or port alone does not prove the application works.
 
-## Backup dan pemulihan
+## Backup and recovery
 
-Sertakan tiga komponen: dump PostgreSQL, direktori `UPLOAD_DIR`, dan konfigurasi deployment peribadi. Simpan backup di luar checkout dan lindungi aksesnya.
+Include three components: a PostgreSQL dump, the `UPLOAD_DIR` directory and the private deployment configuration. Keep backups outside the checkout and protect access to them.
 
-Backup berjadual (dump + uploads + manifest SHA-256, retensi 14 hari):
+Scheduled backup (dump + uploads + SHA-256 manifest, 14-day retention):
 
 ```bash
-npm run backup                        # tulis ke .data/backups
-KEEP_DAYS=30 npm run backup           # retensi berbeza
-BACKUP_DIR=/mnt/backup npm run backup # simpan di luar checkout
+npm run backup                        # write to .data/backups
+KEEP_DAYS=30 npm run backup           # different retention
+BACKUP_DIR=/mnt/backup npm run backup # keep outside the checkout
 ```
 
-Ia menamakan fail dengan tarikh (`kira-rapi-YYYYMMDD-HHMMSS.dump`), memeriksa dump boleh dibaca semula oleh `pg_restore`, dan mengarkibkan `UPLOAD_DIR` pada masa yang sama supaya lampiran dan DB selaras. Jadualkan melalui cron, contohnya `15 2 * * * cd /srv/kira-rapi && npm run backup`.
+It names files by timestamp (`kira-rapi-YYYYMMDD-HHMMSS.dump`), verifies the dump can be read back by `pg_restore`, and archives `UPLOAD_DIR` at the same time so attachments and the database stay aligned. Schedule it with cron, for example `15 2 * * * cd /srv/kira-rapi && npm run backup`.
 
-Jika PostgreSQL bukan dalam Compose, jalankan `pg_dump`/`pg_restore` terus terhadap `DATABASE_URL` dengan format yang sama, dan pastikan `UPLOAD_DIR` disalin dalam tetingkap yang sama. Jangan commit backup ke Git.
+If PostgreSQL is not running under Compose, call `pg_dump`/`pg_restore` directly against `DATABASE_URL` using the same format, and copy `UPLOAD_DIR` inside the same window. Never commit backups to Git.
 
-**Uji pemulihan, jangan andaikan.** Skrip verifikasi memulihkan dump ke database buangan (nama mesti berakhir `_test`), kemudian membandingkan kiraan baris, jumlah ledger, baki per akaun dan checksum uploads dengan sumber:
+**Test the restore, do not assume it.** The verification script restores the dump into a throwaway database (the name must end with `_test`), then compares row counts, ledger totals, per-account balances and uploads checksums against the source:
 
 ```bash
-npm run restore:verify                # dump terbaharu
+npm run restore:verify                # newest dump
 npm run restore:verify -- .data/backups/kira-rapi-20261020-021500.dump --keep
 ```
 
-Keputusan `PASS` bermaksud backup benar-benar boleh dipulihkan dan konsisten. Jalankan semasa tempoh tenang kerana dokumen yang dipos ketika backup berjalan boleh membuat perbandingan gagal secara sah. Database pemulihan dipadam selepas semakan kecuali `--keep`; pada kegagalan ia dikekalkan untuk siasatan.
+A `PASS` result means the backup is genuinely restorable and consistent. Run it during a quiet period, because documents posted while the backup runs can legitimately make the comparison fail. The restored database is dropped after the check unless `--keep` is passed; on failure it is kept for investigation.
 
-Pemulihan ke host production baharu masih perlu dijalankan secara manual sekali sebelum hari kejadian.
+Restoring onto a new production host still has to be performed manually once, before the day you need it.
 
-### Penyelenggaraan berjadual
+### Scheduled maintenance
 
-Sesi yang tamat tempoh dan kaunter cubaan log masuk dipadam secara automatik sekali sejam apabila ada log masuk berjaya. Untuk pemasangan yang jarang digunakan, jadualkan pembersihan dalam cron:
+Expired sessions and login-attempt counters are pruned automatically once an hour after a successful sign-in. For rarely used installations, schedule the cleanup in cron:
 
 ```bash
 30 3 * * * cd /srv/kira-rapi && npm run cleanup
 ```
 
-## Kawalan akses dan had cubaan log masuk
+## Access control and login throttling
 
-Had cubaan dikira pada tiga lapisan, dan **hanya percubaan gagal** ditukar kepada kiraan:
+Limits are counted on three layers, and **only failed attempts** are counted:
 
-| Lapisan | Had | Tujuan |
+| Layer | Limit | Purpose |
 | --- | --- | --- |
-| Alamat + e-mel | 8 kegagalan / 15 minit | Hentikan tekaan kata laluan pada satu akaun |
-| Alamat | 25 kegagalan / 15 minit | Hentikan satu host mencuba banyak akaun |
-| E-mel | 30 kegagalan / 15 minit | Hentikan serangan bertaburan daripada banyak alamat |
+| Address + email | 8 failures / 15 minutes | Stop password guessing against one account |
+| Address | 25 failures / 15 minutes | Stop one host trying many accounts |
+| Email | 30 failures / 15 minutes | Stop a distributed attack from many addresses |
 
-Reka bentuk ini mengelakkan **kunci akaun sebagai senjata**: penyerang perlu 30 kegagalan sebelum pengguna sebenar disekat, dan log masuk yang berjaya mengosongkan kiraan alamat+e-mel serta e-mel. Kiraan mengikut alamat dikekalkan selepas log masuk berjaya supaya akaun sah tidak boleh digunakan untuk mereset bajet penyerang. Pendaftaran awam dihadkan 5 permohonan / 15 minit bagi setiap alamat dan setiap e-mel.
+This design prevents **account lockout as a weapon**: an attacker needs 30 failures before a real user is blocked, and a successful sign-in clears the address+email and email counters. The per-address counter survives a successful sign-in so a valid account cannot be used to reset an attacker's budget. Public registration is limited to 5 requests per 15 minutes per address and per email.
 
-Alamat klien dibaca daripada `X-Forwarded-For` (entri paling kiri) atau `X-Real-IP`, dan hanya alamat yang sah diterima. Jika aplikasi didedahkan **tanpa** proxy, tetapkan `TRUST_PROXY_HEADERS=false`; jika tidak, klien boleh memalsukan header tersebut dan memintas had mengikut alamat. Contoh nginx: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`.
+The client address is read from `X-Forwarded-For` (left-most entry) or `X-Real-IP`, and only valid addresses are accepted. If the application is exposed **without** a proxy, set `TRUST_PROXY_HEADERS=false`; otherwise a client can forge the header and bypass the per-address limit. Example nginx directive: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`.
 
-Tiada e-mel atau alamat IP disimpan dalam bentuk teks biasa: kunci had ialah SHA-256 bagi gabungan jenis, alamat dan e-mel.
+No email address or IP is stored in plain text: the throttle key is the SHA-256 of the kind, address and email combined.
 
-## Jejak audit
+## Audit trail
 
-Halaman Audit menyokong tapisan ikut pengguna, kod tindakan, julat tarikh dan carian pada butiran, nama pengguna atau kod tindakan. Julat tarikh menggunakan **waktu Malaysia (GMT+8)**, dan julat yang terbalik ditukar secara automatik.
+The Audit page supports filtering by user, action code, date range and free-text search over details, user names or action codes. The date range uses **Malaysia time (GMT+8)**, and a reversed range is swapped automatically.
 
-Butang **Eksport log CSV** memuat turun sehingga 50,000 baris menggunakan penapis yang sama. Kandungan CSV diambil daripada log yang tidak boleh diubah; medan teks dijadikan selamat daripada formula spreadsheet. Log audit tidak boleh disunting atau dipadam oleh aplikasi, jadi tapisan ini hanya bacaan.
+The **Export log CSV** button downloads up to 50,000 rows using the same filters. CSV content comes from an append-only log; text fields are made safe against spreadsheet formulas. The audit log cannot be edited or deleted by the application, so these filters are read-only.
 
-## Peraturan penting
+## Operating rules
 
-- Untuk kesilapan draf, gunakan **Sunting draf**. Selepas dihantar, butiran kewangan dibekukan.
-- Untuk kesilapan bayaran, gunakan **Batalkan dokumen** dengan sebab dan tarikh pembalikan; entri asal dikekalkan.
-- Bila tutup bulan, semak jumlah dengan penyata bank/tunai sebelum mengunci tempoh.
-- Jika yuran salah, batalkan resit berkaitan terlebih dahulu; rekod yuran kembali belum dibayar.
-- Menyahaktifkan pengguna dan menukar kata laluan membatalkan sesi berkaitan.
-- Lampiran maksimum 5 MB, dengan semakan tandatangan fail PDF/PNG/JPEG. Fail dimuat turun melalui route yang memerlukan login. Pengimbasan antivirus tidak disediakan.
-- Eksport CSV melindungi medan teks daripada formula spreadsheet.
-- Log audit dan ledger mempunyai trigger PostgreSQL yang menghalang UPDATE/DELETE aplikasi. Pentadbir database tetap mempunyai kuasa pentadbiran pada DB.
+- For a draft mistake, use **Edit draft**. Once submitted, financial details are frozen.
+- For a payment mistake, use **Void document** with a reason and reversal date; the original entry is retained.
+- When closing a month, reconcile the totals against the bank/cash statement before locking the period.
+- If a due is wrong, void the related receipt first; the due record reopens as unpaid.
+- Disabling a user and changing a password revoke the related sessions.
+- Attachments are capped at 5 MB with PDF/PNG/JPEG magic-byte checks. Files are downloaded through a route that requires sign-in. Antivirus scanning is not provided.
+- CSV export protects text fields against spreadsheet formulas.
+- The audit log and ledger carry PostgreSQL triggers that reject application UPDATE/DELETE. Database administrators still hold administrative power over the database.
 
-## Pengesahan pembangunan
+## Development verification
 
-Disahkan pada **12 Oktober 2026 (Asia/Kuala_Lumpur)**:
+Verified on **12 October 2026 (Asia/Kuala_Lumpur)**:
 
-| Semakan | Keputusan |
+| Check | Result |
 | --- | --- |
-| Build production dan TypeScript | Lulus |
-| Ujian unit | 8 lulus |
-| Ujian integrasi PostgreSQL | 10 lulus |
-| Ujian output Excel | 8 lulus: baki 12 bulan, formula berpaut, format asal, baris dinamik, bulan kosong dan PDF |
-| Senario browser Chromium | 8 lulus, termasuk desktop/mobile, tema siang/malam, fokus menu, lampiran, kelulusan, pembatalan akses dan muat turun Excel/PDF |
-| Semakan visual UI | Desktop dan telefon dalam kedua-dua tema; tiada limpahan halaman pada saiz yang diuji |
-| Audit dependencies npm | 0 vulnerability dilaporkan |
-| Cetakan rumusan contoh | Fixture asal 1 halaman A4; fixture dengan pelarasan tambahan 2 halaman. Cetakan dari mod malam kekal putih; sidebar dan kawalan aplikasi disembunyikan |
+| Production build and TypeScript | Pass |
+| Unit tests | 8 passing |
+| PostgreSQL integration tests | 10 passing |
+| Excel output tests | 8 passing: 12-month balances, linked formulas, original formatting, dynamic rows, empty months and PDF |
+| Chromium browser scenarios | 8 passing, covering desktop/mobile, day/night themes, menu focus, attachments, approval, access revocation and Excel/PDF downloads |
+| UI visual review | Desktop and phone in both themes; no page overflow at the tested sizes |
+| npm dependency audit | 0 vulnerabilities reported |
+| Sample summary print | Original fixture 1 A4 page; fixture with an extra adjustment 2 pages. Printing from night mode stays white; sidebar and application controls are hidden |
 
-Ujian unit dan integrasi berada dalam `tests/`; senario browser berada dalam `tests/e2e/app.spec.ts` dan `tests/e2e/design.spec.ts`. Ujian menggunakan database berasingan. Jalankan `npm run build` sebelum `npm run test:e2e` supaya browser menguji kod semasa.
+Unit and integration tests live in `tests/`; browser scenarios live in `tests/e2e/app.spec.ts` and `tests/e2e/design.spec.ts`. Tests use separate databases. Run `npm run build` before `npm run test:e2e` so the browser exercises the current code.
 
-Redesign UI disahkan dengan build production dan lapan senario browser. Fail template Excel, penjana laporan, logik kewangan dan schema dibandingkan menggunakan SHA-256 dan kekal sama seperti sebelum redesign. Semakan kontras teks terpilih pada dashboard, buku tunai, resit/baucer, laporan Excel dan tetapan tidak menemukan kegagalan ambang kontras dalam kedua-dua tema; ini bukan audit aksesibiliti menyeluruh.
+The UI redesign was verified with a production build and eight browser scenarios. Excel template files, the report generator, financial logic and the schema were compared with SHA-256 and remained identical to the pre-redesign version. A contrast review of selected text on the dashboard, cash book, receipts/vouchers, Excel reports and settings found no threshold failures in either theme; this is not a full accessibility audit.
 
-Semakan tambahan UI dwibahasa pada **13 Oktober 2026 (Asia/Kuala_Lumpur)**:
+Additional bilingual UI review on **13 October 2026 (Asia/Kuala_Lumpur)**:
 
-- Build production, TypeScript dan **11 ujian unit** lulus.
-- **12 senario browser** lulus, termasuk bahasa pada server tanpa JavaScript, cookie selepas reload/log masuk, navigasi modul, penapis, input borang dan paparan telefon.
-- Muat turun daripada UI BM dan English menghasilkan empat workbook dengan XML kandungan, formula, gaya dan pautan yang sama. Perbandingan mengecualikan metadata masa penjanaan, termasuk salinannya dalam cache pautan luar. Fail `BACA DAHULU.txt` juga sama.
-- Teks PDF daripada UI English dan kandungan pratonton cetakan resit/baucer/rumusan kekal BM. Kawalan bahasa disembunyikan semasa mencetak.
-- SHA-256 bagi `lib/excel.ts`, `scripts/excel/*` dan `templates/excel/*` sepadan dengan versi sebelum penambahan bahasa. Tiada perubahan schema atau migration.
+- Production build, TypeScript and **11 unit tests** passed.
+- **12 browser scenarios** passed, covering server-side language without JavaScript, cookies across reloads and sign-in, module navigation, filters, form input and phone layout.
+- Downloads from the Malay and English UI produced four workbooks with identical content XML, formulas, styles and links. The comparison excluded generation-time metadata, including its copy inside the external-link cache. `BACA DAHULU.txt` was identical too.
+- PDF text from the English UI and the print previews for receipts, vouchers and summaries stayed in Malay. The language control is hidden when printing.
+- SHA-256 for `lib/excel.ts`, `scripts/excel/*` and `templates/excel/*` matched the pre-bilingual version. No schema or migration changes.
 
-Senario bahasa berada dalam `tests/e2e/i18n.spec.ts`; screenshot English berada dalam `docs/screenshots/`. Gunakan `APP_URL` HTTPS pada production supaya cookie bahasa menerima atribut `Secure`.
+Language scenarios live in `tests/e2e/i18n.spec.ts`; English screenshots are in `docs/screenshots/`. Use an HTTPS `APP_URL` in production so the language cookie receives the `Secure` attribute.
 
-Disahkan pada **22 Oktober 2026 (Asia/Kuala_Lumpur)** untuk had cubaan log masuk berlapis dan jejak audit boleh tapis:
+Verified on **22 October 2026 (Asia/Kuala_Lumpur)** for layered login throttling and the filterable audit trail:
 
-| Semakan | Keputusan |
+| Check | Result |
 | --- | --- |
-| CI GitHub Actions (`quality`) | Lulus: typecheck, ESLint, Prettier, ujian unit, `npm audit --omit=dev --audit-level=high`, build production |
-| CI GitHub Actions (`integration`) | Lulus: PostgreSQL 16, 13 ujian integrasi termasuk kiraan had cubaan serentak |
-| Ujian unit | 27 lulus (9 penapis audit, 7 had cubaan/alamat klien, 11 sedia ada) |
-| Ujian integrasi PostgreSQL | 13 lulus: 3 baharu untuk had cubaan dan tapisan audit |
-| Prettier dan ESLint | 0 ralat, 0 amaran pada `app/`, `lib/`, `components/` dan `tests/` |
+| GitHub Actions (`quality`) | Pass: typecheck, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high`, production build |
+| GitHub Actions (`integration`) | Pass: PostgreSQL 16, 13 integration tests including concurrent throttle counting |
+| Unit tests | 27 passing (9 audit filters, 7 throttling/client address, 11 existing) |
+| PostgreSQL integration tests | 13 passing: 3 new for throttling and audit filtering |
+| Prettier and ESLint | 0 errors, 0 warnings across `app/`, `lib/`, `components/` and `tests/` |
 
-Screenshot dan PDF di `.data/screenshots` menggunakan data rekaan. Screenshot README disalin daripada run browser yang disahkan.
+Screenshots and PDFs in `.data/screenshots` use fictitious data. README screenshots are copied from verified browser runs.
 
-Override `deepmerge-ts@8.0.2` dalam `package.json` membetulkan advisory GHSA-ggr8-5vv4-36mx pada dependency konfigurasi Prisma. CLI Prisma, migration, build dan ujian digunakan untuk menyemak keserasiannya.
+The `deepmerge-ts@8.0.2` override in `package.json` fixes advisory GHSA-ggr8-5vv4-36mx in a Prisma configuration dependency. The Prisma CLI, migrations, build and tests were used to confirm compatibility.

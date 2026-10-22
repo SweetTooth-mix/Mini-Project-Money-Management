@@ -11,9 +11,10 @@ A community finance management application with a Malay and English UI: cash boo
 
 ![Kira Rapi dashboard with demo data](docs/screenshots/dashboard.png)
 
-> **Documentation language.** This README is in English. The operational runbooks
-> under [`docs/`](docs/) remain in Malay, matching the language used by the
-> organisation that runs the system.
+> **Documentation language.** All documentation in this repository is in English.
+> The product itself ships a bilingual Malay/English UI, keeps printable documents
+> and Excel/PDF output in Malay, and its test fixtures and seed data use Malay
+> strings.
 
 ## Contents
 
