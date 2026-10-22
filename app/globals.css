@@ -1673,7 +1673,7 @@ select {
 }
 .document-letterhead p {
   font-size: 10px;
-  color: #8c9785;
+  color: #5f6d54;
   margin: 3px 0;
   max-width: 280px;
 }
@@ -1696,13 +1696,14 @@ select {
 }
 .document-title-block span {
   font-size: 10px;
-  color: #98a18f;
+  color: #5f6d54;
 }
 .document-watermark {
   padding: 10px;
   border: 1px dashed #dac9af;
   background: #fffcf5;
-  color: #b39b76;
+  /* A status word ("DRAF"), not decoration: 5.1:1 on its own background. */
+  color: #5f6d54;
   font-size: 9px;
   letter-spacing: 1px;
   text-align: center;
@@ -1723,7 +1724,7 @@ select {
 .amount-words small {
   font-size: 8px;
   letter-spacing: 1px;
-  color: #a0a68f;
+  color: #5f6d54;
 }
 .document-parties h3 {
   font-size: 14px;
@@ -1736,12 +1737,12 @@ select {
 }
 .document-parties span {
   font-size: 10px;
-  color: #859479;
+  color: #5f6d54;
 }
 .document-lines th {
   font-size: 10px;
   background: #f0f5ec;
-  color: #667c5b;
+  color: #5f6d54;
 }
 .document-lines td {
   padding: 24px 16px;
@@ -1754,7 +1755,7 @@ select {
 .document-lines td small {
   display: block;
   font-size: 9px;
-  color: #9aa58d;
+  color: #5f6d54;
   margin-top: 7px;
 }
 .document-lines tfoot td {
@@ -1777,7 +1778,7 @@ select {
 .document-note {
   margin-top: 20px;
   font-size: 11px;
-  color: #7e896f;
+  color: #5f6d54;
 }
 .document-note p {
   margin: 5px 0;
@@ -1795,7 +1796,7 @@ select {
 }
 .signatures span {
   font-size: 9px;
-  color: #96a084;
+  color: #5f6d54;
 }
 .signature-line {
   height: 34px;
@@ -1807,14 +1808,14 @@ select {
 }
 .signatures small {
   font-size: 9px;
-  color: #9aa58c;
+  color: #5f6d54;
 }
 .document-print-footer {
   display: flex;
   justify-content: space-between;
   gap: 15px;
   font-size: 8px;
-  color: #a7ae9b;
+  color: #5f6d54;
   border-top: 1px solid var(--line);
   padding-top: 15px;
 }
@@ -1854,12 +1855,12 @@ select {
 }
 .timeline p {
   font-size: 11px;
-  color: #899a7b;
+  color: #5f6d54;
   margin: 5px 0;
 }
 .timeline small {
   font-size: 9px;
-  color: #a5b198;
+  color: #5f6d54;
 }
 .report-sheet {
   max-width: 980px;
