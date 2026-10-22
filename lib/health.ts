@@ -3,6 +3,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { db } from "./db";
+import { log } from "./log";
 import { summarize, type CheckState, type HealthReport } from "./health-status";
 
 export { summarize } from "./health-status";
@@ -15,7 +16,12 @@ async function checkDatabase(): Promise<CheckState> {
   try {
     await db.$queryRaw`SELECT 1`;
     return "ok";
-  } catch {
+  } catch (error) {
+    // The response only carries the state; the cause belongs in the logs.
+    log.warn("health.database_unavailable", {
+      errName: error instanceof Error ? error.name : "UnknownError",
+      errCode: (error as { code?: string }).code,
+    });
     return "unavailable";
   }
 }
@@ -29,7 +35,10 @@ async function checkUploads(): Promise<CheckState> {
     await writeFile(probe, "ok", { mode: 0o600, flag: "wx" });
     await rm(probe, { force: true });
     return "ok";
-  } catch {
+  } catch (error) {
+    log.warn("health.uploads_unavailable", {
+      errName: error instanceof Error ? error.name : "UnknownError",
+    });
     return "unavailable";
   }
 }

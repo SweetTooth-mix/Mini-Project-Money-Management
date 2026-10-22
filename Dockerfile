@@ -64,6 +64,9 @@ RUN python3 -m venv /opt/reports/venv \
 FROM node:${NODE_VERSION}-bookworm-slim AS migrate
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y openssl \
+ && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json prisma.config.ts tsconfig.json ./
 # lib/ is needed because the seed runs through the same services the
@@ -89,11 +92,15 @@ ENV NODE_ENV=production \
 
 # LibreOffice Calc renders the PDF output; Liberation fonts keep the templates
 # metrically identical to the originals. The -nogui variant drops the desktop.
+# openssl is required, not optional: Prisma runs `openssl version` to choose its
+# query engine, and without it falls back to the 1.1.x build, which cannot load
+# against libssl3 and leaves every database call failing.
 RUN apt-get update \
  && apt-get install --no-install-recommends -y \
       libreoffice-calc-nogui \
       fonts-liberation \
       python3 \
+      openssl \
       ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
