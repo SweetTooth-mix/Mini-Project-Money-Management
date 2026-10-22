@@ -99,7 +99,6 @@ jobs:
       - name: Report failing assertions
         if: failure()
         run: |
-          grep -E "^not ok|AssertionError|Error:|expected|actual" -A 6 integration.log \
-            | head -c 6000 \
+          tail -n 250 integration.log \
             | sed 's/%/%25/g; s/\r/%0D/g' \
             | awk '{ print "::error::" $0 }' || true
