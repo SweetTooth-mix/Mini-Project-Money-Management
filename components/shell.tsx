@@ -112,6 +112,7 @@ export function Shell({
       }
     };
     const desktop = window.matchMedia("(min-width: 1101px)");
+    const trigger = menuButton.current;
     const onResize = () => {
       if (desktop.matches) setOpen(false);
     };
