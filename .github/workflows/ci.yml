@@ -139,6 +139,18 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      # The documentation screenshots (docs/screenshots) are regenerated from
+      # this artefact instead of a maintainer's laptop, so the README never
+      # shows an interface the code no longer renders.
+      - name: Upload documentation screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-screenshots
+          path: .data/screenshots/docs/
+          if-no-files-found: ignore
+          retention-days: 14
+
   container:
     name: Container image
     runs-on: ubuntu-latest

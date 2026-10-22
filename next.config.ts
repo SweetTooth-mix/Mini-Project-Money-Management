@@ -12,7 +12,6 @@ const devPreviewOrigins = (process.env.DEV_PREVIEW_ORIGINS ?? "")
       .replace(/\/.*$/, ""),
   )
   .filter(Boolean);
-const frameAncestors = isDev ? "'self' https:" : "'none'";
 
 const config: NextConfig = {
   poweredByHeader: false,
@@ -33,14 +32,6 @@ const config: NextConfig = {
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
-          },
-          {
-            key: "Content-Security-Policy",
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline'" +
-              (isDev ? " 'unsafe-eval'" : "") +
-              "; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; " +
-              `frame-ancestors ${frameAncestors}; base-uri 'self'; form-action 'self'; object-src 'none'`,
           },
           ...(process.env.APP_URL?.startsWith("https://")
             ? [

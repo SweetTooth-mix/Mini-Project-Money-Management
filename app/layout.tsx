@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import { getI18n } from "@/lib/i18n-server";
 import { LanguageProvider } from "@/components/language-provider";
@@ -22,10 +23,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { language, t } = await getI18n();
+  // Set by proxy.ts; Next also stamps this nonce on its own scripts.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html lang={language} suppressHydrationWarning>
       <head>
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){var t;try{t=localStorage.getItem('kira-rapi-theme')}catch(e){}document.documentElement.dataset.theme=t==='light'||t==='dark'?t:window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()`,
           }}

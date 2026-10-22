@@ -60,6 +60,17 @@ The viewport meta tag comes from Next.js; the layout is verified at 360, 390, 76
 
 Run `npm run build` followed by `npm run test:e2e`. The tests use a separate fixture database and produce screenshots and PDFs in `.data/screenshots`. Review results are in the [operations guide](OPERATIONS.md).
 
+The images embedded in this guide and in the README are generated, never captured by hand. The suite writes them to `.data/screenshots/docs`, and CI publishes that folder as the `docs-screenshots` artefact on every run. To refresh the documentation:
+
+```bash
+npm run build
+npm run test:e2e -- docs-screenshots
+npm run docs:screenshots          # dry run: shows what would change
+npm run docs:screenshots -- --write
+```
+
+The dry run also lists images in `docs/screenshots` that no longer have a matching capture, so a removed screen cannot leave a stale picture behind.
+
 | Day mode                                         | Night mode                                               |
 | ------------------------------------------------ | -------------------------------------------------------- |
 | ![Day mode dashboard](screenshots/dashboard.png) | ![Night mode dashboard](screenshots/dashboard-night.png) |
