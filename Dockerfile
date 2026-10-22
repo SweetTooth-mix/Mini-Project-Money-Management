@@ -66,6 +66,9 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json prisma.config.ts tsconfig.json ./
+# lib/ is needed because the seed runs through the same services the
+# application uses (createAccount, createDocument, transitionDocument).
+COPY lib ./lib
 COPY prisma ./prisma
 RUN npx prisma generate
 CMD ["npx", "prisma", "migrate", "deploy"]
