@@ -3012,6 +3012,7 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 @media (max-width: 480px) {
   .excel-report-map {
     grid-template-columns: 1fr;
@@ -5496,5 +5497,43 @@ select {
   .language-toggle,
   .language-error {
     display: none !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  /* Type floor, second pass, for the labels the first pass missed: table
+     sub-lines, status pills, activity text and the drawer captions were still
+     9-10px on a phone. Placed last so it wins over the design-system block,
+     which sets several of these at 10px later in the file. The A4 facsimile on
+     the summary page is excluded on purpose: it is a scaled sheet of paper,
+     not UI chrome. */
+  .table-sub,
+  .transaction-cell small,
+  .recent-entry-copy small,
+  .activity-item small,
+  .activity-item strong,
+  .activity-item p,
+  .approval-card-top small,
+  .approval-card > div:last-child,
+  .approval-card b,
+  .panel-bottom-link,
+  .status,
+  .count-pill,
+  .type-tag,
+  .filter-hint,
+  .audit-action,
+  .account-card p,
+  .account-card > small,
+  .document-filters select,
+  .paid-notice span,
+  .nav-caption,
+  .nav-count,
+  .org-switch small,
+  .sidebar-note p,
+  .sidebar-note a,
+  .sidebar-user small,
+  .avatar,
+  .app-footer {
+    font-size: 11px;
   }
 }
