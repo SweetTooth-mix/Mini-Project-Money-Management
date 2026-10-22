@@ -19,6 +19,12 @@ ARG NODE_VERSION=22
 FROM node:${NODE_VERSION}-bookworm-slim AS deps
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+# Prisma probes `openssl version` while installing and while generating to pick
+# its query engine build. Without openssl it selects the 1.1.x engine, which
+# cannot be loaded against libssl3 at run time.
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y openssl \
+ && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
@@ -28,6 +34,9 @@ RUN npm ci --no-audit --no-fund
 FROM node:${NODE_VERSION}-bookworm-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y openssl \
+ && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # `next build` imports the Prisma client but never connects, so a placeholder

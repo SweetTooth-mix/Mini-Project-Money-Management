@@ -21,6 +21,8 @@ async function checkDatabase(): Promise<CheckState> {
     log.warn("health.database_unavailable", {
       errName: error instanceof Error ? error.name : "UnknownError",
       errCode: (error as { code?: string }).code,
+      errMessage:
+        error instanceof Error ? error.message.slice(0, 300) : undefined,
     });
     return "unavailable";
   }
