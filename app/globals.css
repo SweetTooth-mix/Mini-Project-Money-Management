@@ -5594,8 +5594,13 @@ select {
   }
   .brand small,
   .brand-light,
-  .sidebar .brand-name small {
+  .sidebar .brand-name small,
+  .sidebar .brand small,
+  .sidebar .brand-light {
     color: var(--muted);
+  }
+  .sidebar .brand-light {
+    color: var(--accent);
   }
   .nav-link {
     color: var(--sidebar-text);
@@ -5681,15 +5686,16 @@ select {
   }
   .metric-featured {
     background: var(--green-dark);
-    color: #ffffff;
+    color: var(--primary-text);
   }
   .metric-featured .metric-top,
   .metric-featured .metric-detail {
-    color: #d9e8df;
+    color: var(--primary-text);
+    opacity: 0.82;
   }
   .metric-featured .metric-icon {
-    background: #ffffff1f;
-    color: #ffffff;
+    background: transparent;
+    color: var(--primary-text);
   }
   .avatar,
   .avatar-small,
@@ -5764,10 +5770,17 @@ select {
 
   /* --- butang ----------------------------------------------------------- */
   .button-primary {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--primary-bg);
+    border-color: var(--primary-bg);
     border-radius: var(--r-xs);
-    color: #ffffff;
+    color: var(--primary-text);
+    box-shadow: none;
+  }
+  .button-primary:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+    color: var(--primary-text);
+    transform: none;
   }
   .button-secondary {
     background: var(--surface);
