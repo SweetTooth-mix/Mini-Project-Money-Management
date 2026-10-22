@@ -352,24 +352,22 @@ test("concurrent failures do not lose throttle increments", async () => {
 });
 
 test("audit log filters by user, action, search text and Malaysia date range", async () => {
+  // The fixture creates two accounts, which are audited too; measure a delta.
+  const baseline = await db.auditLog.count();
   const doc = await createDocument(author, input);
   await transitionDocument(author, doc.id, "submit");
   await transitionDocument(reviewer, doc.id, "approve");
 
   const all = await auditData({});
-  assert.equal(all.count, 3);
-  assert.deepEqual(all.actions.slice().sort(), [
-    "DOKUMEN_APPROVE",
-    "DOKUMEN_CIPTA",
-    "DOKUMEN_SUBMIT",
-  ]);
+  assert.equal(all.count, baseline + 3);
+  for (const action of ["DOKUMEN_CIPTA", "DOKUMEN_SUBMIT", "DOKUMEN_APPROVE"]) {
+    const filtered = await auditData({ action });
+    assert.equal(filtered.count, 1, action);
+  }
 
   const byReviewer = await auditData({ user: reviewer.id });
   assert.equal(byReviewer.count, 1);
   assert.equal(byReviewer.logs[0].action, "DOKUMEN_APPROVE");
-
-  const byAction = await auditData({ action: "DOKUMEN_CIPTA" });
-  assert.equal(byAction.count, 1);
 
   // Every entry for this document mentions its number in the detail column.
   const byText = await auditData({ q: doc.number });
@@ -380,7 +378,7 @@ test("audit log filters by user, action, search text and Malaysia date range", a
   assert.equal(miss.logs.length, 0);
 
   const todayRange = await auditData({ from: today(), to: today() });
-  assert.equal(todayRange.count, 3);
+  assert.equal(todayRange.count, baseline + 3);
 
   const past = await auditData({ to: "2000-01-01" });
   assert.equal(past.count, 0);
@@ -388,4 +386,5 @@ test("audit log filters by user, action, search text and Malaysia date range", a
   const exported = await auditExportRows({ action: "DOKUMEN_CIPTA" });
   assert.equal(exported.length, 1);
   assert.equal(exported[0].user.email, "author@test.local");
+  assert.equal(exported[0].entityId, doc.id);
 });
