@@ -1906,7 +1906,8 @@ select {
   font-size: 12px;
 }
 .report-totals span {
-  color: #809372;
+  /* 5.2:1 on the report paper: the old #809372 was 3.1:1. */
+  color: #5f6d54;
 }
 .report-totals .report-closing {
   background: #eaf3e3;
@@ -1924,7 +1925,8 @@ select {
 }
 .report-explanation {
   font-size: 10px;
-  color: #9aaa8b;
+  /* 5.2:1 on the report paper: the old #9aaa8b was 2.3:1. */
+  color: #5f6d54;
   line-height: 1.8;
   margin-top: 20px;
 }
