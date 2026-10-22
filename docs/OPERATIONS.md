@@ -160,6 +160,16 @@ Semakan tambahan UI dwibahasa pada **13 Oktober 2026 (Asia/Kuala_Lumpur)**:
 
 Senario bahasa berada dalam `tests/e2e/i18n.spec.ts`; screenshot English berada dalam `docs/screenshots/`. Gunakan `APP_URL` HTTPS pada production supaya cookie bahasa menerima atribut `Secure`.
 
+Disahkan pada **22 Oktober 2026 (Asia/Kuala_Lumpur)** untuk had cubaan log masuk berlapis dan jejak audit boleh tapis:
+
+| Semakan | Keputusan |
+| --- | --- |
+| CI GitHub Actions (`quality`) | Lulus: typecheck, ESLint, Prettier, ujian unit, `npm audit --omit=dev --audit-level=high`, build production |
+| CI GitHub Actions (`integration`) | Lulus: PostgreSQL 16, 13 ujian integrasi termasuk kiraan had cubaan serentak |
+| Ujian unit | 27 lulus (9 penapis audit, 7 had cubaan/alamat klien, 11 sedia ada) |
+| Ujian integrasi PostgreSQL | 13 lulus: 3 baharu untuk had cubaan dan tapisan audit |
+| Prettier dan ESLint | 0 ralat, 0 amaran pada `app/`, `lib/`, `components/` dan `tests/` |
+
 Screenshot dan PDF di `.data/screenshots` menggunakan data rekaan. Screenshot README disalin daripada run browser yang disahkan.
 
 Override `deepmerge-ts@8.0.2` dalam `package.json` membetulkan advisory GHSA-ggr8-5vv4-36mx pada dependency konfigurasi Prisma. CLI Prisma, migration, build dan ujian digunakan untuk menyemak keserasiannya.
