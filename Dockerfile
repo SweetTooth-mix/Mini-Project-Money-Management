@@ -11,12 +11,18 @@
 #
 # The final image runs as an unprivileged user and only writes to UPLOAD_DIR.
 
+# Pinned by digest, not just by tag. `node:22-bookworm-slim` can be re-pointed
+# to a new build at any time, and this image ships to production, so the commit
+# is what should decide the base layer. To move: resolve the new manifest digest
+# (docker buildx imagetools inspect node:22-bookworm-slim) and change it here on
+# purpose, together with the Node version above.
 ARG NODE_VERSION=22
+ARG NODE_IMAGE_DIGEST=sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d
 
 # ---------------------------------------------------------------------------
 # Development dependencies: everything `next build` and `prisma generate` need.
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-bookworm-slim AS deps
+FROM node:${NODE_VERSION}-bookworm-slim@${NODE_IMAGE_DIGEST} AS deps
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 # Prisma probes `openssl version` while installing and while generating to pick
@@ -31,7 +37,7 @@ RUN npm ci --no-audit --no-fund
 # ---------------------------------------------------------------------------
 # Build: generated Prisma client plus the production bundle.
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-bookworm-slim AS builder
+FROM node:${NODE_VERSION}-bookworm-slim@${NODE_IMAGE_DIGEST} AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN apt-get update \
@@ -47,7 +53,7 @@ RUN npm run build
 # ---------------------------------------------------------------------------
 # Runtime dependencies only (no ESLint, TypeScript, Prisma CLI or Playwright).
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-bookworm-slim AS prod-deps
+FROM node:${NODE_VERSION}-bookworm-slim@${NODE_IMAGE_DIGEST} AS prod-deps
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
@@ -57,7 +63,7 @@ RUN npm ci --omit=dev --no-audit --no-fund --ignore-scripts
 # Python packages for the report generator, isolated so source changes do not
 # invalidate the pip install layer.
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-bookworm-slim AS python-deps
+FROM node:${NODE_VERSION}-bookworm-slim@${NODE_IMAGE_DIGEST} AS python-deps
 RUN apt-get update \
  && apt-get install --no-install-recommends -y python3 python3-venv \
  && rm -rf /var/lib/apt/lists/*
@@ -70,7 +76,7 @@ RUN python3 -m venv /opt/reports/venv \
 # Migration target: keeps the Prisma CLI for `migrate deploy` and the seed,
 # without shipping a build toolchain in the runtime image.
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-bookworm-slim AS migrate
+FROM node:${NODE_VERSION}-bookworm-slim@${NODE_IMAGE_DIGEST} AS migrate
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN apt-get update \
@@ -88,7 +94,7 @@ CMD ["npx", "prisma", "migrate", "deploy"]
 # ---------------------------------------------------------------------------
 # Runtime.
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-bookworm-slim AS runner
+FROM node:${NODE_VERSION}-bookworm-slim@${NODE_IMAGE_DIGEST} AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
