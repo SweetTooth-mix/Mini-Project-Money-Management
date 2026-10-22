@@ -210,6 +210,9 @@ See [`.env.example`](.env.example). Never commit `.env`, database dumps or uploa
 | `APPROVAL_TELEGRAM_TOKEN` | — | Telegram bot token for approval notifications |
 | `APPROVAL_TELEGRAM_CHAT_ID` | — | Chat or group that receives the notification |
 | `APPROVAL_WEBHOOK_URL` | — | JSON POST target for approvals, for Slack-style hooks |
+| `SMTP_URL` | — | SMTP connection URL for approval email, e.g. `smtps://user:pass@host:465` |
+| `MAIL_FROM` | — | Sender shown on approval email |
+| `APPROVAL_EMAIL_TO` | — | Reviewer address for approval email; all three SMTP values are needed |
 | `METRICS_TOKEN` | — | Enables `/api/metrics`; without it the endpoint returns 404 |
 | `METRICS_ENABLED` | — | `false` disables request timing entirely; default on |
 
@@ -235,7 +238,7 @@ Public registration creates a `PENDING` USER. Only a Super Admin can activate it
 
 | Suite | Command | Count | Requirements |
 | --- | --- | :---: | --- |
-| Unit | `npm test` | 56 tests | Node only |
+| Unit | `npm test` | 61 tests | Node only |
 | Integration | `npm run test:integration` | 15 tests | PostgreSQL |
 | Excel/PDF reports | `npm run test:reports` | 8 tests | Python + LibreOffice |
 | Browser and accessibility | `npm run test:e2e` | 16 scenarios, 3 of them axe audits over 13 screens | Current build + Chromium |
@@ -298,6 +301,7 @@ When a document is submitted for approval, reviewers can be notified without any
 | --- | --- |
 | Telegram | `APPROVAL_TELEGRAM_TOKEN`, `APPROVAL_TELEGRAM_CHAT_ID` |
 | Webhook (Slack, Mattermost, custom) | `APPROVAL_WEBHOOK_URL` |
+| Email | `SMTP_URL`, `MAIL_FROM`, `APPROVAL_EMAIL_TO` |
 
 The message stays in Malay, like the printed documents and reports, and carries the document number, type, party, description, formatted amount, the submitter's name and a link built from `APP_URL`. The webhook also receives the raw fields, with `amountSen` as a string because JSON has no integer type wide enough for `BigInt`.
 
@@ -398,10 +402,9 @@ The steps above have been exercised in a development environment; the applicatio
 Not yet implemented, in priority order:
 
 1. **Bank reconciliation** and CSV statement import with suggested matches.
-2. **Email delivery** for approval notifications; Telegram and webhooks work today.
-3. **Multiple attachments** per document (currently one file per document).
-4. **Slimmer image**: the LibreOffice layer dominates the image size; a separate report worker image would let the web container stay small.
-5. **Multi-organisation support** and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
+2. **Multiple attachments** per document (currently one file per document).
+3. **Slimmer image**: the LibreOffice layer dominates the image size; a separate report worker image would let the web container stay small.
+4. **Multi-organisation support** and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
 
 Antivirus scanning for attachments is not provided. Restoring a backup of real user data has not been performed in this environment; run `npm run restore:verify` on the production host before you need it.
 
