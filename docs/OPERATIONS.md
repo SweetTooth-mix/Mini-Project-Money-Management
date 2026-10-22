@@ -233,9 +233,9 @@ Verified on **12 October 2026 (Asia/Kuala_Lumpur)**:
 | npm dependency audit | 0 vulnerabilities reported |
 | Sample summary print | Original fixture 1 A4 page; fixture with an extra adjustment 2 pages. Printing from night mode stays white; sidebar and application controls are hidden |
 
-Unit and integration tests live in `tests/`; browser scenarios live in `tests/e2e/app.spec.ts` and `tests/e2e/design.spec.ts`. Tests use separate databases. Run `npm run build` before `npm run test:e2e` so the browser exercises the current code.
+Unit and integration tests live in `tests/`; browser scenarios live in `tests/e2e/app.spec.ts`, `tests/e2e/design.spec.ts` and the axe audits in `tests/e2e/a11y.spec.ts`. Tests use separate databases. Run `npm run build` before `npm run test:e2e` so the browser exercises the current code.
 
-The UI redesign was verified with a production build and eight browser scenarios. Excel template files, the report generator, financial logic and the schema were compared with SHA-256 and remained identical to the pre-redesign version. A contrast review of selected text on the dashboard, cash book, receipts/vouchers, Excel reports and settings found no threshold failures in either theme; this is not a full accessibility audit.
+The UI redesign was verified with a production build and eight browser scenarios. Excel template files, the report generator, financial logic and the schema were compared with SHA-256 and remained identical to the pre-redesign version. A contrast review of selected text on the dashboard, cash book, receipts/vouchers, Excel reports and settings found no threshold failures in either theme. Automated axe audits now cover every screen in both themes in CI; they catch serious and critical violations only, so manual keyboard and screen-reader checks are still expected before a release.
 
 Additional bilingual UI review on **13 October 2026 (Asia/Kuala_Lumpur)**:
 

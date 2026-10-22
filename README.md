@@ -233,13 +233,13 @@ Public registration creates a `PENDING` USER. Only a Super Admin can activate it
 | Unit | `npm test` | 35 tests | Node only |
 | Integration | `npm run test:integration` | 15 tests | PostgreSQL |
 | Excel/PDF reports | `npm run test:reports` | 8 tests | Python + LibreOffice |
-| Browser | `npm run test:e2e` | 13 scenarios | Current build + Chromium |
+| Browser and accessibility | `npm run test:e2e` | 16 scenarios, 3 of them axe audits over 13 screens | Current build + Chromium |
 
 ```bash
 npm run test               # money, dates, ledger, CSV, i18n, throttling, audit filters, logging/health
 npm run test:integration   # concurrent posting, approval, reversal, dues, period lock, throttling
 npm run test:reports       # Excel templates, formula links, 12-month balances and PDF
-npm run test:e2e           # Chromium: documents, Excel/PDF, theme, language/cookies and mobile
+npm run test:e2e           # Chromium: documents, Excel/PDF, theme, language, mobile and axe audits
 npm run typecheck          # tsc --noEmit
 npm run lint               # ESLint: Next core-web-vitals + TypeScript
 npm run format:check       # Prettier
@@ -251,11 +251,18 @@ npm audit                  # Dependency audit
 
 1. `quality` — `prisma generate`, `typecheck`, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high` and a production build.
 2. `integration` — PostgreSQL 16 as a service, a `kira_rapi_test` database, `prisma migrate deploy` and the 15 integration tests.
-3. `container` — builds the runtime and migration images, applies migrations, seeds a demo organisation, starts the container and waits for its own `HEALTHCHECK` to report healthy. It then asserts that `/api/health` reports the reporting toolchain as `ok`, which proves LibreOffice and the Python virtualenv work inside the image.
+3. `accessibility` — production build, Chromium, then the full Playwright suite against the isolated `kira_rapi_e2e_test` database, including the axe audits. Failure screenshots are uploaded as an artefact.
+4. `container` — builds the runtime and migration images, applies migrations, seeds a demo organisation, starts the container and waits for its own `HEALTHCHECK` to report healthy. It then asserts that `/api/health` reports the reporting toolchain as `ok`, which proves LibreOffice and the Python virtualenv work inside the image.
 
-Integration failures are surfaced as check-run annotations, so the cause is readable without downloading job logs. Excel/PDF and browser suites stay manual because they need LibreOffice and Chromium.
+Integration and browser failures are surfaced as check-run annotations, so the cause is readable without downloading job logs. The Excel/PDF suite stays manual because it needs LibreOffice.
 
-`test:integration` provisions `kira_rapi_test` on the local Compose PostgreSQL and cleans fixture data inside that database; the database name must end with `_test` or the suite refuses to run. `test:e2e` **resets the dedicated `kira_rapi_e2e_test` database**, creates fixtures and runs the production build on port 3100, so it needs a current build. The application database `kira_rapi` is never reset by tests; screenshots and PDFs land in `.data/screenshots`.
+`test:integration` provisions `kira_rapi_test` on the local Compose PostgreSQL and cleans fixture data inside that database; the database name must end with `_test` or the suite refuses to run. `test:e2e` **resets the dedicated `kira_rapi_e2e_test` database**, creates fixtures and runs the production build on port 3100, so it needs a current build. It provisions that database through `docker compose` locally and lets Prisma create it in CI (`E2E_SKIP_COMPOSE_DB=true`). The application database `kira_rapi` is never reset by tests; screenshots and PDFs land in `.data/screenshots`.
+
+## Accessibility
+
+`tests/e2e/a11y.spec.ts` runs [axe-core](https://github.com/dequelabs/axe-core) over the login and register pages in both themes, all nine dashboard screens, and the sign-in failure state — 13 audits in three scenarios. It fails on `serious` and `critical` findings across the WCAG 2.0/2.1 A and AA rule sets; lower-impact findings are reported by axe but do not break the build, because several of them are deliberate design choices in this app.
+
+The audit is part of `npm run test:e2e` and runs in CI on every pull request. It complements, and does not replace, manual keyboard and screen-reader checks: automated tooling finds a minority of real accessibility problems.
 
 ## Observability
 
