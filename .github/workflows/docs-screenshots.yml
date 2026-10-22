@@ -1,0 +1,99 @@
+name: Refresh documentation screenshots
+
+# The README and docs/UI-UX.md embed real screenshots of the interface. They go
+# stale whenever the design moves, and a maintainer should not have to install
+# PostgreSQL, Chromium and the app on a laptop to update them.
+#
+# Run this workflow from the branch you want updated. It rebuilds the app,
+# captures every documented screen, and commits the result to docs/screenshots.
+# A run with no visual change produces no commit, so it is safe to re-run.
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: docs-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  DATABASE_URL: postgresql://kira:kira_ci_password@127.0.0.1:5432/kira_rapi
+
+jobs:
+  refresh:
+    name: Capture and commit
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: kira
+          POSTGRES_PASSWORD: kira_ci_password
+          POSTGRES_DB: kira_rapi
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kira -d kira_rapi"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      # The suite creates its own kira_rapi_e2e_test database; there is no
+      # docker compose project inside the job.
+      E2E_SKIP_COMPOSE_DB: "true"
+      # Screenshots do not touch the reporting toolchain; the container job and
+      # the report tests own that.
+      E2E_SKIP_REPORTS: "true"
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Production build
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Migrates the fixture database, seeds demo data and runs only the
+      # documentation spec.
+      - name: Capture documented screens
+        run: npm run test:e2e -- docs-screenshots
+
+      - name: Copy captures into docs/screenshots
+        run: npm run docs:screenshots -- --write
+
+      - name: Upload captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-screenshots
+          path: .data/screenshots/docs/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Commit the refreshed images
+        run: |
+          if git diff --quiet -- docs/screenshots; then
+            echo "Screenshots already current; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots
+          git commit -m "docs: refresh interface screenshots from CI"
+          git push origin "HEAD:${{ github.ref_name }}"
