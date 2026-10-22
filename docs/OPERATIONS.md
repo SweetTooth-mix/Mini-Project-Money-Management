@@ -170,6 +170,11 @@ APPROVAL_TELEGRAM_CHAT_ID=-1001234567890
 
 # Or any endpoint that accepts a JSON POST.
 APPROVAL_WEBHOOK_URL=https://hooks.example/kira
+
+# Or email, which needs all three values.
+SMTP_URL=smtps://user:CHANGE_ME@smtp.example:465
+MAIL_FROM="Kira Rapi <kira@example.my>"
+APPROVAL_EMAIL_TO=bendahari@example.my
 ```
 
 The request carries the Malay message plus the raw fields (`id`, `number`, `type`, `party`, `description`, `amountSen` as a string, `submittedBy`, `url`). The link is built from `APP_URL`, so set it to the public address.
@@ -178,7 +183,9 @@ Operationally:
 
 - Delivery happens **after** the submission commits, with a three-second timeout per channel. Failures appear as `approval.notify_failed` log lines with the channel name and either the HTTP status or the error name; they never reach the user.
 - Reviewers without a configured channel still see submissions in the pending queue and the dashboard badge, so notifications are an addition, not a dependency.
-- A Telegram token without a chat id is treated as unconfigured, so a half-filled `.env` cannot silently drop messages.
+- A Telegram token without a chat id, or an SMTP URL without a sender and recipient, is treated as unconfigured, so a half-filled `.env` cannot silently drop messages.
+- Email uses `nodemailer` over the `SMTP_URL` connection string, so the SMTP password lives in the environment, not in the database. A provider that requires an app password (Gmail, Microsoft 365) needs one created specifically for this app.
+- Every channel is attempted independently: a broken SMTP server does not stop the Telegram message, and neither stops the submission.
 - Rotating the token only requires restarting the app; the notifier reads the environment once per process.
 
 ## Logging and monitoring
@@ -309,7 +316,7 @@ Verified on **22 October 2026 (Asia/Kuala_Lumpur)** for layered login throttling
 | --- | --- |
 | GitHub Actions (`quality`) | Pass: typecheck, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high`, production build |
 | GitHub Actions (`integration`) | Pass: PostgreSQL 16, 15 integration tests including concurrent throttle counting and health probes |
-| Unit tests | 56 passing (9 audit filters, 10 metrics, 10 approval notifications, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
+| Unit tests | 61 passing (9 audit filters, 10 metrics, 15 approval notifications, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
 | PostgreSQL integration tests | 15 passing: 3 for throttling and audit filtering, 2 for health probes |
 | Prettier and ESLint | 0 errors, 0 warnings across `app/`, `lib/`, `components/` and `tests/` |
 

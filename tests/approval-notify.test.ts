@@ -2,10 +2,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   approvalConfigFromEnv,
+  approvalSubject,
   createApprovalNotifier,
   formatApprovalNotice,
   hasApprovalChannel,
 } from "../lib/approval-notify";
+import type { MailMessage } from "../lib/mail";
 
 const notice = {
   id: "doc_1",
@@ -145,6 +147,7 @@ test("environment configuration ignores blank values", () => {
     webhookUrl: undefined,
     telegramToken: undefined,
     telegramChatId: undefined,
+    email: undefined,
   });
   assert.deepEqual(
     approvalConfigFromEnv({
@@ -156,6 +159,97 @@ test("environment configuration ignores blank values", () => {
       webhookUrl: undefined,
       telegramToken: "123:abc",
       telegramChatId: "-100200",
+      email: undefined,
     },
   );
+});
+
+test("email is delivered with a subject and the same Malay body", async () => {
+  const sent: MailMessage[] = [];
+  const notifier = createApprovalNotifier(
+    {
+      email: {
+        smtpUrl: "smtp://user:secret@smtp.example:587",
+        from: "kira@example.test",
+        to: "bendahari@example.test",
+      },
+    },
+    null,
+    3000,
+    async (message) => {
+      sent.push(message);
+    },
+  );
+
+  // No fetch available at all: email must still count as a usable channel.
+  assert.equal(notifier.configured, true);
+  await notifier.notify(notice);
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].to, "bendahari@example.test");
+  assert.equal(sent[0].subject, approvalSubject(notice));
+  assert.match(sent[0].subject, /RS-2026-00012/);
+  assert.match(sent[0].text, /Amaun: RM 8,500\.00/);
+});
+
+test("an email config without a sender is not treated as configured", () => {
+  const notifier = createApprovalNotifier({
+    email: { smtpUrl: "smtp://x", from: "a@b", to: "c@d" },
+  });
+  assert.equal(notifier.configured, false);
+  assert.equal(
+    hasApprovalChannel({
+      email: { smtpUrl: "smtp://x", from: "a@b", to: "c@d" },
+    }),
+    true,
+  );
+});
+
+test("a failing mail server never throws into the submission", async () => {
+  const notifier = createApprovalNotifier(
+    { email: { smtpUrl: "smtp://x", from: "a@b", to: "c@d" } },
+    null,
+    3000,
+    async () => {
+      throw new Error("connection refused");
+    },
+  );
+  await assert.doesNotReject(() => notifier.notify(notice));
+});
+
+test("email settings are only used when all three values are present", () => {
+  assert.equal(
+    approvalConfigFromEnv({ SMTP_URL: "smtp://x", MAIL_FROM: "a@b" }).email,
+    undefined,
+  );
+  assert.deepEqual(
+    approvalConfigFromEnv({
+      SMTP_URL: "smtp://x",
+      MAIL_FROM: "a@b",
+      APPROVAL_EMAIL_TO: "c@d",
+    }).email,
+    { smtpUrl: "smtp://x", from: "a@b", to: "c@d" },
+  );
+});
+
+test("email and webhook are delivered independently", async () => {
+  const sent: MailMessage[] = [];
+  const urls: string[] = [];
+  const notifier = createApprovalNotifier(
+    {
+      webhookUrl: "https://hooks.example/kira",
+      email: { smtpUrl: "smtp://x", from: "a@b", to: "c@d" },
+    },
+    (async (url: string) => {
+      urls.push(url);
+      return new Response("{}");
+    }) as unknown as typeof fetch,
+    3000,
+    async (message) => {
+      sent.push(message);
+    },
+  );
+
+  await notifier.notify(notice);
+  assert.equal(sent.length, 1);
+  assert.deepEqual(urls, ["https://hooks.example/kira"]);
 });
