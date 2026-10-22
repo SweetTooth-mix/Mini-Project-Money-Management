@@ -126,6 +126,12 @@ a row of data they cannot see.
 | Top bar | `0 --s-8` |
 | Card (`.metric`, `.panel-heading`) | `--s-6 --s-6 --s-5` (16 / 16 / 12) |
 | Gap between cards | `--s-7` |
+| List row (`.table-scroll td`) | `--s-5 --s-6` (12 / 16) |
+| Filter row | `0 --s-6 --s-6` |
+
+Row and filter padding applies from 761px only. Below that the phone padding stays as tuned: it
+doubles as the touch target, and the 360px table overflow (which the scroll shadow advertises) is
+asserted by `tests/e2e/responsive.spec.ts`.
 
 These live in the `v5` block near the end of `app/globals.css`, scoped to `min-width: 761px` so the
 phone values below are untouched. Do not let a padded-out "premium" spacing scale creep back in:

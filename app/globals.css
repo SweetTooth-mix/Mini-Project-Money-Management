@@ -5960,6 +5960,66 @@ select {
   }
 }
 
+/* ==========================================================================
+   v6 · Halaman jadual: baucer-resit, rumusan, yuran, buku-tunai, audit.
+   Angka dan kod dokumen guna peranan mono; ketumpatan baris dan penapis
+   untuk desktop. Helaian A4 tidak terjejas: setiap jadual senarai berada
+   dalam .table-scroll, manakala jadual cetakan (.document-lines,
+   .report-table) berada di luar bekas itu.
+   ========================================================================== */
+@media screen {
+  .table-scroll .amount,
+  .table-scroll td.align-right,
+  .document-number,
+  .pagination {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .document-number {
+    font-size: 11.5px;
+    letter-spacing: -0.2px;
+  }
+  .pagination {
+    gap: var(--s-6);
+  }
+
+  /* Ikon carian: 2.64:1 -> 6.76:1. */
+  .search-input svg {
+    color: var(--muted);
+  }
+  .subtle-tag {
+    border-color: var(--line);
+  }
+
+  /* Nilai borang dibaca sebagai data, bukan sebagai label. */
+  .month-filter input {
+    color: var(--ink);
+    background: var(--surface);
+  }
+}
+
+/* Ketumpatan baris: desktop sahaja. Padding telefon dikekalkan sebagai
+   sasaran sentuh, dan limpahan jadual pada 360px mesti kekal seperti diuji. */
+@media screen and (min-width: 761px) {
+  .table-scroll td {
+    padding: var(--s-5) var(--s-6);
+    border-bottom-color: var(--line);
+  }
+  .table-scroll th {
+    padding: var(--s-5) var(--s-6);
+  }
+
+  /* Baris penapis sejajar dengan padding kepala panel (16/16/12). */
+  .filter-bar,
+  .document-filters {
+    padding: 0 var(--s-6) var(--s-6);
+    gap: var(--s-5);
+  }
+  .filter-hint {
+    margin: calc(var(--s-3) * -1) var(--s-6) var(--s-6);
+  }
+}
+
 @media screen and (max-width: 600px) {
   /* Type floor, second pass, for the labels the first pass missed: table
      sub-lines, status pills, activity text and the drawer captions were still
