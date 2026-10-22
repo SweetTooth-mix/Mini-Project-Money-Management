@@ -18,7 +18,7 @@ Aplikasi pengurusan kewangan komuniti dengan UI Bahasa Melayu dan English: buku 
 | Rumusan | Pecahan kategori, baki awal/akhir, butiran pelarasan dan cetakan/simpan PDF melalui browser |
 | Laporan Excel | Empat workbook berpaut mengikut template asal, laporan 12 bulan, akaun tunjang, rumusan yuran dan PDF A4 |
 | Tetapan | Profil organisasi, penandatangan, pengguna, permohonan akses, kata laluan dan kunci tempoh kewangan |
-| Audit | Rekod tindakan dengan pengguna, masa dan butiran perubahan |
+| Audit | Rekod tindakan dengan pengguna, masa dan butiran perubahan; tapisan ikut pengguna, tindakan, julat tarikh (waktu Malaysia) dan carian, serta eksport CSV |
 
 Carian Buku Tunai mengabaikan huruf besar/kecil. Baki berjalan dan jumlah bulanan merangkumi semua transaksi dalam pilihan bulan, akaun dan dana, termasuk transaksi yang tidak muncul dalam hasil carian atau halaman semasa. Pautan Sebelum/Seterusnya mengekalkan penapis; carian baharu bermula pada halaman pertama. Eksport CSV dan rumusan terus menggunakan keseluruhan transaksi bagi pilihan bulan/akaun/dana.
 
@@ -102,6 +102,7 @@ Rujuk [`.env.example`](.env.example). Jangan commit `.env`, dump database atau u
 | `POSTGRES_PASSWORD` | Kata laluan container PostgreSQL tempatan |
 | `APP_URL` | Origin aplikasi; gunakan HTTPS untuk production supaya cookie Secure dan HSTS diaktifkan |
 | `UPLOAD_DIR` | Direktori lampiran yang berterusan, lalai `.data/uploads` |
+| `TRUST_PROXY_HEADERS` | Lalai `true`; tetapkan `false` jika aplikasi didedahkan tanpa proxy, supaya had cubaan log masuk ikut alamat tidak boleh dipalsukan |
 | `SEED_ADMIN_EMAIL` | E-mel Super Admin awal |
 | `SEED_ADMIN_PASSWORD` | Kata laluan awal, minimum 12 aksara |
 | `SEED_DEMO` | `true` untuk data demonstrasi; `false` untuk organisasi baharu tanpa data rekaan |

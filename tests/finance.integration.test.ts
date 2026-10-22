@@ -13,6 +13,8 @@ import {
 } from "../lib/finance";
 import { dateOnly, today } from "../lib/money";
 import { ledgerData } from "../lib/queries";
+import { auditData, auditExportRows } from "../lib/audit";
+import { check, loginBuckets, record, reset } from "../lib/throttle";
 
 if (!new URL(process.env.DATABASE_URL!).pathname.endsWith("_test"))
   throw new Error(
@@ -301,4 +303,88 @@ test("only the creator can edit a draft, and submission freezes its financial co
     }),
     1,
   );
+});
+
+test("only failures count towards a login throttle and success clears them", async () => {
+  const buckets = loginBuckets({
+    email: "author@test.local",
+    ip: "203.0.113.7",
+  });
+  // A successful sign-in must not consume the shared address budget.
+  await reset(buckets.resettable);
+  assert.equal((await check(buckets.all)).allowed, true);
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    assert.equal((await check(buckets.all)).allowed, true);
+    await record(buckets.all);
+  }
+  const blocked = await check(buckets.all);
+  assert.equal(blocked.allowed, false);
+  assert.ok(blocked.retryAfterSeconds > 0);
+  assert.ok(blocked.retryAfterSeconds <= 15 * 60);
+
+  // Clearing the account buckets restores access without touching the address total.
+  await reset(buckets.resettable);
+  assert.equal((await check(buckets.all)).allowed, true);
+  const addressBucket = buckets.all.find((bucket) => bucket.limit === 25)!;
+  const stored = await db.loginAttempt.findUniqueOrThrow({
+    where: { key: addressBucket.key },
+  });
+  assert.equal(stored.attempts, 8);
+});
+
+test("concurrent failures do not lose throttle increments", async () => {
+  const buckets = loginBuckets({
+    email: "race@test.local",
+    ip: "198.51.100.4",
+  });
+  await Promise.all(
+    Array.from({ length: 5 }, async () => {
+      await check(buckets.all);
+      await record(buckets.all);
+    }),
+  );
+  const pair = buckets.all.find((bucket) => bucket.limit === 8)!;
+  const stored = await db.loginAttempt.findUniqueOrThrow({
+    where: { key: pair.key },
+  });
+  assert.equal(stored.attempts, 5);
+});
+
+test("audit log filters by user, action, search text and Malaysia date range", async () => {
+  const doc = await createDocument(author, input);
+  await transitionDocument(author, doc.id, "submit");
+  await transitionDocument(reviewer, doc.id, "approve");
+
+  const all = await auditData({});
+  assert.equal(all.count, 3);
+  assert.deepEqual(all.actions.slice().sort(), [
+    "DOKUMEN_APPROVE",
+    "DOKUMEN_CIPTA",
+    "DOKUMEN_SUBMIT",
+  ]);
+
+  const byReviewer = await auditData({ user: reviewer.id });
+  assert.equal(byReviewer.count, 1);
+  assert.equal(byReviewer.logs[0].action, "DOKUMEN_APPROVE");
+
+  const byAction = await auditData({ action: "DOKUMEN_CIPTA" });
+  assert.equal(byAction.count, 1);
+
+  const byText = await auditData({ q: doc.number });
+  assert.equal(byText.count, 1);
+
+  const miss = await auditData({ q: "tiada-yang-sepadan" });
+  assert.equal(miss.count, 0);
+  assert.equal(miss.logs.length, 0);
+
+  const todayRange = await auditData({ from: today(), to: today() });
+  assert.equal(todayRange.count, 3);
+
+  const past = await auditData({ to: "2000-01-01" });
+  assert.equal(past.count, 0);
+
+  const exported = await auditExportRows({ action: "DOKUMEN_CIPTA" });
+  assert.equal(exported.length, 1);
+  assert.equal(exported[0].user.email, "author@test.local");
 });

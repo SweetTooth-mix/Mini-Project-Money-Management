@@ -98,6 +98,28 @@ Sesi yang tamat tempoh dan kaunter cubaan log masuk dipadam secara automatik sek
 30 3 * * * cd /srv/kira-rapi && npm run cleanup
 ```
 
+## Kawalan akses dan had cubaan log masuk
+
+Had cubaan dikira pada tiga lapisan, dan **hanya percubaan gagal** ditukar kepada kiraan:
+
+| Lapisan | Had | Tujuan |
+| --- | --- | --- |
+| Alamat + e-mel | 8 kegagalan / 15 minit | Hentikan tekaan kata laluan pada satu akaun |
+| Alamat | 25 kegagalan / 15 minit | Hentikan satu host mencuba banyak akaun |
+| E-mel | 30 kegagalan / 15 minit | Hentikan serangan bertaburan daripada banyak alamat |
+
+Reka bentuk ini mengelakkan **kunci akaun sebagai senjata**: penyerang perlu 30 kegagalan sebelum pengguna sebenar disekat, dan log masuk yang berjaya mengosongkan kiraan alamat+e-mel serta e-mel. Kiraan mengikut alamat dikekalkan selepas log masuk berjaya supaya akaun sah tidak boleh digunakan untuk mereset bajet penyerang. Pendaftaran awam dihadkan 5 permohonan / 15 minit bagi setiap alamat dan setiap e-mel.
+
+Alamat klien dibaca daripada `X-Forwarded-For` (entri paling kiri) atau `X-Real-IP`, dan hanya alamat yang sah diterima. Jika aplikasi didedahkan **tanpa** proxy, tetapkan `TRUST_PROXY_HEADERS=false`; jika tidak, klien boleh memalsukan header tersebut dan memintas had mengikut alamat. Contoh nginx: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`.
+
+Tiada e-mel atau alamat IP disimpan dalam bentuk teks biasa: kunci had ialah SHA-256 bagi gabungan jenis, alamat dan e-mel.
+
+## Jejak audit
+
+Halaman Audit menyokong tapisan ikut pengguna, kod tindakan, julat tarikh dan carian pada butiran, nama pengguna atau kod tindakan. Julat tarikh menggunakan **waktu Malaysia (GMT+8)**, dan julat yang terbalik ditukar secara automatik.
+
+Butang **Eksport log CSV** memuat turun sehingga 50,000 baris menggunakan penapis yang sama. Kandungan CSV diambil daripada log yang tidak boleh diubah; medan teks dijadikan selamat daripada formula spreadsheet. Log audit tidak boleh disunting atau dipadam oleh aplikasi, jadi tapisan ini hanya bacaan.
+
 ## Peraturan penting
 
 - Untuk kesilapan draf, gunakan **Sunting draf**. Selepas dihantar, butiran kewangan dibekukan.

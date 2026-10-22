@@ -1,6 +1,5 @@
 "use server";
 
-import { createHash } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
@@ -30,6 +29,14 @@ import {
 } from "@/lib/money";
 import { deleteUpload, storeUpload } from "@/lib/uploads";
 import { pruneOpportunistically } from "@/lib/maintenance";
+import { clientAddress } from "@/lib/request-ip";
+import {
+  check,
+  loginBuckets,
+  record,
+  registerBuckets,
+  reset,
+} from "@/lib/throttle";
 
 const str = (form: FormData, key: string, max = 200) =>
   z
@@ -90,35 +97,16 @@ async function run(
   );
 }
 
-async function throttle(email: string, kind: string) {
-  const key = createHash("sha256").update(`${kind}:${email}`).digest("hex");
-  return db.$transaction(async (tx) => {
-    await tx.loginAttempt.upsert({
-      where: { key },
-      create: { key },
-      update: {},
-    });
-    await tx.$queryRaw`SELECT "key" FROM "LoginAttempt" WHERE "key" = ${key} FOR UPDATE`;
-    const record = await tx.loginAttempt.findUniqueOrThrow({ where: { key } });
-    const expired = record.windowStart.getTime() < Date.now() - 15 * 60 * 1000;
-    if (!expired && record.attempts >= 8) return false;
-    await tx.loginAttempt.update({
-      where: { key },
-      data: expired
-        ? { attempts: 1, windowStart: new Date() }
-        : { attempts: { increment: 1 } },
-    });
-    return true;
-  });
-}
-
 export async function loginAction(form: FormData) {
   const email = String(form.get("email") ?? "")
     .trim()
     .toLowerCase()
     .slice(0, 200);
   const password = String(form.get("password") ?? "");
-  if (!(await throttle(email, "login")))
+  const { ip } = await clientAddress();
+  const buckets = loginBuckets({ email, ip });
+  const throttle = await check(buckets.all);
+  if (!throttle.allowed)
     redirect(
       "/login?error=" +
         encodeURIComponent(
@@ -132,13 +120,16 @@ export async function loginAction(form: FormData) {
     user?.passwordHash ??
       "$2b$12$3rZPHhp0WzPYIMigmhVXvOPhGKCEoKKLX2yYNzmPlYD90qITwoe4K",
   );
-  if (!user || !valid || user.status !== "ACTIVE")
+  if (!user || !valid || user.status !== "ACTIVE") {
+    await record(buckets.all);
     redirect(
       "/login?error=" +
         encodeURIComponent(
           "E-mel atau kata laluan tidak tepat, atau akaun belum aktif.",
         ),
     );
+  }
+  await reset(buckets.resettable);
   await startSession(user.id);
   await pruneOpportunistically();
   redirect("/dashboard");
@@ -158,8 +149,11 @@ export async function registerAction(form: FormData) {
       .min(12, "Kata laluan mesti sekurang-kurangnya 12 aksara.")
       .max(72)
       .parse(form.get("password"));
-    if (!(await throttle(email, "register")))
+    const { ip } = await clientAddress();
+    const buckets = registerBuckets(email, ip);
+    if (!(await check(buckets)).allowed)
       throw new DomainError("Terlalu banyak permohonan. Cuba lagi kemudian.");
+    await record(buckets);
     const exists = await db.user.findUnique({ where: { email } });
     if (!exists)
       await db.user.create({
