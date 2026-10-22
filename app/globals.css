@@ -513,7 +513,11 @@ svg {
   font-weight: 600;
   line-height: 1.4;
   white-space: nowrap;
-  transition: all 0.15s;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 .button-primary {
   background: var(--green);
@@ -522,7 +526,6 @@ svg {
 }
 .button-primary:hover {
   background: var(--green-dark);
-  transform: translateY(-1px);
 }
 .button-secondary {
   background: white;
@@ -852,7 +855,8 @@ svg {
   max-width: 35%;
   border-radius: 4px 4px 0 0;
   min-height: 0;
-  transition: opacity 0.15s;
+  transform-origin: bottom;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 .bar:hover {
   opacity: 0.75;
@@ -3075,6 +3079,12 @@ select {
     --s-7: 20px;
     --s-8: 24px;
     --s-9: 32px;
+    /* Motion scale — short, ease-out, no overshoot. */
+    --dur-fast: 120ms;
+    --dur-base: 180ms;
+    --dur-slow: 240ms;
+    --ease-out: cubic-bezier(0.2, 0, 0, 1);
+    --stagger: 40ms;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -5857,6 +5867,96 @@ select {
 @media screen and (max-width: 600px) {
   th {
     font-size: 11px;
+  }
+}
+
+/* ==========================================================================
+   v4 · Motion. Satu gerak bermakna: carta tumbuh dari garis dasar.
+   Hanya transform dan opacity. Semua gerak berhenti di bawah
+   prefers-reduced-motion (blok global di hujung fail).
+   ========================================================================== */
+@media screen {
+  .bar {
+    animation: bar-grow var(--dur-slow) var(--ease-out) both;
+  }
+  .bar-group:nth-child(1) .bar {
+    animation-delay: 0ms;
+  }
+  .bar-group:nth-child(2) .bar {
+    animation-delay: var(--stagger);
+  }
+  .bar-group:nth-child(3) .bar {
+    animation-delay: calc(var(--stagger) * 2);
+  }
+  .bar-group:nth-child(4) .bar {
+    animation-delay: calc(var(--stagger) * 3);
+  }
+  .bar-group:nth-child(5) .bar {
+    animation-delay: calc(var(--stagger) * 4);
+  }
+  .bar-group:nth-child(6) .bar {
+    animation-delay: calc(var(--stagger) * 5);
+  }
+  @keyframes bar-grow {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  /* Laci telefon: gelincir dengan token, latar belakang pudar (opacity sahaja). */
+  .sidebar {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .nav-backdrop {
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+
+  /* Keadaan interaktif: perubahan warna sahaja, tiada geometri. */
+  .nav-link,
+  .icon-button,
+  .table-primary,
+  .approval-card,
+  .account-card {
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+}
+
+/* ==========================================================================
+   v5 · Ketumpatan. Selaraskan ruang dengan mockup arah C: 24px sisi halaman,
+   16px dalam kad. Nilai diambil daripada skala jarak, bukan nombor mentah.
+   Desktop sahaja — telefon sudah ada nilai tersendiri di bawah.
+   ========================================================================== */
+@media screen and (min-width: 761px) {
+  .main-content {
+    padding: var(--s-7) var(--s-8) var(--s-8);
+  }
+  .topbar {
+    padding-inline: var(--s-8);
+  }
+  .metric {
+    padding: var(--s-6) var(--s-6) var(--s-5);
+  }
+  .panel-heading {
+    padding: var(--s-6) var(--s-6) var(--s-5);
+  }
+  .panel {
+    margin-bottom: var(--s-7);
+  }
+  .page-heading {
+    margin-bottom: var(--s-7);
+  }
+}
+
+/* Skrin besar kekal lapang di bahagian atas, tetapi ikut skala. */
+@media screen and (min-width: 1600px) {
+  .main-content {
+    padding-top: var(--s-9);
   }
 }
 
