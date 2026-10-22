@@ -207,6 +207,40 @@ proxy_set_header X-Request-Id $request_id;
 
 **Alerting.** Forward errors by pointing `ERROR_WEBHOOK_URL` at a collector, chat webhook or error tracker. Delivery is fire-and-forget with a two-second timeout and never blocks a request. Suggested alerts: any `level=error` line, `/api/health` returning `unavailable`, and `/api/health` reporting `reports: degraded` for more than an hour after a deployment.
 
+## Metrics
+
+`/api/metrics` serves Prometheus text. It is disabled unless `METRICS_TOKEN` is set, and then requires that value as a bearer token, so a scrape configuration looks like:
+
+```yaml
+scrape_configs:
+  - job_name: kira-rapi
+    metrics_path: /api/metrics
+    authorization:
+      credentials: <METRICS_TOKEN>
+    static_configs:
+      - targets: ["127.0.0.1:3000"]
+```
+
+```bash
+curl -s -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:3000/api/metrics
+```
+
+What to watch:
+
+| Signal | Meaning |
+| --- | --- |
+| `kira_http_request_duration_seconds` p95 rising on `/dashboard/*` | Database latency or a slow report render |
+| `kira_http_requests_total{status="5xx"}` | Unhandled failures; pair with the `request.unhandled` log line via the request ID |
+| `kira_request_errors_total` | Errors that reached `onRequestError`; the route label identifies the screen |
+| `kira_metrics_dropped_series_total` above 0 | The 200-series cap was hit; usually a new dynamic route shape needing normalisation |
+
+Notes:
+
+- Counters are per process, in memory. They reset on restart or deploy, which is expected for a scrape target; keep `rate()` queries, not raw totals.
+- With PM2 in cluster mode each worker exposes only its own numbers. Scrape every worker or run one instance, the same trade-off as the existing health check.
+- Uploads and report generation are timed as part of the request that serves them; there is no separate queue.
+- `METRICS_ENABLED=false` disables the HTTP timing patch entirely and leaves only 404 at `/api/metrics`.
+
 ## Access control and login throttling
 
 Limits are counted on three layers, and **only failed attempts** are counted:
@@ -275,7 +309,7 @@ Verified on **22 October 2026 (Asia/Kuala_Lumpur)** for layered login throttling
 | --- | --- |
 | GitHub Actions (`quality`) | Pass: typecheck, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high`, production build |
 | GitHub Actions (`integration`) | Pass: PostgreSQL 16, 15 integration tests including concurrent throttle counting and health probes |
-| Unit tests | 46 passing (9 audit filters, 10 approval notifications, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
+| Unit tests | 56 passing (9 audit filters, 10 metrics, 10 approval notifications, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
 | PostgreSQL integration tests | 15 passing: 3 for throttling and audit filtering, 2 for health probes |
 | Prettier and ESLint | 0 errors, 0 warnings across `app/`, `lib/`, `components/` and `tests/` |
 

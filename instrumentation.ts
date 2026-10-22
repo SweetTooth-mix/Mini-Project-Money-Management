@@ -1,4 +1,5 @@
 import { logError, log } from "@/lib/log";
+import { metrics, normalizeRoute } from "@/lib/metrics";
 import { isRequestId } from "@/lib/request-id";
 
 /**
@@ -11,6 +12,11 @@ export async function register() {
     node: process.version,
     environment: process.env.NODE_ENV,
   });
+  // Loaded lazily so the edge runtime never imports node:http.
+  if (process.env.NEXT_RUNTIME !== "edge") {
+    const { instrumentHttpServer } = await import("@/lib/metrics-http");
+    await instrumentHttpServer();
+  }
 }
 
 type RequestLike = {
@@ -30,6 +36,7 @@ export async function onRequestError(
   request: RequestLike,
   context: ErrorContext,
 ) {
+  metrics.recordError(normalizeRoute(context?.routePath || request.path || ""));
   const headerId = request.headers?.["x-request-id"];
   logError("request.unhandled", error, {
     ...(isRequestId(headerId) ? { requestId: headerId } : {}),

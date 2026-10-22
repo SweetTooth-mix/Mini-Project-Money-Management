@@ -210,6 +210,8 @@ See [`.env.example`](.env.example). Never commit `.env`, database dumps or uploa
 | `APPROVAL_TELEGRAM_TOKEN` | — | Telegram bot token for approval notifications |
 | `APPROVAL_TELEGRAM_CHAT_ID` | — | Chat or group that receives the notification |
 | `APPROVAL_WEBHOOK_URL` | — | JSON POST target for approvals, for Slack-style hooks |
+| `METRICS_TOKEN` | — | Enables `/api/metrics`; without it the endpoint returns 404 |
+| `METRICS_ENABLED` | — | `false` disables request timing entirely; default on |
 
 ¹ Only needed when PostgreSQL runs through Compose. ² Needed for the first seed run.
 
@@ -233,7 +235,7 @@ Public registration creates a `PENDING` USER. Only a Super Admin can activate it
 
 | Suite | Command | Count | Requirements |
 | --- | --- | :---: | --- |
-| Unit | `npm test` | 46 tests | Node only |
+| Unit | `npm test` | 56 tests | Node only |
 | Integration | `npm run test:integration` | 15 tests | PostgreSQL |
 | Excel/PDF reports | `npm run test:reports` | 8 tests | Python + LibreOffice |
 | Browser and accessibility | `npm run test:e2e` | 16 scenarios, 3 of them axe audits over 13 screens | Current build + Chromium |
@@ -260,6 +262,27 @@ npm audit                  # Dependency audit
 Integration and browser failures are surfaced as check-run annotations, so the cause is readable without downloading job logs. The Excel/PDF suite stays manual because it needs LibreOffice.
 
 `test:integration` provisions `kira_rapi_test` on the local Compose PostgreSQL and cleans fixture data inside that database; the database name must end with `_test` or the suite refuses to run. `test:e2e` **resets the dedicated `kira_rapi_e2e_test` database**, creates fixtures and runs the production build on port 3100, so it needs a current build. It provisions that database through `docker compose` locally and lets Prisma create it in CI (`E2E_SKIP_COMPOSE_DB=true`). The application database `kira_rapi` is never reset by tests; screenshots and PDFs land in `.data/screenshots`.
+
+## Metrics
+
+`/api/metrics` exposes Prometheus text metrics for scraping. It is off unless `METRICS_TOKEN` is set, and then requires it as a bearer credential — traffic patterns are not public information.
+
+| Metric | Type | Meaning |
+| --- | --- | --- |
+| `kira_http_requests_total` | counter | Completed requests by `method`, `route` and `status` class (`2xx` … `5xx`) |
+| `kira_http_request_duration_seconds` | histogram | Latency from request start to response finish |
+| `kira_request_errors_total` | counter | Unhandled errors reported by `onRequestError`, by route |
+| `kira_metrics_dropped_series_total` | counter | Requests ignored after the 200-series limit was reached |
+| `kira_process_uptime_seconds` | gauge | Seconds since the process began collecting |
+
+```bash
+METRICS_TOKEN=... # long random value, see .env.example
+curl -s -H "Authorization: Bearer $METRICS_TOKEN" http://localhost:3000/api/metrics | head
+```
+
+Routes are labelled by shape, not identity: `/dashboard/baucer-resit/cma1b2c3…` becomes `/dashboard/baucer-resit/:id`, query strings are dropped, and each label is capped at 200 time series with the overflow counted in `kira_metrics_dropped_series_total`. Static assets under `/_next/` are not recorded.
+
+Timing covers the whole server, not just the API routes: Next.js has no "request finished" hook, so the Node HTTP server is instrumented once from `instrumentation.ts`. That patch is idempotent, guarded by `try/catch`, and can be switched off with `METRICS_ENABLED=false`. Counters live in memory and reset when the process restarts — this is a scrape target, not a time-series database.
 
 ## Accessibility
 
@@ -377,9 +400,8 @@ Not yet implemented, in priority order:
 1. **Bank reconciliation** and CSV statement import with suggested matches.
 2. **Email delivery** for approval notifications; Telegram and webhooks work today.
 3. **Multiple attachments** per document (currently one file per document).
-4. **Metrics**: request latency and error rates exported for scraping; logs and health checks exist today, but there is no time-series data.
-5. **Slimmer image**: the LibreOffice layer dominates the image size; a separate report worker image would let the web container stay small.
-6. **Multi-organisation support** and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
+4. **Slimmer image**: the LibreOffice layer dominates the image size; a separate report worker image would let the web container stay small.
+5. **Multi-organisation support** and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
 
 Antivirus scanning for attachments is not provided. Restoring a backup of real user data has not been performed in this environment; run `npm run restore:verify` on the production host before you need it.
 
