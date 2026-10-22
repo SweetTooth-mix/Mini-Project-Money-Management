@@ -11,7 +11,7 @@
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "tsx --test tests/money.test.ts tests/ledger.test.ts tests/i18n.test.ts",
+    "test": "tsx --test tests/money.test.ts tests/ledger.test.ts tests/i18n.test.ts tests/throttle.test.ts tests/audit.test.ts",
     "test:integration": "node scripts/test-db.mjs",
     "test:e2e": "node scripts/test-e2e.mjs",
     "test:reports": ".venv/bin/python -m unittest discover -s tests/reports -v",

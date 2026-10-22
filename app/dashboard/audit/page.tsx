@@ -1,10 +1,11 @@
 import { uiLocale } from "@/lib/i18n";
 import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
-import { db } from "@/lib/db";
+import { ArrowDownToLine, Search as SearchIcon } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { param, type Search } from "@/lib/queries";
-import { Empty, PageHeading, Panel } from "@/components/ui";
+import { auditData } from "@/lib/audit";
+import type { Search } from "@/lib/queries";
+import { Empty, Field, PageHeading, Panel } from "@/components/ui";
 
 export default async function Audit({
   searchParams,
@@ -14,17 +15,24 @@ export default async function Audit({
   const { t, language } = await getI18n();
 
   await requireUser();
-  const search = await searchParams,
-    page = Math.max(1, Math.min(100000, parseInt(param(search, "page")) || 1));
-  const [logs, count] = await Promise.all([
-    db.auditLog.findMany({
-      include: { user: { select: { name: true } } },
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      skip: (page - 1) * 30,
-      take: 30,
-    }),
-    db.auditLog.count(),
-  ]);
+  const search = await searchParams;
+  const data = await auditData(search);
+  const filters = data.filters;
+  const query = new URLSearchParams(
+    Object.entries({
+      q: filters.query,
+      user: filters.userId,
+      action: filters.action,
+      from: filters.from,
+      to: filters.to,
+    }).filter(([, value]) => value),
+  ).toString();
+  const pageLink = (page: number) =>
+    "?" +
+    new URLSearchParams({
+      ...Object.fromEntries(new URLSearchParams(query)),
+      page: String(page),
+    });
   return (
     <>
       <PageHeading
@@ -32,14 +40,65 @@ export default async function Audit({
         description={t(
           "Siapa, bila dan apa yang berubah. Rekod untuk ketelusan organisasi.",
         )}
-      />
+      >
+        <a
+          className="button button-secondary"
+          href={`/api/audit/export${query ? `?${query}` : ""}`}
+        >
+          <ArrowDownToLine size={16} />
+          {t("Eksport log CSV")}
+        </a>
+      </PageHeading>
       <Panel
         title={t("Log aktiviti")}
         description={t(
           "Tindakan kewangan dan perubahan akses direkodkan bersama transaksi berkaitan.",
         )}
       >
-        {logs.length ? (
+        <form className="filter-bar">
+          <div className="search-input">
+            <SearchIcon size={17} aria-hidden="true" />
+            <input
+              type="search"
+              aria-label={t("Cari butiran, pengguna atau tindakan…")}
+              name="q"
+              defaultValue={filters.query}
+              maxLength={200}
+              placeholder={t("Cari butiran, pengguna atau tindakan…")}
+            />
+          </div>
+          <Field label={t("Pengguna")}>
+            <select name="user" defaultValue={filters.userId}>
+              <option value="">{t("Semua pengguna")}</option>
+              {data.users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label={t("Tindakan")}>
+            <select name="action" defaultValue={filters.action}>
+              <option value="">{t("Semua tindakan")}</option>
+              {data.actions.map((action) => (
+                <option key={action} value={action}>
+                  {action}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label={t("Dari tarikh")}>
+            <input type="date" name="from" defaultValue={filters.from} />
+          </Field>
+          <Field label={t("Hingga tarikh")}>
+            <input type="date" name="to" defaultValue={filters.to} />
+          </Field>
+          <button className="button button-secondary">{t("Tapis log")}</button>
+        </form>
+        <p className="form-hint">
+          {t("Tarikh mengikut waktu Malaysia (GMT+8).")}
+        </p>
+        {data.logs.length ? (
           <div className="table-scroll">
             <table>
               <thead>
@@ -51,38 +110,49 @@ export default async function Audit({
                 </tr>
               </thead>
               <tbody>
-                {logs.map((l) => (
-                  <tr key={l.id}>
+                {data.logs.map((log) => (
+                  <tr key={log.id}>
                     <td className="nowrap muted">
                       {new Intl.DateTimeFormat(uiLocale(language), {
                         dateStyle: "medium",
                         timeStyle: "short",
                         timeZone: "Asia/Kuala_Lumpur",
-                      }).format(l.createdAt)}
+                      }).format(log.createdAt)}
                     </td>
                     <td>
-                      <strong>{l.user.name}</strong>
+                      <strong>{log.user.name}</strong>
                     </td>
                     <td>
-                      <span className="audit-action">{l.action}</span>
+                      <span className="audit-action">{log.action}</span>
                     </td>
-                    <td>{l.detail}</td>
+                    <td>{log.detail}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        ) : query ? (
+          <Empty
+            description={t(
+              "Tiada log sepadan. Longgarkan penapis atau tukar julat tarikh.",
+            )}
+          />
         ) : (
           <Empty description={t("Aktiviti organisasi akan direkod di sini.")} />
         )}
         <div className="table-footer">
-          <span>{t("{count} rekod · Halaman {page}", { count, page })}</span>
+          <span>
+            {t("{count} rekod · Halaman {page}", {
+              count: data.count,
+              page: data.page,
+            })}
+          </span>
           <div className="pagination">
-            {page > 1 && (
-              <Link href={`?page=${page - 1}`}>{t("← Sebelum")}</Link>
+            {data.page > 1 && (
+              <Link href={pageLink(data.page - 1)}>{t("← Sebelum")}</Link>
             )}
-            {page * 30 < count && (
-              <Link href={`?page=${page + 1}`}>{t("Seterusnya →")}</Link>
+            {data.page < data.pages && (
+              <Link href={pageLink(data.page + 1)}>{t("Seterusnya →")}</Link>
             )}
           </div>
         </div>

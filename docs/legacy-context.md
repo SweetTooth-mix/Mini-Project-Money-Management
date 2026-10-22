@@ -1,88 +1,88 @@
 # Kira Rapi — JKKR App
 
-Kira Rapi ialah aplikasi web pengurusan kewangan untuk **Jawatankuasa Kemajuan & Keselamatan Kampung (JKKR)**. Aplikasi ini mengurus akaun, transaksi, dana, yuran ahli, serta penyediaan dan cetakan resit, baucer, dan rumusan kewangan.
+Kira Rapi is a web-based finance management application for a **Village Development and Security Committee (JKKR)**. It manages accounts, transactions, funds, member dues, and the preparation and printing of receipts, vouchers and financial summaries.
 
-> Dokumentasi ini berdasarkan ringkasan sistem sedia ada. Kod aplikasi, schema Prisma, dan skrip projek belum tersedia dalam repository ini; arahan setup di bawah ialah panduan umum yang perlu disemak apabila kod dimasukkan.
+> This document is based on a summary of the pre-existing system. The application code, Prisma schema and project scripts were not available in this repository; the setup instructions below are general guidance to be rechecked when the code is added.
 
-## Stack teknologi
+## Technology stack
 
-| Komponen | Teknologi |
+| Component | Technology |
 | --- | --- |
 | Framework | Next.js 14.2.5, App Router, React 18 |
-| Bahasa | TypeScript |
-| Pangkalan data | PostgreSQL 16 |
+| Language | TypeScript |
+| Database | PostgreSQL 16 |
 | ORM | Prisma 5.22 |
-| Authentication | JWT melalui `jose`, `bcryptjs`, cookie session selama 8 jam |
-| UI | Tailwind CSS, design system `kira-rapi-ui.css`, `lucide-react`, `recharts` |
+| Authentication | JWT via `jose`, `bcryptjs`, 8-hour session cookie |
+| UI | Tailwind CSS, `kira-rapi-ui.css` design system, `lucide-react`, `recharts` |
 | Deployment | PM2, nginx reverse proxy |
 
-## Fungsi utama
+## Main capabilities
 
-- **Akaun kewangan:** akaun BANK, CASH, dan OTHER dengan baki pembukaan.
-- **Buku tunai:** rekod pendapatan dan perbelanjaan, ledger, serta penapisan transaksi.
-- **Pengurusan dana:** pengasingan transaksi mengikut dana.
-- **Resit dan baucer:** dokumen berstatus DRAFT, APPROVED, atau PAID, dengan sokongan cetakan.
-- **Rumusan kewangan:** pengiraan baki pembukaan dan penutupan bulanan serta cetakan laporan.
-- **Yuran ahli:** rekod yuran bulanan.
-- **Tetapan organisasi:** profil organisasi, akaun, senarai, template dokumen, dan kelulusan.
-- **Audit:** jejak tindakan melalui AuditLog.
+- **Financial accounts:** BANK, CASH and OTHER accounts with opening balances.
+- **Cash book:** income and expense records, the ledger and transaction filtering.
+- **Fund management:** separating transactions by fund.
+- **Receipts and vouchers:** documents with DRAFT, APPROVED or PAID status, with print support.
+- **Financial summaries:** monthly opening and closing balance calculations plus report printing.
+- **Member dues:** monthly dues records.
+- **Organisation settings:** organisation profile, accounts, lists, document templates and approvals.
+- **Audit:** an action trail through AuditLog.
 
-## Model data
+## Data model
 
-| Model | Tujuan |
+| Model | Purpose |
 | --- | --- |
-| `Account` | Akaun kewangan dengan jenis BANK/CASH/OTHER dan opening balance |
-| `Transaction` | Transaksi INCOME/EXPENSE yang dikaitkan dengan akaun dan dana |
-| `Dana` | Enum dana: GAB_JKKR, AC_TUMPANG, DANA_KEROHANIAN, LAIN2 |
-| `ListItem` | Senarai tersuai, termasuk tambahan pilihan dana pada aplikasi |
-| `BaucerResit` | Dokumen baucer/resit dengan status DRAFT/APPROVED/PAID |
-| `YuranRecord` | Rekod yuran bulanan ahli |
-| `CompanyProfile` | Profil organisasi dan penandatangan sedia, semak, serta lulus |
-| `DocumentTemplate` | Template resit, baucer, dan rumusan; logo, label, serta penandatangan |
-| `AuditLog` | Rekod tindakan pengguna |
+| `Account` | Financial account with BANK/CASH/OTHER type and opening balance |
+| `Transaction` | INCOME/EXPENSE transaction linked to an account and fund |
+| `Dana` | Fund enum: GAB_JKKR, AC_TUMPANG, DANA_KEROHANIAN, LAIN2 |
+| `ListItem` | Custom lists, including additional fund options in the application |
+| `BaucerResit` | Voucher/receipt document with DRAFT/APPROVED/PAID status |
+| `YuranRecord` | A member's monthly dues record |
+| `CompanyProfile` | Organisation profile and prepared-by, checked-by and approved-by signatories |
+| `DocumentTemplate` | Receipt, voucher and summary templates; logo, labels and signatories |
+| `AuditLog` | Record of user actions |
 
-Peranan pengguna: **SUPER_ADMIN**, **ADMIN**, dan **USER**. Perincian kebenaran setiap peranan perlu dirujuk pada implementasi aplikasi.
+User roles: **SUPER_ADMIN**, **ADMIN** and **USER**. The exact permission set per role must be taken from the application implementation.
 
-## Modul dan route
+## Modules and routes
 
-| Route | Modul |
+| Route | Module |
 | --- | --- |
-| `/dashboard` | Dashboard utama |
-| `/dashboard/buku-tunai` | Buku tunai, ledger, dan filter |
-| `/dashboard/baucer-resit` | Pengurusan dan cetakan resit/baucer |
-| `/dashboard/rumusan` | Rumusan kewangan |
-| `/dashboard/rumusan/cetak` | Cetakan rumusan |
-| `/dashboard/yuran` | Yuran bulanan |
-| `/dashboard/settings` | Template, senarai, akaun, dan kelulusan |
+| `/dashboard` | Main dashboard |
+| `/dashboard/buku-tunai` | Cash book, ledger and filters |
+| `/dashboard/baucer-resit` | Receipt/voucher management and printing |
+| `/dashboard/rumusan` | Financial summaries |
+| `/dashboard/rumusan/cetak` | Summary printing |
+| `/dashboard/yuran` | Monthly dues |
+| `/dashboard/settings` | Templates, lists, accounts and approvals |
 
-Sistem dilaporkan mempunyai **27 API route** yang merangkumi authentication (`/api/auth/*`), accounts, transactions, baucer-resit, company-profiles, list-types/items, templates, uploads, users, yuran, dan me. Method HTTP, payload, dan kebenaran endpoint perlu dirujuk pada kod route.
+The system reportedly has **27 API routes** covering authentication (`/api/auth/*`), accounts, transactions, baucer-resit, company-profiles, list-types/items, templates, uploads, users, yuran and me. HTTP methods, payloads and endpoint permissions must be taken from the route code.
 
-## Komponen khusus
+## Specialised components
 
-- `lib/terbilang.ts` menukar nombor kepada perkataan Melayu, termasuk format “ringgit Malaysia” pada baucer.
-- `lib/rumusan.ts` dan `rumusan-ledger.ts` mengira baki pembukaan dan penutupan mengikut bulan.
-- `/dashboard/rumusan/cetak/print.css` menyediakan gaya cetakan rumusan.
-- Middleware melindungi route kecuali `/login`, `/register`, dan `/`.
-- Security headers merangkumi CSP, HSTS, dan `X-Frame-Options: DENY`.
+- `lib/terbilang.ts` converts numbers to Malay words, including the "ringgit Malaysia" format on vouchers.
+- `lib/rumusan.ts` and `rumusan-ledger.ts` calculate monthly opening and closing balances.
+- `/dashboard/rumusan/cetak/print.css` provides the summary print styles.
+- Middleware protects routes except `/login`, `/register` and `/`.
+- Security headers include CSP, HSTS and `X-Frame-Options: DENY`.
 
-## Setup pembangunan
+## Development setup
 
-### Prasyarat
+### Prerequisites
 
-- Node.js dan package manager yang serasi dengan `package.json` serta lockfile projek.
+- A Node.js and package manager version compatible with the project's `package.json` and lockfile.
 - PostgreSQL 16.
-- Kod aplikasi lengkap dan konfigurasi environment yang dirujuk oleh aplikasi.
+- The complete application code and the environment configuration the application refers to.
 
-### Langkah umum
+### General steps
 
-1. Masukkan atau dapatkan kod aplikasi lengkap dalam checkout ini.
-2. Semak `package.json`, lockfile, schema Prisma, dan contoh konfigurasi environment.
-3. Pasang dependencies menggunakan package manager projek. Jika projek menggunakan `package-lock.json`, gunakan `npm ci`.
-4. Sediakan pangkalan data PostgreSQL untuk pembangunan. Tetapkan sambungan DB dan konfigurasi authentication mengikut nama pemboleh ubah sebenar dalam kod. Jangan commit fail yang mengandungi rahsia.
-5. Generate Prisma Client dan jalankan migration menggunakan skrip projek. Pastikan sambungan menunjuk kepada DB pembangunan sebelum menjalankan migration atau seed.
-6. Jalankan skrip development yang ditetapkan dalam `package.json`.
+1. Add or obtain the complete application code in this checkout.
+2. Review `package.json`, the lockfile, the Prisma schema and the example environment configuration.
+3. Install dependencies with the project's package manager. If the project uses `package-lock.json`, use `npm ci`.
+4. Provision a PostgreSQL database for development. Set the database connection and authentication configuration using the real variable names in the code. Never commit files containing secrets.
+5. Generate the Prisma Client and run migrations with the project scripts. Make sure the connection points at the development database before running migrations or seeds.
+6. Run the development script defined in `package.json`.
 
-Jika skrip dan struktur projek mengesahkan penggunaan npm/Prisma standard, contoh arahan ialah:
+If the scripts and project structure confirm standard npm/Prisma usage, the example commands are:
 
 ```bash
 npm ci
@@ -91,57 +91,57 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Arahan ini belum diuji dalam repository ini kerana kod dan manifest belum tersedia. Gunakan arahan seed yang ditetapkan oleh projek hanya pada DB pembangunan atau ujian.
+These commands have not been tested in this repository because the code and manifest were not available. Use the seed command defined by the project only against a development or test database.
 
-## Deployment sedia ada
+## Existing deployment
 
-Maklumat berikut ialah konfigurasi deployment yang dilaporkan, bukan hasil pemeriksaan langsung daripada repository ini:
+The following is the reported deployment configuration, not the result of a direct inspection of this repository:
 
-| Tetapan | Nilai |
+| Setting | Value |
 | --- | --- |
-| Nama aplikasi | Kira Rapi — JKKR App |
+| Application name | Kira Rapi — JKKR App |
 | Container | LXC 101 |
 | Domain | [debri.cipher-node.org](https://debri.cipher-node.org) |
-| Pengguna sistem | `jkkr` |
-| Direktori aplikasi | `/home/jkkr/jkkr-app` |
-| Proses PM2 | `kira-rapi`, mode fork |
-| Port aplikasi | `3000` |
+| System user | `jkkr` |
+| Application directory | `/home/jkkr/jkkr-app` |
+| PM2 process | `kira-rapi`, fork mode |
+| Application port | `3000` |
 | Reverse proxy | nginx, port 80 |
-| Pangkalan data | PostgreSQL, `localhost:5432` |
+| Database | PostgreSQL, `localhost:5432` |
 
-Aliran trafik: nginx menerima permintaan web dan menghantarnya kepada Next.js pada port 3000; aplikasi menggunakan PostgreSQL sebagai stor data.
+Traffic flow: nginx receives web requests and forwards them to Next.js on port 3000; the application uses PostgreSQL as its data store.
 
-Untuk deployment seterusnya, gunakan skrip build projek dan konfigurasi PM2/nginx yang sebenar. Semak migration, backup DB, pemboleh ubah environment, serta readiness aplikasi sebelum restart servis.
+For future deployments, use the project's build scripts and the real PM2/nginx configuration. Review migrations, database backups, environment variables and application readiness before restarting the service.
 
-### Pemeriksaan operasi
+### Operational checks
 
-Pada host deployment, dengan akses yang sesuai:
+On the deployment host, with appropriate access:
 
 ```bash
-# Jalankan sebagai pengguna jkkr untuk melihat proses PM2 aplikasi.
+# Run as the jkkr user to view the application's PM2 processes.
 cd /home/jkkr/jkkr-app
 pm2 status
 pm2 logs kira-rapi --lines 50 --nostream
 
-# Semak status servis sistem.
+# Check the system services.
 systemctl status nginx postgresql --no-pager
 ```
 
-Status yang dilaporkan semasa ringkasan disediakan: PM2 `kira-rapi` online, nginx dan PostgreSQL active, serta Next.js mendengar pada port 3000. Status ini boleh berubah dan perlu diperiksa semula pada host.
+Status at the time the summary was prepared: PM2 `kira-rapi` online, nginx and PostgreSQL active, and Next.js listening on port 3000. This status can change and must be checked again on the host.
 
-## Akaun seed dan keselamatan
+## Seed accounts and security
 
-Seed dilaporkan menyediakan akaun contoh untuk peranan super admin dan pengguna. Semak skrip seed untuk butirannya dan gunakan hanya dalam persekitaran pembangunan atau ujian. Tukar atau nyahaktifkan akaun lalai sebelum penggunaan production; kata laluan tidak disimpan dalam README ini.
+The seed reportedly provides sample accounts for the super admin and user roles. Review the seed script for details and use it only in development or test environments. Change or disable the default accounts before production use; passwords are not recorded in this README.
 
-## Validasi
+## Validation
 
-Selepas kod aplikasi tersedia, semak workflow berikut dengan DB ujian:
+Once the application code is available, check the following workflows against a test database:
 
-- Login, logout, tamat tempoh session, dan akses mengikut peranan.
-- Rekod transaksi masuk/keluar serta kesannya pada baki akaun dan dana.
-- Baki pembukaan/penutupan bulanan dalam buku tunai dan rumusan.
-- Penyediaan, kelulusan, pembayaran, dan cetakan resit/baucer.
-- Rekod yuran bulanan dan jejak audit.
-- Build production serta ujian/type check yang disediakan oleh projek.
+- Sign-in, sign-out, session expiry and role-based access.
+- Recording income and expense transactions and their effect on account and fund balances.
+- Monthly opening and closing balances in the cash book and summaries.
+- Preparing, approving, paying and printing receipts/vouchers.
+- Monthly dues records and the audit trail.
+- Production build and the tests or type checks the project provides.
 
-Tiada build atau test suite boleh dijalankan daripada kandungan repository semasa.
+No build or test suite can be run from the current repository contents.

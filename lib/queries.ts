@@ -1,10 +1,10 @@
 import { db } from "./db";
+import { param, type Search } from "./search";
 import { monthRange } from "./money";
 import { summarize } from "./ledger";
 
-export type Search = { [key: string]: string | string[] | undefined };
-export const param = (search: Search, key: string) =>
-  typeof search[key] === "string" ? (search[key] as string) : "";
+export type { Search } from "./search";
+export { param } from "./search";
 
 export async function ledgerData(search: Search) {
   const range = monthRange(param(search, "month"));

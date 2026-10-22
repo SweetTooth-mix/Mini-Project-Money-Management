@@ -1,65 +1,65 @@
-# Output mengikut template Excel asal
+# Output matching the original Excel templates
 
-Buka **Laporan Excel** (`/dashboard/laporan-excel`). Pilih tahun, dana bagi tiga kolum asal dan dana akaun tunjang. Dana **Gabungan JKKR** menjadi pilihan asal tunjang. Dana tambahan digabungkan dalam **Lain2** supaya empat pecahan dana asal dikekalkan.
+Open **Excel reports** (`/dashboard/laporan-excel`). Choose the year, the fund for each of the three original columns and the funds account fund. The **Gabungan JKKR** fund becomes the default funds-account choice. Extra funds are merged into **Lain2** so the four original fund splits are preserved.
 
-Butang **Jana 4 Excel berpaut (.zip)** menghasilkan:
+The **Generate 4 linked Excel files (.zip)** button produces:
 
-| Fail | Kandungan dan pautan |
+| File | Contents and links |
 | --- | --- |
-| `1. Baucer dan Resit.xlsx` | Resit/baucer yang mempunyai posting bagi tahun berkenaan, `Data` ledger boleh edit, baki awal, data yuran dan panduan |
-| `2. Buku Kewangan.xlsx` | Januari–Disember, baki berjalan, bank/tunai dan pecahan dana; formula membaca fail 1 |
-| `3. Bulanan dan Rumusan Tahunan.xlsx` | Laporan bulanan mengikut buku kewangan dan rumusan 12 bulan; formula membaca fail 2 |
-| `4. Akaun Tunjang.xlsx` | Laporan bulanan dana pilihan, rumusan tahunan mengikut kategori asal dan rumusan yuran; formula membaca sumber fail 1 dan 2 |
+| `1. Baucer dan Resit.xlsx` | Receipts/vouchers with a posting in the chosen year, an editable `Data` ledger sheet, opening balances, dues data and a guide |
+| `2. Buku Kewangan.xlsx` | January–December, running balances, bank/cash and fund splits; formulas read file 1 |
+| `3. Bulanan dan Rumusan Tahunan.xlsx` | Monthly reports according to the books and a 12-month summary; formulas read file 2 |
+| `4. Akaun Tunjang.xlsx` | Monthly report for the chosen funds account, an annual summary by original category and a dues summary; formulas read sources in files 1 and 2 |
 
-Workbook mengekalkan sel gabungan, lebar kolum, fon, warna, border, label, susunan dan ruangan tandatangan daripada empat template yang dibekalkan. Fail `.xls` lama ditukar kepada `.xlsx`. Baris transaksi ditambah apabila ruang asal tidak mencukupi; tajuk jadual berulang pada halaman berikutnya. Ruangan teks panjang boleh bertambah tinggi. Kawasan cetakan ditetapkan supaya ruangan tandatangan tidak terpotong.
+The workbooks preserve merged cells, column widths, fonts, colours, borders, labels, ordering and signature areas from the four supplied templates. Legacy `.xls` files were converted to `.xlsx`. Transaction rows are appended when the original space runs out; table headers repeat on following pages. Long text fields may grow taller. Print areas are set so signature blocks are not cut off.
 
-Helaian Februari asal yang kosong dilengkapkan menggunakan format Januari. Tahun, nama organisasi, penandatangan dan angka datang daripada aplikasi. Pautan lama ke drive Windows dan fail tahun 2021/2025/2026 tidak digunakan. Template dalam repository telah dibersihkan daripada transaksi, nama penandatangan, nombor cek, alamat, maklumat workbook dan cache pautan asal; fail upload yang mengandungi data sejarah tidak disimpan dalam repository dan tidak diimport ke database.
+The originally empty February sheet is completed using the January format. Year, organisation name, signatories and figures come from the application. The old links to a Windows drive and the 2021/2025/2026 files are not used. The templates in the repository have been cleaned of transactions, signatory names, cheque numbers, addresses, workbook metadata and original link caches; uploaded files containing historical data are not stored in the repository and are not imported into the database.
 
-## Edit dan hubungan antara fail
+## Editing and the relationship between files
 
-1. Ekstrak semua fail ke folder yang sama. Kekalkan nama fail supaya pautan relatif terus sah.
-2. Buka keempat-empat fail dalam Excel dan benarkan kemas kini pautan bagi pakej ini. Data dikira semula melalui formula.
-3. Edit amaun bertanda, nama, butiran dan rujukan pada helaian **Data** dalam fail 1. Amaun positif bermaksud pertambahan baki; amaun negatif bermaksud pengurangan baki.
-4. Nama kategori tunjang pada Data boleh dipadankan kepada label dalam rumusan tunjang. Kategori asal yang tidak sepadan dimasukkan dalam **Lain-lain** semasa penjanaan.
-5. Jika angka diubah dalam Excel, kemas kini ruangan **Ringgit Malaysia** juga. Terbilang dijana semula secara automatik apabila dokumen diubah melalui aplikasi dan dieksport semula.
-6. Untuk tambah/padam catatan atau menukar bulan, jenis akaun, jenis catatan dan dana: ubah melalui aplikasi dan jana semula. Struktur baris laporan ditentukan ketika eksport; ia bukan pengganti editor transaksi aplikasi.
+1. Extract all files into the same folder. Keep the file names so the relative links stay valid.
+2. Open all four files in Excel and allow link updates for this package. Data is recalculated through formulas.
+3. Edit signed amounts, names, details and references on the **Data** sheet in file 1. A positive amount increases the balance; a negative amount decreases it.
+4. Funds-account category names on Data can be matched to the labels in the funds-account summary. Original categories without a match are placed in **Lain-lain** during generation.
+5. If you change figures in Excel, update the **Ringgit Malaysia** words column too. Amount-in-words is regenerated automatically when a document is changed in the application and exported again.
+6. To add or remove entries, or change the month, account type, entry type and fund: change them in the application and regenerate. Report row structure is fixed at export time; this is not a replacement for the application's transaction editor.
 
-Edit Excel tidak menyegerakkan database aplikasi. Pakej ialah snapshot boleh edit. Formula menyimpan nilai cache supaya angka asal boleh dilihat tanpa fail sumber dibuka; pembaca Excel berbeza mungkin memerlukan kemas kini pautan atau pengiraan semula. Setiap pakej tahunan mempunyai baki awalnya sendiri, bukan pautan langsung kepada pakej tahun lain yang dimuat turun sebelumnya.
+Editing Excel does not synchronise the application database. The package is an editable snapshot. Formulas keep cached values so the original figures can be seen without opening the source files; different Excel readers may need a link update or recalculation. Each annual package carries its own opening balances rather than a direct link to a previously downloaded package.
 
-## Cetak dan PDF
+## Print and PDF
 
-Pilih bulan dan jenis laporan, kemudian klik **PDF format asal**. Penjana mengambil nilai daripada workbook Excel yang sama dan menggunakan **LibreOffice Calc** untuk mencetak kepada PDF A4. Tiada reka bentuk HTML berasingan. PDF ialah nilai pada masa dijana; perubahan Excel selepas muat turun tidak mengubah PDF terdahulu. Cetak Excel yang diedit menggunakan Excel, atau ubah rekod aplikasi dan jana PDF baharu.
+Choose a month and report type, then click **PDF, original format**. The generator reads the same Excel workbook values and uses **LibreOffice Calc** to print to A4 PDF. There is no separate HTML layout. A PDF is the values at generation time; Excel changes after download do not alter earlier PDFs. Print an edited workbook with Excel, or change the application record and generate a new PDF.
 
-Pada halaman resit/baucer terdapat butang **Excel format asal** dan **PDF format asal** untuk dokumen individu. Excel individu menggunakan sel isi boleh edit tanpa kebergantungan kepada fail lain. Draf, dokumen belum dibayar dan dokumen dibatalkan mempunyai penanda status. Dokumen yang diluluskan menggunakan profil organisasi yang dibekukan ketika kelulusan.
+The receipts/vouchers page offers **Excel, original format** and **PDF, original format** for individual documents. The individual Excel file uses editable fill-in cells with no dependencies on other files. Drafts, unpaid documents and voided documents carry status markers. Approved documents use the organisation profile frozen at approval.
 
-## Pengiraan
+## Calculations
 
-- Satu transaksi database `RepeatableRead` membekalkan data kepada keempat-empat workbook.
-- Dokumen tanpa posting tidak dimasukkan dalam buku kewangan.
-- Buku kewangan dan laporan bulanan memaparkan pergerakan baki sebenar, termasuk catatan bertanda `OPENING`, `TRANSFER_IN`, `TRANSFER_OUT` dan `REVERSAL`. Pindahan hanya mengubah kolum bank/tunai dan tidak dianggap kutipan dana.
-- Rumusan tahunan memaparkan penerimaan/perbelanjaan bersih. Pembalikan menjadi nilai negatif dalam jenis asal pada bulan pembalikan. Pindahan dikecualikan; pembukaan sepanjang tahun ditunjukkan pada baris **Pelarasan** yang menggunakan ruang kosong selepas baki bulanan. Baki akhir termasuk pelarasan tersebut.
-- Akaun `OTHER` disertakan bersama bank; tajuk bertukar kepada **Bank/lain** apabila perlu.
-- Rumusan yuran membaca tuntutan tahun dipilih dan status bayaran semasa eksport. Ia tidak menganggap bilangan ahli atau kadar RM1,000 daripada contoh asal. Setiap tuntutan mempunyai baris supaya bayaran berganda dengan tarikh/rujukan berlainan tidak hilang. Ini bukan laporan status yuran pada suatu tarikh sejarah sebelum pembatalan.
-- Nilai wang dikira dengan `Decimal` ketika eksport, berasal daripada integer sen. Formula menggunakan `ROUND(..., 2)`. Nilai yang melebihi ketepatan angka Excel ditolak.
+- A single `RepeatableRead` database transaction supplies data to all four workbooks.
+- Documents without a posting are excluded from the books.
+- The books and monthly reports show real balance movements, including entries marked `OPENING`, `TRANSFER_IN`, `TRANSFER_OUT` and `REVERSAL`. Transfers only shift the bank/cash columns and are never counted as fund collection.
+- The annual summary shows net receipts and expenses. A reversal becomes a negative value within its original type in the reversal month. Transfers are excluded; opening movements across the year appear on the **Adjustment** row that uses the blank space after the monthly balances. The closing balance includes those adjustments.
+- `OTHER` accounts are included with bank; the heading becomes **Bank/lain** where needed.
+- The dues summary reads the selected year's claims and the payment status at export time. It does not assume the member count or the RM1,000 rate from the original example. Each claim gets a row so duplicate payments with different dates or references are not lost. This is not a status report for a historical date before a void.
+- Money is computed with `Decimal` during export, originating from integer sen. Formulas use `ROUND(..., 2)`. Values beyond Excel's numeric precision are rejected.
 
-## Persediaan server
+## Server setup
 
-Python 3.10+, sokongan `venv` dan LibreOffice Calc diperlukan. Contoh Debian/Ubuntu:
+Python 3.10+, `venv` support and LibreOffice Calc are required. Debian/Ubuntu example:
 
 ```bash
 sudo apt-get install python3-venv libreoffice-calc fonts-liberation
 npm run setup:reports
 ```
 
-`setup:local` turut menjalankan `setup:reports`. Dependencies Python dipin dalam `scripts/excel/requirements.txt` dan dipasang dalam `.venv` yang tidak dicommit. Untuk lokasi Python tersuai, tetapkan `EXCEL_PYTHON` kepada executable yang mempunyai `openpyxl`. Jangan salin virtualenv antara mesin; jalankan setup semula.
+`setup:local` also runs `setup:reports`. Python dependencies are pinned in `scripts/excel/requirements.txt` and installed into an uncommitted `.venv`. For a custom Python location, set `EXCEL_PYTHON` to an executable that has `openpyxl`. Never copy a virtualenv between machines; run setup again instead.
 
-Jalankan aplikasi dari root repo. Direktori `templates/excel` dan `scripts/excel` diperlukan pada server; konfigurasi tracing Next turut menyertakannya. LibreOffice mesti berada dalam PATH pengguna PM2. Gunakan satu instance aplikasi seperti konfigurasi PM2 sedia ada. Had dua penjanaan serentak dilaksanakan bagi setiap proses; bagi banyak instance, tambah had concurrency pada infrastruktur.
+Run the application from the repository root. The `templates/excel` and `scripts/excel` directories are required on the server; the Next tracing configuration includes them. LibreOffice must be on the PM2 user's PATH. Use a single application instance as in the existing PM2 configuration. The two concurrent generations limit is enforced per process; for multiple instances, add a concurrency limit at the infrastructure level.
 
-Permintaan eksport memerlukan sesi aktif dan jawapan menggunakan `Cache-Control: private, no-store`. Tiada macro atau formula daripada upload asal dijalankan. Teks rekod dimasukkan sebagai nilai literal, termasuk teks bermula dengan `=`. Fail sementara berada dalam direktori peribadi dan dibersihkan selepas penjanaan. Ralat worker tidak mendedahkan rekod atau laluan tempatan kepada pengguna.
+Export requests require an active session and responses use `Cache-Control: private, no-store`. No macros or formulas from original uploads are executed. Record text is inserted as literal values, including text beginning with `=`. Temporary files live in a private directory and are removed after generation. Worker errors never expose records or local paths to the user.
 
-Had pakej: 5,000 catatan ledger, 500 dokumen dan 5,000 tuntutan yuran bagi satu tahun. Had masa penjanaan 110 saat; keperluan melebihi had ini memerlukan eksport arkib melalui proses latar. Untuk nginx, gunakan `proxy_read_timeout 120s` bagi endpoint penjanaan jika timeout lalai lebih pendek.
+Package limits: 5,000 ledger entries, 500 documents and 5,000 dues claims for one year. Generation timeout is 110 seconds; requirements beyond that need an archive export through a background process. For nginx, use `proxy_read_timeout 120s` on the generation endpoint if the default timeout is shorter.
 
-## Semakan
+## Checks
 
 ```bash
 npm run test:reports
@@ -67,4 +67,4 @@ npm run build
 npm run test:e2e
 ```
 
-Ujian laporan menyemak baki untuk 12 bulan, pembalikan, pindahan, dana tambahan, baki pembukaan, baris dinamik, data kosong, formula injection, cache dan pautan workbook, gaya asal serta PDF. Ujian pengiraan semula menyelesaikan hubungan workbook yang dijana menjadi helaian dalam workbook ujian, mengubah amaun sumber, kemudian meminta LibreOffice mengira formula secara bebas. Pengiraan semula dalam Microsoft Excel desktop tidak diautomasi dalam environment Linux ini.
+The report tests check balances for 12 months, reversals, transfers, extra funds, opening balances, dynamic rows, empty data, formula injection, workbook caches and links, original styling and PDF. The recalculation test rewrites the generated workbook links into sheets inside a test workbook, changes a source amount, then asks LibreOffice to recalculate the formulas independently. Recalculation in desktop Microsoft Excel is not automated in this Linux environment.

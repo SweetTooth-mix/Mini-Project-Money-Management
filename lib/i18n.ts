@@ -2003,6 +2003,50 @@ export const dictionary = {
     ms: "Daftar ahli",
     en: "Register member",
   },
+  "Cari butiran, pengguna atau tindakan…": {
+    ms: "Cari butiran, pengguna atau tindakan…",
+    en: "Search details, users or actions…",
+  },
+  "Semua pengguna": {
+    ms: "Semua pengguna",
+    en: "All users",
+  },
+  "Semua tindakan": {
+    ms: "Semua tindakan",
+    en: "All actions",
+  },
+  "Dari tarikh": {
+    ms: "Dari tarikh",
+    en: "From date",
+  },
+  "Hingga tarikh": {
+    ms: "Hingga tarikh",
+    en: "Until date",
+  },
+  "Tapis log": {
+    ms: "Tapis log",
+    en: "Filter log",
+  },
+  "Eksport log CSV": {
+    ms: "Eksport log CSV",
+    en: "Export log CSV",
+  },
+  Entiti: {
+    ms: "Entiti",
+    en: "Entity",
+  },
+  "Tarikh mengikut waktu Malaysia (GMT+8).": {
+    ms: "Tarikh mengikut waktu Malaysia (GMT+8).",
+    en: "Dates follow Malaysia time (GMT+8).",
+  },
+  "Tiada log sepadan. Longgarkan penapis atau tukar julat tarikh.": {
+    ms: "Tiada log sepadan. Longgarkan penapis atau tukar julat tarikh.",
+    en: "No matching log entries. Loosen the filters or change the date range.",
+  },
+  "Log audit mengandungi butiran perubahan dan tidak boleh disunting.": {
+    ms: "Log audit mengandungi butiran perubahan dan tidak boleh disunting.",
+    en: "The audit log contains change details and cannot be edited.",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof dictionary;
