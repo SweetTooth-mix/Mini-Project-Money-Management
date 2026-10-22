@@ -1,7 +1,22 @@
 import type { NextConfig } from "next";
 
+// Development only: the preview environment embeds the app in an iframe and
+// proxies it from another host. Production keeps DENY + frame-ancestors 'none'.
+const isDev = process.env.NODE_ENV === "development";
+const devPreviewOrigins = (process.env.DEV_PREVIEW_ORIGINS ?? "")
+  .split(",")
+  .map((origin) =>
+    origin
+      .trim()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, ""),
+  )
+  .filter(Boolean);
+const frameAncestors = isDev ? "'self' https:" : "'none'";
+
 const config: NextConfig = {
   poweredByHeader: false,
+  ...(devPreviewOrigins.length ? { allowedDevOrigins: devPreviewOrigins } : {}),
   outputFileTracingIncludes: {
     "/api/reports": ["./templates/excel/*.xlsx", "./scripts/excel/generate.py"],
   },
@@ -12,7 +27,7 @@ const config: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          { key: "X-Frame-Options", value: "DENY" },
+          ...(isDev ? [] : [{ key: "X-Frame-Options", value: "DENY" }]),
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
@@ -23,8 +38,9 @@ const config: NextConfig = {
             key: "Content-Security-Policy",
             value:
               "default-src 'self'; script-src 'self' 'unsafe-inline'" +
-              (process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "") +
-              "; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+              (isDev ? " 'unsafe-eval'" : "") +
+              "; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; " +
+              `frame-ancestors ${frameAncestors}; base-uri 'self'; form-action 'self'; object-src 'none'`,
           },
           ...(process.env.APP_URL?.startsWith("https://")
             ? [

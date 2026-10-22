@@ -112,6 +112,7 @@ export function Shell({
       }
     };
     const desktop = window.matchMedia("(min-width: 1101px)");
+    const trigger = menuButton.current;
     const onResize = () => {
       if (desktop.matches) setOpen(false);
     };
@@ -121,7 +122,7 @@ export function Shell({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onResize);
-      menuButton.current?.focus();
+      trigger?.focus();
     };
   }, [open]);
   const current =

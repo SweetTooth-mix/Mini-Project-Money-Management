@@ -67,18 +67,36 @@ Health menunjukkan sambungan DB. Untuk semakan fungsi, login dengan akaun ujian,
 
 Sertakan tiga komponen: dump PostgreSQL, direktori `UPLOAD_DIR`, dan konfigurasi deployment peribadi. Simpan backup di luar checkout dan lindungi aksesnya.
 
-Contoh backup DB Compose tempatan:
+Backup berjadual (dump + uploads + manifest SHA-256, retensi 14 hari):
 
 ```bash
-mkdir -p .data/backups
-chmod 700 .data/backups
-docker compose exec -T db pg_dump -U kira -d kira_rapi -Fc > .data/backups/kira-rapi.dump
-chmod 600 .data/backups/kira-rapi.dump
+npm run backup                        # tulis ke .data/backups
+KEEP_DAYS=30 npm run backup           # retensi berbeza
+BACKUP_DIR=/mnt/backup npm run backup # simpan di luar checkout
 ```
 
-Gunakan nama fail bertarikh dalam operasi biasa supaya backup terdahulu tidak ditimpa. Salin uploads dalam tetingkap penyelenggaraan yang sama untuk memastikan lampiran dan DB selaras. Jangan commit backup ke Git.
+Ia menamakan fail dengan tarikh (`kira-rapi-YYYYMMDD-HHMMSS.dump`), memeriksa dump boleh dibaca semula oleh `pg_restore`, dan mengarkibkan `UPLOAD_DIR` pada masa yang sama supaya lampiran dan DB selaras. Jadualkan melalui cron, contohnya `15 2 * * * cd /srv/kira-rapi && npm run backup`.
 
-Uji pemulihan ke database dan direktori uploads yang berasingan dahulu. Sahkan kiraan dokumen, jumlah ledger, baki per akaun/dana dan beberapa lampiran sebelum menukar sambungan aplikasi. Pemulihan backup pengguna sebenar belum dijalankan dalam environment ini.
+Jika PostgreSQL bukan dalam Compose, jalankan `pg_dump`/`pg_restore` terus terhadap `DATABASE_URL` dengan format yang sama, dan pastikan `UPLOAD_DIR` disalin dalam tetingkap yang sama. Jangan commit backup ke Git.
+
+**Uji pemulihan, jangan andaikan.** Skrip verifikasi memulihkan dump ke database buangan (nama mesti berakhir `_test`), kemudian membandingkan kiraan baris, jumlah ledger, baki per akaun dan checksum uploads dengan sumber:
+
+```bash
+npm run restore:verify                # dump terbaharu
+npm run restore:verify -- .data/backups/kira-rapi-20261020-021500.dump --keep
+```
+
+Keputusan `PASS` bermaksud backup benar-benar boleh dipulihkan dan konsisten. Jalankan semasa tempoh tenang kerana dokumen yang dipos ketika backup berjalan boleh membuat perbandingan gagal secara sah. Database pemulihan dipadam selepas semakan kecuali `--keep`; pada kegagalan ia dikekalkan untuk siasatan.
+
+Pemulihan ke host production baharu masih perlu dijalankan secara manual sekali sebelum hari kejadian.
+
+### Penyelenggaraan berjadual
+
+Sesi yang tamat tempoh dan kaunter cubaan log masuk dipadam secara automatik sekali sejam apabila ada log masuk berjaya. Untuk pemasangan yang jarang digunakan, jadualkan pembersihan dalam cron:
+
+```bash
+30 3 * * * cd /srv/kira-rapi && npm run cleanup
+```
 
 ## Peraturan penting
 

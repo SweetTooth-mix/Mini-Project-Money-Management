@@ -10,6 +10,7 @@
     "build": "prisma generate && next build",
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test": "tsx --test tests/money.test.ts tests/ledger.test.ts tests/i18n.test.ts",
     "test:integration": "node scripts/test-db.mjs",
     "test:e2e": "node scripts/test-e2e.mjs",
@@ -19,7 +20,12 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "npm run db:generate && npm run db:migrate && npm run db:seed",
-    "setup:local": "bash scripts/setup-local.sh"
+    "setup:local": "bash scripts/setup-local.sh",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "cleanup": "tsx scripts/cleanup.ts",
+    "backup": "bash scripts/backup.sh",
+    "restore:verify": "bash scripts/restore-verify.sh"
   },
   "dependencies": {
     "@fontsource/dm-sans": "5.3.0",
@@ -42,6 +48,9 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "dotenv": "^17.0.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.0",
+    "prettier": "^3.9.10",
     "prisma": "6.19.3",
     "tsx": "^4.23.0",
     "typescript": "^5.9.0"

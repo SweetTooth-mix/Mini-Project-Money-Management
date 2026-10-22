@@ -164,7 +164,7 @@ async function seed() {
     },
   ];
   for (const sample of samples) {
-    const { day, fund, ...fields } = sample;
+    const { fund, ...fields } = sample;
     const date = dateOnly(
       `${month}-${String(Math.min(sample.day, Number(today().slice(8)))).padStart(2, "0")}`,
     );

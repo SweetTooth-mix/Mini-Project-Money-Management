@@ -29,6 +29,7 @@ import {
   today,
 } from "@/lib/money";
 import { deleteUpload, storeUpload } from "@/lib/uploads";
+import { pruneOpportunistically } from "@/lib/maintenance";
 
 const str = (form: FormData, key: string, max = 200) =>
   z
@@ -139,6 +140,7 @@ export async function loginAction(form: FormData) {
         ),
     );
   await startSession(user.id);
+  await pruneOpportunistically();
   redirect("/dashboard");
 }
 export async function logoutAction() {
