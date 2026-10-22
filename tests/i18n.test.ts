@@ -6,6 +6,13 @@ import {
   resolveLanguage,
   translateMessage,
 } from "../lib/i18n";
+import { auditMessages } from "../lib/i18n/messages/audit";
+import { authMessages } from "../lib/i18n/messages/auth";
+import { cashbookMessages } from "../lib/i18n/messages/cashbook";
+import { commonMessages } from "../lib/i18n/messages/common";
+import { documentsMessages } from "../lib/i18n/messages/documents";
+import { reportsMessages } from "../lib/i18n/messages/reports";
+import { settingsMessages } from "../lib/i18n/messages/settings";
 
 test("missing or unsupported cookie languages fall back to Malay", () => {
   for (const value of [undefined, "", "ms", "en-US", "fr", "__proto__"])
@@ -39,4 +46,29 @@ test("controlled flash messages translate without rewriting unknown content", ()
     "Dana Kampung Contoh",
   );
   assert.equal(translateMessage("constructor", "en"), "constructor");
+});
+
+test("no message key is defined in two groups", () => {
+  // The groups are merged with object spread, which silently drops a duplicate,
+  // so a copy-pasted phrase could otherwise lose its translation.
+  const groups = {
+    commonMessages,
+    authMessages,
+    documentsMessages,
+    cashbookMessages,
+    reportsMessages,
+    auditMessages,
+    settingsMessages,
+  };
+  const seen = new Map<string, string>();
+  for (const [group, messages] of Object.entries(groups))
+    for (const key of Object.keys(messages)) {
+      assert.equal(
+        seen.has(key),
+        false,
+        `"${key}" is defined in ${seen.get(key)} and ${group}`,
+      );
+      seen.set(key, group);
+    }
+  assert.equal(Object.keys(dictionary).length, seen.size);
 });

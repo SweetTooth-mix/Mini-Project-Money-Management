@@ -102,7 +102,7 @@ Reversals are reported as adjustments on the reversal date. Negative balances ar
 
 The primary language is **Malay (`ms`)**. A **BM / EN** control next to the theme toggle switches menus, labels, forms and UI messages. The choice is stored for one year in the `kira-rapi-lang` cookie (`Path=/`, `SameSite=Lax`, `HttpOnly`; `Secure` when `APP_URL` is HTTPS). Server Components read the cookie before rendering, so the language survives reloads, navigation and sign-in. A missing or invalid cookie falls back to Malay.
 
-The dictionary lives in [`lib/i18n.ts`](lib/i18n.ts) as `{ ms, en }` pairs with named placeholders. `LanguageToggle` uses a Server Action to set the cookie. The day/night theme uses a separate preference.
+The dictionary lives under [`lib/i18n/messages/`](lib/i18n/messages) as `{ ms, en }` pairs with named placeholders, grouped by screen area (documents, cashbook, reports, audit, auth, settings, common). [`lib/i18n.ts`](lib/i18n.ts) merges the groups and re-exports the helpers, so call sites import from one place. `LanguageToggle` uses a Server Action to set the cookie. The day/night theme uses a separate preference.
 
 **Report language does not change with the UI.** The four Excel workbooks, PDFs and print previews for receipts, vouchers and summaries stay in Malay. Organisation names, funds, categories, transactions and audit records are source data and are never machine-translated. `lib/excel.ts`, `scripts/excel/*` and `templates/excel/*` are untouched by the bilingual feature.
 
@@ -230,7 +230,7 @@ Public registration creates a `PENDING` USER. Only a Super Admin can activate it
 
 | Suite | Command | Count | Requirements |
 | --- | --- | :---: | --- |
-| Unit | `npm test` | 35 tests | Node only |
+| Unit | `npm test` | 36 tests | Node only |
 | Integration | `npm run test:integration` | 15 tests | PostgreSQL |
 | Excel/PDF reports | `npm run test:reports` | 8 tests | Python + LibreOffice |
 | Browser and accessibility | `npm run test:e2e` | 16 scenarios, 3 of them axe audits over 13 screens | Current build + Chromium |
