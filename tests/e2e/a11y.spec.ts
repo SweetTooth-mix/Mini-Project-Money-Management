@@ -67,20 +67,27 @@ test("public screens are accessible in both themes", async ({ page }) => {
 test("financial screens are accessible after signing in", async ({ page }) => {
   await login(page);
 
-  for (const [path, label] of [
-    ["/dashboard", "dashboard"],
-    ["/dashboard/baucer-resit", "vouchers and receipts"],
-    ["/dashboard/buku-tunai", "cashbook"],
-    ["/dashboard/rumusan", "summary"],
-    ["/dashboard/yuran", "fees"],
-    ["/dashboard/akaun", "accounts"],
-    ["/dashboard/laporan-excel", "Excel reports"],
-    ["/dashboard/audit", "audit trail"],
-    ["/dashboard/settings", "settings"],
-  ] as const) {
-    await page.goto(path);
-    await expect(page.locator("main, [role=main]").first()).toBeVisible();
-    await audit(page, label);
+  // Both themes, not just the default one. Colour contrast is the rule most
+  // likely to regress here: a fixed colour that reads well on paper is unread
+  // on the night surface, and no other test would notice.
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const [path, label] of [
+      ["/dashboard", "dashboard"],
+      ["/dashboard/baucer-resit", "vouchers and receipts"],
+      ["/dashboard/buku-tunai", "cashbook"],
+      ["/dashboard/rumusan", "summary"],
+      ["/dashboard/yuran", "fees"],
+      ["/dashboard/akaun", "accounts"],
+      ["/dashboard/laporan-excel", "Excel reports"],
+      ["/dashboard/audit", "audit trail"],
+      ["/dashboard/settings", "settings"],
+    ] as const) {
+      await page.goto(path);
+      await expect(page.locator("main, [role=main]").first()).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await audit(page, `${label} (${theme})`);
+    }
   }
 });
 
