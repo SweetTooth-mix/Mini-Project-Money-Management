@@ -9,6 +9,7 @@ import {
 export {
   loginBuckets,
   registerBuckets,
+  reportBuckets,
   WINDOW_MS,
   type Bucket,
   type LoginBuckets,

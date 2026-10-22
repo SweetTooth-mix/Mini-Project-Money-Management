@@ -10,6 +10,14 @@ export type ClientAddress = {
 export type HeaderReader = (name: string) => string | null | undefined;
 
 /**
+ * Trust is opt-in. An unset variable means the app is reachable directly, where
+ * any client could send its own X-Forwarded-For and pick its own throttle
+ * bucket. Deployments behind a proxy must say so explicitly.
+ */
+export const trustProxyHeaders = (env: Record<string, string | undefined>) =>
+  env.TRUST_PROXY_HEADERS === "true";
+
+/**
  * Resolve the client address from proxy headers.
  *
  * Behind nginx (`proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for`)
@@ -32,13 +40,14 @@ export function resolveAddress(
 }
 
 /**
- * Set TRUST_PROXY_HEADERS=false when the app is exposed directly, otherwise a
- * client could spoof the header and bypass the per-address limit.
+ * Set TRUST_PROXY_HEADERS=true only when a reverse proxy you control sets the
+ * header. Left unset, the per-address limit stays inert and only the per-email
+ * limit applies — worse for detection, but impossible to spoof.
  */
 export async function clientAddress(): Promise<ClientAddress> {
   const store = await headers();
   return resolveAddress(
     (name) => store.get(name),
-    process.env.TRUST_PROXY_HEADERS !== "false",
+    trustProxyHeaders(process.env),
   );
 }

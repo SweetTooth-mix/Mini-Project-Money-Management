@@ -30,6 +30,16 @@ export async function requireUser() {
   return user;
 }
 
+/**
+ * Cross-user data — the activity trail — is for managers. A plain user is sent
+ * back to the dashboard instead of seeing a permission error page.
+ */
+export async function requireManager() {
+  const user = await requireUser();
+  if (user.role === "USER") redirect("/dashboard");
+  return user;
+}
+
 export async function startSession(userId: string) {
   const token = randomBytes(32).toString("base64url");
   const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);

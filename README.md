@@ -59,7 +59,8 @@ A community finance management application with a Malay and English UI: cash boo
 | Authentication | 256-bit random session token, SHA-256 hash at rest, `HttpOnly`/`SameSite=Lax`/`Secure` cookie (when `APP_URL` is HTTPS), 8-hour expiry |
 | Session revocation | Sessions are deleted when an account is disabled or a password changes |
 | Login throttling | Three layers (see below); only failed attempts count; keys stored as hashes |
-| Authorisation | Roles are re-checked server-side for every financial action; hiding a button is not an access control |
+| Report throttling | 10 report generations per 15 minutes per user, because each render starts Python and LibreOffice |
+| Authorisation | Roles are re-checked server-side for every financial action; hiding a button is not an access control. The audit trail and its CSV export require a manager role |
 | Separation of duties | A preparer cannot approve their own document, including a Super Admin |
 | Record integrity | PostgreSQL triggers reject UPDATE/DELETE on `LedgerEntry` and `AuditLog`, and freeze document values once submitted |
 | Attachments | 5 MB limit, PDF/PNG/JPEG magic-byte validation, UUID storage name, login required to download, `Content-Security-Policy: sandbox` |
@@ -79,7 +80,9 @@ Limits apply on three layers, and **only failed attempts** are counted:
 
 The layered design prevents **account lockout as a weapon**: a real user is only blocked after 30 failures, and a successful sign-in clears the account buckets. The per-address total survives a successful sign-in, so a valid account cannot be used to reset an attacker's budget. Public registration is limited to 5 requests per 15 minutes per address and per email.
 
-The client address is read from `X-Forwarded-For` (left-most entry) or `X-Real-IP`, and only syntactically valid addresses are accepted. If the application is exposed **without** a proxy, set `TRUST_PROXY_HEADERS=false`; otherwise a client can forge the header and bypass the per-address limit. No email address or IP is stored in plain text.
+The client address is read from `X-Forwarded-For` (left-most entry) or `X-Real-IP`, and only syntactically valid addresses are accepted. Trust is **opt-in**: set `TRUST_PROXY_HEADERS=true` behind a proxy you control. Left unset, the headers are ignored, so a client cannot choose its own bucket by forging them; the server warns at startup when trust and `APP_URL` disagree. No email address or IP is stored in plain text.
+
+Production also refuses to start when `APP_URL` is not `https://`, because the session cookie would otherwise lose its `Secure` flag and HSTS would be omitted. Loopback URLs are accepted for local containers, and `ALLOW_INSECURE_HTTP=true` is the explicit exception for a throwaway environment.
 
 ## Financial correctness
 
@@ -193,15 +196,16 @@ See [`.env.example`](.env.example). Never commit `.env`, database dumps or uploa
 | Name | Required | Purpose |
 | --- | :---: | --- |
 | `DATABASE_URL` | ✓ | Application PostgreSQL connection |
-| `APP_URL` | ✓ | Application origin; HTTPS enables `Secure` cookies and HSTS |
+| `APP_URL` | ✓ | Application origin; HTTPS enables `Secure` cookies and HSTS. Production refuses `http://` except loopback |
 | `POSTGRES_PASSWORD` | ✓¹ | Local PostgreSQL container password |
 | `UPLOAD_DIR` | — | Persistent attachment directory, default `.data/uploads` |
-| `TRUST_PROXY_HEADERS` | — | Default `true`; set `false` when the app is exposed without a proxy |
+| `TRUST_PROXY_HEADERS` | — | Default `false`. Set `true` only behind a proxy that sets `X-Forwarded-For` |
 | `SEED_ADMIN_EMAIL` | ✓² | Initial Super Admin email |
 | `SEED_ADMIN_PASSWORD` | ✓² | Initial password, minimum 12 characters |
 | `SEED_DEMO` | — | `true` for demo data; `false` for a new organisation |
 | `SEED_REVIEWER_PASSWORD` | — | Required when `SEED_DEMO=true` |
 | `DEV_PREVIEW_ORIGINS` | — | Development only: extra hosts for the dev server and preview iframes |
+| `ALLOW_INSECURE_HTTP` | — | `true` lets production start on plain HTTP. Throwaway environments only |
 | `TEST_DATABASE_URL` | — | External test database; the name must end with `_test` |
 | `EXCEL_PYTHON` | — | Python interpreter path, default `.venv/bin/python` |
 | `LOG_LEVEL` | — | `debug`, `info`, `warn` or `error`; default `info` |

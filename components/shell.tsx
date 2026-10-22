@@ -199,15 +199,18 @@ export function Shell({
         </nav>
         <p className="nav-caption">{t("PENGURUSAN")}</p>
         <nav aria-label={t("Pengurusan")}>
-          <Link
-            href="/dashboard/audit"
-            onClick={() => setOpen(false)}
-            className={`nav-link ${path.includes("audit") ? "active" : ""}`}
-            aria-current={path.includes("audit") ? "page" : undefined}
-          >
-            <ShieldCheck size={19} strokeWidth={1.7} />
-            {t("Jejak audit")}
-          </Link>
+          {/* The trail covers every user's actions, so the page is manager-only. */}
+          {role !== "USER" && (
+            <Link
+              href="/dashboard/audit"
+              onClick={() => setOpen(false)}
+              className={`nav-link ${path.includes("audit") ? "active" : ""}`}
+              aria-current={path.includes("audit") ? "page" : undefined}
+            >
+              <ShieldCheck size={19} strokeWidth={1.7} />
+              {t("Jejak audit")}
+            </Link>
+          )}
           <Link
             href="/dashboard/settings"
             onClick={() => setOpen(false)}

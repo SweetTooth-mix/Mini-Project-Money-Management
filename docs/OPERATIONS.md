@@ -260,11 +260,19 @@ Limits are counted on three layers, and **only failed attempts** are counted:
 
 This design prevents **account lockout as a weapon**: an attacker needs 30 failures before a real user is blocked, and a successful sign-in clears the address+email and email counters. The per-address counter survives a successful sign-in so a valid account cannot be used to reset an attacker's budget. Public registration is limited to 5 requests per 15 minutes per address and per email.
 
-The client address is read from `X-Forwarded-For` (left-most entry) or `X-Real-IP`, and only valid addresses are accepted. If the application is exposed **without** a proxy, set `TRUST_PROXY_HEADERS=false`; otherwise a client can forge the header and bypass the per-address limit. Example nginx directive: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`.
+The client address is read from `X-Forwarded-For` (left-most entry) or `X-Real-IP`, and only valid addresses are accepted.
+
+Trusting those headers is **opt-in**: set `TRUST_PROXY_HEADERS=true` only behind a proxy you control — the nginx example above sets `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`. Left unset or `false`, the headers are ignored; the per-address layer then cannot fire, because any client could otherwise choose its own bucket by forging the header. The server logs a warning at startup when `APP_URL` is `https://` but trust is off, and again when trust is on over plain HTTP.
+
+Report generation is limited to **10 requests per 15 minutes per signed-in user**, because each render starts Python and LibreOffice. The limit answers 429 with `Retry-After`; the two-render concurrency guard stays as a second layer.
+
+**Production refuses to start when `APP_URL` is not `https://`.** Without it the session cookie loses its `Secure` flag and HSTS is omitted, so a misconfigured deployment would put the token on the wire in clear. Loopback URLs (`http://127.0.0.1:3000`, `http://localhost`) are accepted for container health checks and local Compose runs. `ALLOW_INSECURE_HTTP=true` is the explicit exception for a throwaway environment; it should never appear in a real deployment. `next build` is never blocked.
 
 No email address or IP is stored in plain text: the throttle key is the SHA-256 of the kind, address and email combined.
 
 ## Audit trail
+
+The page and its CSV export require a manager role (`ADMIN` or `SUPER_ADMIN`): the trail covers every other user's actions, so it is not shown to a plain `USER`.
 
 The Audit page supports filtering by user, action code, date range and free-text search over details, user names or action codes. The date range uses **Malaysia time (GMT+8)**, and a reversed range is swapped automatically.
 
