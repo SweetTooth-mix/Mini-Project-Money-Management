@@ -1,7 +1,10 @@
-@import "@fontsource/dm-sans/400.css";
-@import "@fontsource/dm-sans/500.css";
-@import "@fontsource/dm-sans/600.css";
-@import "@fontsource/dm-sans/700.css";
+@import "@fontsource/public-sans/400.css";
+@import "@fontsource/public-sans/500.css";
+@import "@fontsource/public-sans/600.css";
+@import "@fontsource/source-serif-4/400.css";
+@import "@fontsource/source-serif-4/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 :root {
   --paper: #f7f8fa;
@@ -16,7 +19,9 @@
   --red: #b54e49;
   --radius: 14px;
   --shadow: 0 2px 5px #233b2e03;
-  --font: "DM Sans", system-ui, sans-serif;
+  --font: "Public Sans", system-ui, sans-serif;
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 }
 * {
   box-sizing: border-box;
@@ -3023,32 +3028,33 @@ select {
 @media screen {
   :root {
     color-scheme: light;
-    --paper: #f3f5f4;
+    --paper: #f4f6f4;
     --surface: #ffffff;
-    --surface-soft: #f7f9f8;
-    --surface-hover: #edf3f0;
-    --ink: #172c2a;
-    --muted: #60716b;
-    --line: #dce5df;
-    --green: #17634c;
-    --green-dark: #114b3a;
-    --green-pale: #e8f3ed;
-    --accent: #1c7458;
-    --accent-soft: #eaf4ee;
-    --amber: #87601c;
-    --amber-soft: #fbf2df;
-    --blue: #2c6585;
-    --blue-soft: #eaf2f8;
-    --red: #ad3f3f;
-    --red-soft: #fbebea;
-    --input-border: #c6d2ca;
+    --surface-soft: #eaf0ec;
+    --surface-hover: #e4ece7;
+    --ink: #16211c;
+    --muted: #4f5f57;
+    --line: #dce3de;
+    --green: #14503c;
+    --green-dark: #0e3b2c;
+    --green-pale: #e6efea;
+    --accent: #14503c;
+    --accent-soft: #e6efea;
+    --amber: #7e5f1f;
+    --amber-soft: #f7efdf;
+    --blue: #255e7a;
+    --blue-soft: #e8f0f4;
+    --red: #9c3a32;
+    --red-soft: #f7e9e7;
+    --brass: #b08a46;
+    --input-border: #c4cfc8;
     --radius: var(--r-xl);
     --shadow: 0 2px 4px #12392a03;
-    --sidebar-bg: #142f2b;
-    --sidebar-text: #b9ccc4;
-    --sidebar-active: #244c40;
-    --sidebar-line: #ffffff14;
-    --primary-bg: #17634c;
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #3f4f47;
+    --sidebar-active: #e6efea;
+    --sidebar-line: #e3e9e5;
+    --primary-bg: #14503c;
     --primary-text: #ffffff;
     --focus: #2d876a;
     /* Radius scale — 6 steps. No ad-hoc px radii. */
@@ -3072,30 +3078,31 @@ select {
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --paper: #111b1a;
-    --surface: #192725;
-    --surface-soft: #1e302c;
-    --surface-hover: #263c35;
-    --ink: #edf4ef;
-    --muted: #a6bbb0;
-    --line: #31463c;
-    --green: #9bdfbe;
-    --green-dark: #b7ebce;
-    --green-pale: #233f32;
-    --accent: #9bdfbe;
-    --accent-soft: #233f32;
-    --amber: #e8c68b;
-    --amber-soft: #3e3524;
-    --blue: #a6d4ee;
-    --blue-soft: #243944;
-    --red: #f2aaa5;
-    --red-soft: #422d2b;
-    --input-border: #52665a;
-    --sidebar-bg: #101b18;
-    --sidebar-text: #b7cbbf;
-    --sidebar-active: #274d3d;
-    --sidebar-line: #ffffff16;
-    --primary-bg: #a7e1bb;
+    --paper: #0f1512;
+    --surface: #161e1a;
+    --surface-soft: #1d2721;
+    --surface-hover: #243029;
+    --ink: #ecf2ed;
+    --muted: #a9bab0;
+    --line: #2e3b33;
+    --green: #a8dec0;
+    --green-dark: #c4ecd4;
+    --green-pale: #223328;
+    --accent: #a8dec0;
+    --accent-soft: #223328;
+    --amber: #e3c48c;
+    --amber-soft: #35301f;
+    --blue: #a6cbe0;
+    --blue-soft: #22333d;
+    --red: #eba9a2;
+    --red-soft: #3b2926;
+    --brass: #c9a465;
+    --input-border: #46564c;
+    --sidebar-bg: #0c110e;
+    --sidebar-text: #afc2b7;
+    --sidebar-active: #1e2c24;
+    --sidebar-line: #ffffff12;
+    --primary-bg: #a8dec0;
     --primary-text: #142b20;
     --focus: #afe6c5;
     --shadow: none;
@@ -5515,6 +5522,329 @@ select {
   .language-toggle,
   .language-error {
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   v3 · Ledger Editorial (arah C). Pilot: shell + dashboard.
+   Semua warna di sini datang daripada token di atas. Peraturan cetakan,
+   .print-sheet dan .report-sheet tidak disentuh.
+   ========================================================================== */
+@media screen {
+  /* --- tipografi: serif untuk tajuk, mono untuk angka -------------------- */
+  body {
+    font-family: var(--font);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .brand-name,
+  .empty-state h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0;
+  }
+  h1 {
+    letter-spacing: -0.4px;
+  }
+  .panel-heading h2 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .metric-value,
+  .table-footer strong,
+  .count-pill,
+  .nav-count,
+  .fund-total strong {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
+  }
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface-soft);
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow,
+  .nav-caption {
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* --- sidebar putih ---------------------------------------------------- */
+  .sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--line);
+    color: var(--sidebar-text);
+  }
+  .brand-symbol i {
+    background: var(--accent);
+  }
+  .brand small,
+  .brand-light,
+  .sidebar .brand-name small {
+    color: var(--muted);
+  }
+  .nav-link {
+    color: var(--sidebar-text);
+    border-radius: var(--r-sm);
+  }
+  .nav-link svg {
+    color: var(--muted);
+  }
+  .nav-link:hover {
+    background: var(--surface-hover);
+    color: var(--ink);
+  }
+  .nav-link.active {
+    background: var(--sidebar-active);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .nav-link.active svg {
+    color: var(--accent);
+  }
+  .nav-count {
+    background: var(--amber-soft);
+    border-color: transparent;
+    color: var(--amber);
+  }
+  .nav-link.active .nav-count {
+    background: var(--surface);
+    color: var(--accent);
+  }
+  .org-switch {
+    border-color: var(--line);
+  }
+  .org-switch small {
+    color: var(--muted);
+  }
+  .org-avatar {
+    background: var(--surface-soft);
+    color: var(--accent);
+  }
+  .sidebar-note {
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+  }
+  .sidebar-note strong {
+    color: var(--ink);
+  }
+  .sidebar-note p {
+    color: var(--muted);
+  }
+  .sidebar-note a {
+    color: var(--accent);
+  }
+  .sidebar-note > svg {
+    color: var(--accent);
+  }
+  .sidebar-user {
+    border-top-color: var(--line);
+  }
+  .sidebar-user .avatar {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .sidebar-user small {
+    color: var(--muted);
+  }
+  .sidebar .icon-button {
+    color: var(--muted);
+  }
+  .sidebar .icon-button:hover {
+    background: var(--surface-hover);
+    color: var(--ink);
+  }
+
+  /* --- permukaan -------------------------------------------------------- */
+  .panel,
+  .metric,
+  .account-card,
+  .approval-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xs);
+    box-shadow: none;
+  }
+  .metric-featured {
+    background: var(--green-dark);
+    color: #ffffff;
+  }
+  .metric-featured .metric-top,
+  .metric-featured .metric-detail {
+    color: #d9e8df;
+  }
+  .metric-featured .metric-icon {
+    background: #ffffff1f;
+    color: #ffffff;
+  }
+  .avatar,
+  .avatar-small,
+  .metric-icon,
+  .transaction-icon.in {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .metric-icon.gold,
+  .transaction-icon.out {
+    background: var(--amber-soft);
+    color: var(--amber);
+  }
+  .metric-icon.orange {
+    background: var(--red-soft);
+    color: var(--red);
+  }
+
+  /* --- pil status ------------------------------------------------------- */
+  .status,
+  .subtle-tag {
+    background: var(--surface-soft);
+    color: var(--muted);
+  }
+  .status-draft {
+    background: var(--surface-soft);
+    color: var(--muted);
+  }
+  .status-pending,
+  .type-tag.voucher,
+  .count-pill {
+    background: var(--amber-soft);
+    border-color: transparent;
+    color: var(--amber);
+  }
+  .status-approved,
+  .type-tag.receipt {
+    background: var(--blue-soft);
+    color: var(--blue);
+  }
+  .status-paid,
+  .status-active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .status-void,
+  .status-rejected,
+  .status-disabled {
+    background: var(--red-soft);
+    color: var(--red);
+  }
+  .flash-success,
+  .paid-notice {
+    background: var(--accent-soft);
+    border-color: var(--line);
+    color: var(--accent);
+  }
+  .flash-error {
+    background: var(--red-soft);
+    border-color: var(--line);
+    color: var(--red);
+  }
+  .info-note {
+    background: var(--amber-soft);
+    border-color: var(--line);
+    color: var(--amber);
+  }
+  .back-link,
+  .text-button {
+    color: var(--accent);
+  }
+
+  /* --- butang ----------------------------------------------------------- */
+  .button-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    border-radius: var(--r-xs);
+    color: #ffffff;
+  }
+  .button-secondary {
+    background: var(--surface);
+    border-color: var(--input-border);
+    border-radius: var(--r-xs);
+    color: var(--ink);
+  }
+  .button-secondary:hover {
+    background: var(--surface-hover);
+    border-color: var(--muted);
+  }
+  .button-danger {
+    background: var(--red-soft);
+    border-color: var(--line);
+    color: var(--red);
+  }
+
+  /* --- jadual ----------------------------------------------------------- */
+  tbody tr:hover {
+    background: var(--surface-hover);
+  }
+  tfoot th,
+  tfoot td {
+    background: var(--surface-soft);
+  }
+  .table-primary {
+    color: var(--ink);
+  }
+
+  /* --- carta ------------------------------------------------------------ */
+  .bar-income,
+  .legend-income {
+    background: var(--accent);
+  }
+  .bar-expense,
+  .legend-expense {
+    background: var(--brass);
+  }
+  .current .bar-income {
+    background: var(--green-dark);
+  }
+  .current .bar-expense {
+    background: var(--amber);
+  }
+  .fund-track {
+    background: var(--surface-soft);
+  }
+  .chart-legend,
+  .chart-y-labels,
+  .chart-summary > span,
+  .bar-group > span {
+    color: var(--muted);
+  }
+
+  /* --- borang ----------------------------------------------------------- */
+  input,
+  textarea,
+  select {
+    background: var(--surface);
+    border-color: var(--input-border);
+    color: var(--ink);
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--accent);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted);
+  }
+}
+
+/* Lantai fon telefon kekal untuk tajuk lajur jadual. */
+@media screen and (max-width: 600px) {
+  th {
+    font-size: 11px;
   }
 }
 
