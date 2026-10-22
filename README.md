@@ -64,7 +64,7 @@ A community finance management application with a Malay and English UI: cash boo
 | Separation of duties | A preparer cannot approve their own document, including a Super Admin |
 | Record integrity | PostgreSQL triggers reject UPDATE/DELETE on `LedgerEntry` and `AuditLog`, and freeze document values once submitted |
 | Attachments | 5 MB limit, PDF/PNG/JPEG magic-byte validation, UUID storage name, login required to download, `Content-Security-Policy: sandbox` |
-| Response headers | CSP without external script allowances, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, HSTS when HTTPS |
+| Response headers | Per-request CSP nonce (`proxy.ts`) with no `unsafe-inline` for scripts, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, HSTS when HTTPS |
 | CSV | Text fields are defused against spreadsheet formula injection (`csvCell`) |
 | Registration | Public sign-up creates a `PENDING` account; only a Super Admin can activate it |
 

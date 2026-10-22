@@ -124,6 +124,14 @@ Use HTTP 200 as the load-balancer readiness signal: a missing reporting toolchai
 
 For a functional check, sign in with a test account, open the dashboard and cash book, and exercise a document in a test database. An open PID or port alone does not prove the application works.
 
+Content-Security-Policy is generated per request by `proxy.ts` (the Next.js 16 successor to `middleware.ts`) so every response carries a fresh script nonce. Check that it is present and that scripts are not loosened:
+
+```bash
+curl --silent --head http://127.0.0.1:3000/login | grep --ignore-case content-security-policy
+```
+
+The `script-src` directive must read `'self' 'nonce-…' 'strict-dynamic'` in production; `'unsafe-eval'` and `ws:` appear only when `NODE_ENV` is not `production`. If `'unsafe-inline'` reappears there, someone has added an inline script without passing the nonce from `x-nonce`, and the theme bootstrap in `app/layout.tsx` is the pattern to copy.
+
 ## Backup and recovery
 
 Include three components: a PostgreSQL dump, the `UPLOAD_DIR` directory and the private deployment configuration. Keep backups outside the checkout and protect access to them.
