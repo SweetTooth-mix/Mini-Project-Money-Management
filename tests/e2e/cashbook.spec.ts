@@ -215,9 +215,7 @@ test("cash book search and 50-row pages retain full balances, filters and export
     "Halaman 1 daripada 1 · 0 transaksi",
   );
   expect(await page.locator(".metrics-grid").textContent()).toBe(metrics);
-  await page
-    .getByRole("button", { name: "Tukar ke English", exact: true })
-    .click();
+  await page.getByRole("button", { name: /Tukar ke English/ }).click();
   await expect(
     page.getByRole("searchbox", { name: "Search transactions" }),
   ).toBeVisible();

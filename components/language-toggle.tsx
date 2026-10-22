@@ -10,15 +10,20 @@ export function LanguageToggle() {
   const [pending, startTransition] = useTransition();
   const [failed, setFailed] = useState(false);
   const next = language === "ms" ? "en" : "ms";
+  // Malay is abbreviated "BM" (Bahasa Melayu), not "MS".
+  const code = language === "ms" ? "BM" : "EN";
   const label = t(
     next === "en" ? "Tukar ke English" : "Tukar ke Bahasa Melayu",
   );
+  // The visible chip shows the active language; the accessible name repeats it
+  // so speech input can say what is on screen (WCAG 2.5.3).
+  const name = `${code} — ${label}`;
   return (
     <>
       <button
         type="button"
         className="theme-toggle language-toggle"
-        aria-label={label}
+        aria-label={name}
         title={label}
         aria-busy={pending}
         disabled={pending}
@@ -34,7 +39,7 @@ export function LanguageToggle() {
         }}
       >
         <Languages size={18} aria-hidden="true" />
-        <span>{language === "ms" ? "BM" : "EN"}</span>
+        <span>{code}</span>
       </button>
       {failed && (
         <span role="alert" className="language-error">

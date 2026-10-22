@@ -59,8 +59,10 @@ export function ThemeToggle() {
     >
       <Moon size={18} className="theme-moon" aria-hidden="true" />
       <Sun size={18} className="theme-sun" aria-hidden="true" />
+      {/* The visible text names the destination, not the current theme, so it
+          is contained in the accessible name (WCAG 2.5.3, label in name). */}
       <span className="theme-label">
-        {theme === "dark" ? t("Mod malam") : t("Mod siang")}
+        {theme === "dark" ? t("Mod siang") : t("Mod malam")}
       </span>
     </button>
   );

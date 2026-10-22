@@ -59,9 +59,7 @@ test("language defaults to Malay and a persistent cookie controls server-rendere
     .addCookies([{ name: cookieName, value: "unsupported", url: baseURL }]);
   await page.goto("/login");
   await expect(page.locator("html")).toHaveAttribute("lang", "ms");
-  await page
-    .getByRole("button", { name: "Tukar ke English", exact: true })
-    .click();
+  await page.getByRole("button", { name: /Tukar ke English/ }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(
     page.getByRole("heading", { name: "Sign in to your workspace." }),
@@ -163,9 +161,7 @@ test("English navigation works across modules, preserves filters and theme, and 
     "2026-05",
   );
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page
-    .getByRole("button", { name: "Tukar ke English", exact: true })
-    .click();
+  await page.getByRole("button", { name: /Tukar ke English/ }).click();
   for (const [route, heading] of [
     ["baucer-resit", "Receipts & vouchers"],
     ["yuran", "Member dues"],
@@ -248,9 +244,7 @@ test("English form actions keep stored values and printable documents in Malay",
   await expect(page.getByLabel("Kaedah bayaran", { exact: true })).toHaveValue(
     "TUNAI",
   );
-  await page
-    .getByRole("button", { name: "Tukar ke English", exact: true })
-    .click();
+  await page.getByRole("button", { name: /Tukar ke English/ }).click();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.locator(".flash[role=status]")).toContainText(
     "Draft saved.",
@@ -272,9 +266,7 @@ test("English form actions keep stored values and printable documents in Malay",
   await page.goto("/dashboard/rumusan");
   await expect(page.locator(".report-sheet")).toBeVisible();
   const summary = await page.locator(".report-sheet").textContent();
-  await page
-    .getByRole("button", { name: "Tukar ke English", exact: true })
-    .click();
+  await page.getByRole("button", { name: /Tukar ke English/ }).click();
   await expect(
     page.getByRole("heading", { name: "Financial summary", exact: true }),
   ).toBeVisible();

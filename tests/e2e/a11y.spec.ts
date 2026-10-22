@@ -41,8 +41,6 @@ async function audit(page: Page, label: string) {
   expect(problems, `Accessibility problems on ${label}`).toEqual([]);
 }
 
-test.describe.configure({ mode: "serial" });
-
 test("public screens are accessible in both themes", async ({ page }) => {
   for (const theme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: theme });
