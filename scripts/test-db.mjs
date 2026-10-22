@@ -53,6 +53,7 @@ execFileSync(
     "--test",
     "--test-concurrency=1",
     "tests/finance.integration.test.ts",
+    "tests/health.integration.test.ts",
   ],
   options,
 );

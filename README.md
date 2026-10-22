@@ -28,6 +28,7 @@ A community finance management application with a Malay and English UI: cash boo
 - [Environment variables](#environment-variables)
 - [Roles](#roles)
 - [Tests and CI](#tests-and-ci)
+- [Observability](#observability)
 - [Operations](#operations)
 - [Production deployment](#production-deployment)
 - [Documentation](#documentation)
@@ -202,6 +203,9 @@ See [`.env.example`](.env.example). Never commit `.env`, database dumps or uploa
 | `DEV_PREVIEW_ORIGINS` | — | Development only: extra hosts for the dev server and preview iframes |
 | `TEST_DATABASE_URL` | — | External test database; the name must end with `_test` |
 | `EXCEL_PYTHON` | — | Python interpreter path, default `.venv/bin/python` |
+| `LOG_LEVEL` | — | `debug`, `info`, `warn` or `error`; default `info` |
+| `SERVICE_NAME` | — | Label attached to every log line, default `kira-rapi` |
+| `ERROR_WEBHOOK_URL` | — | Optional JSON POST target for error records; delivery failures are ignored |
 
 ¹ Only needed when PostgreSQL runs through Compose. ² Needed for the first seed run.
 
@@ -225,13 +229,13 @@ Public registration creates a `PENDING` USER. Only a Super Admin can activate it
 
 | Suite | Command | Count | Requirements |
 | --- | --- | :---: | --- |
-| Unit | `npm test` | 27 tests | Node only |
-| Integration | `npm run test:integration` | 13 tests | PostgreSQL |
+| Unit | `npm test` | 35 tests | Node only |
+| Integration | `npm run test:integration` | 15 tests | PostgreSQL |
 | Excel/PDF reports | `npm run test:reports` | 8 tests | Python + LibreOffice |
 | Browser | `npm run test:e2e` | 13 scenarios | Current build + Chromium |
 
 ```bash
-npm run test               # money, dates, ledger, CSV, i18n, throttling, audit filters
+npm run test               # money, dates, ledger, CSV, i18n, throttling, audit filters, logging/health
 npm run test:integration   # concurrent posting, approval, reversal, dues, period lock, throttling
 npm run test:reports       # Excel templates, formula links, 12-month balances and PDF
 npm run test:e2e           # Chromium: documents, Excel/PDF, theme, language/cookies and mobile
@@ -245,11 +249,34 @@ npm audit                  # Dependency audit
 **CI.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every pull request and every push to `main`:
 
 1. `quality` — `prisma generate`, `typecheck`, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high` and a production build.
-2. `integration` — PostgreSQL 16 as a service, a `kira_rapi_test` database, `prisma migrate deploy` and the 13 integration tests.
+2. `integration` — PostgreSQL 16 as a service, a `kira_rapi_test` database, `prisma migrate deploy` and the 15 integration tests.
 
 Integration failures are surfaced as check-run annotations, so the cause is readable without downloading job logs. Excel/PDF and browser suites stay manual because they need LibreOffice and Chromium.
 
 `test:integration` provisions `kira_rapi_test` on the local Compose PostgreSQL and cleans fixture data inside that database; the database name must end with `_test` or the suite refuses to run. `test:e2e` **resets the dedicated `kira_rapi_e2e_test` database**, creates fixtures and runs the production build on port 3100, so it needs a current build. The application database `kira_rapi` is never reset by tests; screenshots and PDFs land in `.data/screenshots`.
+
+## Observability
+
+**Structured logs.** Every server log line is one JSON object on stdout, with `time`, `level`, `message`, `service` and contextual fields. Credentials, tokens, cookies, session identifiers and any key containing `pass`, `secret`, `token` or `key` are replaced with `[redacted]` before a line is written, and long values are truncated. `LOG_LEVEL` controls verbosity (`info` by default).
+
+**Request IDs.** Each API request carries an `x-request-id`: an upstream value from nginx or the platform is reused when it is well formed, otherwise one is generated. The ID is echoed in the response header and included in every related log line, so a user can quote it when reporting a problem. Route handlers, Server Actions and unhandled server errors (`instrumentation.ts` → `onRequestError`) all record it.
+
+**Error forwarding.** Set `ERROR_WEBHOOK_URL` to receive error records as JSON POSTs. Delivery is fire-and-forget with a two-second timeout and never blocks or fails a request; the log line is already written first.
+
+**Health checks.** `GET /api/health` probes three things:
+
+| Check | What it proves | Failure effect |
+| --- | --- | --- |
+| `database` | `SELECT 1` succeeds | `unavailable`, HTTP 503 |
+| `uploads` | a probe file can be written and removed in `UPLOAD_DIR` | `unavailable`, HTTP 503 |
+| `reports` | Python can `import openpyxl`, and `soffice` exists | `degraded`, HTTP 200 |
+
+A missing Python or LibreOffice install is reported as `degraded`, not as an outage, because the UI, cash book and audit trail still work without it. The reporting probe is cached for a minute so health polling does not spawn processes on every request. Responses contain check names only; filesystem paths and tool versions stay in the server logs.
+
+```bash
+curl -s http://127.0.0.1:3000/api/health | jq
+# {"status":"ok","checks":{"database":"ok","uploads":"ok","reports":"ok"},"durationMs":12}
+```
 
 ## Operations
 
@@ -299,7 +326,7 @@ Not yet implemented, in priority order:
 1. **Bank reconciliation** and CSV statement import with suggested matches.
 2. **Approval notifications** over email or Telegram for `PENDING` documents.
 3. **Multiple attachments** per document (currently one file per document).
-4. **Observability**: structured logs, request IDs and error tracking; `/api/health` checks the database only.
+4. **Metrics**: request latency and error rates exported for scraping; logs and health checks exist today, but there is no time-series data.
 5. **Dockerfile** for reproducible deployment with LibreOffice and the Python virtualenv.
 6. **Email delivery**, multi-organisation support and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
 

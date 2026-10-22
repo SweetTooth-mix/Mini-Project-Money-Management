@@ -61,7 +61,17 @@ curl --fail --silent http://127.0.0.1:3000/api/health
 curl --fail --silent --output /dev/null http://127.0.0.1:3000/login
 ```
 
-Health reports the database connection. For a functional check, sign in with a test account, open the dashboard and cash book, and exercise a document in a test database. An open PID or port alone does not prove the application works.
+`/api/health` returns the status of three checks:
+
+| Check | Proves | On failure |
+| --- | --- | --- |
+| `database` | `SELECT 1` succeeds | `unavailable`, HTTP 503 |
+| `uploads` | a probe file can be written and removed in `UPLOAD_DIR` | `unavailable`, HTTP 503 |
+| `reports` | Python can import `openpyxl` and `soffice` is on the PATH | `degraded`, HTTP 200 |
+
+Use HTTP 200 as the load-balancer readiness signal: a missing reporting toolchain still leaves the cash book, approvals and audit trail usable, so the instance should keep receiving traffic. Point alerting at the `degraded` payload instead. The reporting probe is cached for 60 seconds, so do not poll faster than that and expect a fresh answer.
+
+For a functional check, sign in with a test account, open the dashboard and cash book, and exercise a document in a test database. An open PID or port alone does not prove the application works.
 
 ## Backup and recovery
 
@@ -97,6 +107,32 @@ Expired sessions and login-attempt counters are pruned automatically once an hou
 ```bash
 30 3 * * * cd /srv/kira-rapi && npm run cleanup
 ```
+
+## Logging and monitoring
+
+**Log format.** Every server log line is a single JSON object on stdout:
+
+```json
+{"time":"2026-10-22T07:12:04.512Z","level":"error","message":"report.generate_failed","service":"kira-rapi","requestId":"8f1c…","report":"monthly","format":"zip","year":2026,"errName":"Error"}
+```
+
+| Variable | Purpose |
+| --- | --- |
+| `LOG_LEVEL` | `debug`, `info` (default), `warn` or `error` |
+| `SERVICE_NAME` | Label on every line, default `kira-rapi` |
+| `ERROR_WEBHOOK_URL` | Optional JSON POST target for error records |
+
+Values under keys matching `pass`, `secret`, `token`, `cookie`, `session`, `key`, `dsn` or `database_url` are replaced with `[redacted]`, and long strings are truncated. Reset failures record an error name only, because worker stderr can contain record values or local paths.
+
+**Request correlation.** Every API request gets an `x-request-id` and the ID is returned in the response header. Ask the user for that ID when they report a problem, then search the logs. Pass it from nginx so one trace spans both hops:
+
+```nginx
+proxy_set_header X-Request-Id $request_id;
+```
+
+**Collecting the logs.** With PM2, `pm2 logs` already shows the JSON lines; to keep them, use `pm2 install pm2-logrotate` or run under systemd/journald and read them with `journalctl -u kira-rapi -o cat`. Ship them to Loki, OpenSearch or any collector that ingests JSON lines. Nothing in the application rotates log files itself.
+
+**Alerting.** Forward errors by pointing `ERROR_WEBHOOK_URL` at a collector, chat webhook or error tracker. Delivery is fire-and-forget with a two-second timeout and never blocks a request. Suggested alerts: any `level=error` line, `/api/health` returning `unavailable`, and `/api/health` reporting `reports: degraded` for more than an hour after a deployment.
 
 ## Access control and login throttling
 
@@ -165,9 +201,9 @@ Verified on **22 October 2026 (Asia/Kuala_Lumpur)** for layered login throttling
 | Check | Result |
 | --- | --- |
 | GitHub Actions (`quality`) | Pass: typecheck, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high`, production build |
-| GitHub Actions (`integration`) | Pass: PostgreSQL 16, 13 integration tests including concurrent throttle counting |
-| Unit tests | 27 passing (9 audit filters, 7 throttling/client address, 11 existing) |
-| PostgreSQL integration tests | 13 passing: 3 new for throttling and audit filtering |
+| GitHub Actions (`integration`) | Pass: PostgreSQL 16, 15 integration tests including concurrent throttle counting and health probes |
+| Unit tests | 35 passing (9 audit filters, 7 throttling/client address, 8 logging/health, 11 existing) |
+| PostgreSQL integration tests | 15 passing: 3 for throttling and audit filtering, 2 for health probes |
 | Prettier and ESLint | 0 errors, 0 warnings across `app/`, `lib/`, `components/` and `tests/` |
 
 Screenshots and PDFs in `.data/screenshots` use fictitious data. README screenshots are copied from verified browser runs.
