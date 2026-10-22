@@ -52,6 +52,31 @@ jobs:
       - name: Production build
         run: npm run build
 
+  reports:
+    name: Excel and PDF reports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # The generator builds real workbooks and asks LibreOffice for the PDF, so
+      # these tests need the same toolchain the server uses.
+      - name: Install LibreOffice
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            libreoffice-calc-nogui fonts-liberation python3-venv
+
+      - name: Create the Python environment
+        run: npm run setup:reports
+
+      - name: Report tests
+        run: npm run test:reports
+
   accessibility:
     name: Browser and accessibility tests
     runs-on: ubuntu-latest
