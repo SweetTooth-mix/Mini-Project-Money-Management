@@ -36,6 +36,17 @@ What the collector no longer does by hand:
 - **Row numbers and totals.** `Bil`, `JUMLAH`, `JUMLAH SEMASA` and `BAKI BULANAN` are recalculated; adding rows extends the tables and the totals follow.
 - **The empty February sheet.** Months with no data are still produced with the January layout, so the twelve-month summary has a column for every month.
 
+## Deliberate differences from the manual workbooks
+
+Layout, headings, columns, totals and signature blocks match the treasurer's four files. Three labels deliberately do not, because the manual files are wrong or describe data this system does not hold. They are asserted by `test_deliberate_differences_from_the_reference_workbooks` so the choice is visible rather than accidental.
+
+| Generated output | Manual workbook | Why |
+| --- | --- | --- |
+| `Baki pada 1.5.2026` on the May sheet | `Baki pada 1.4.2026` | The May sheet still carried April's opening date, presumably a copied-and-not-updated cell: its own `BULAN : MEI 2026` heading contradicts it. The generated label follows the sheet's month, so all twelve months are right. |
+| `Bank/lain` when an `OTHER` account exists | `Bank` | The `OTHER` accounts are folded into that column; naming it `Bank` would hide money that is not in a bank account. With no `OTHER` accounts the heading stays `Bank`, as in the reference. |
+| `AHLI` above the dues column | `FELDA` | The reference column listed settlements (`Bkt. Goh`, `Sg. Panching Timur`). This data model records a member per claim, not a settlement, so the column holds `Nama ahli` and is labelled accordingly. Adding a region field would be a schema change. |
+| Figures calculated by the workbook | 328 cells showing `#REF!` | The manual files link to external monthly workbooks; once a file moves the links break. The generated package is built in one pass and caches every value. Not a difference in intent, only in whether the numbers resolve. |
+
 ## Editing and the relationship between files
 
 1. Extract all files into the same folder. Keep the file names so the relative links stay valid.
@@ -59,7 +70,7 @@ The receipts/vouchers page offers **Excel, original format** and **PDF, original
 - Documents without a posting are excluded from the books.
 - The books and monthly reports show real balance movements, including entries marked `OPENING`, `TRANSFER_IN`, `TRANSFER_OUT` and `REVERSAL`. Transfers only shift the bank/cash columns and are never counted as fund collection.
 - The annual summary shows net receipts and expenses. A reversal becomes a negative value within its original type in the reversal month. Transfers are excluded; opening movements across the year appear on the **Adjustment** row that uses the blank space after the monthly balances. The closing balance includes those adjustments.
-- `OTHER` accounts are included with bank; the heading becomes **Bank/lain** where needed.
+- `OTHER` accounts are included with bank; the heading becomes **Bank/lain** where needed, because the column then holds money that is not in a bank account.
 - The dues summary reads the selected year's claims and the payment status at export time. It does not assume the member count or the RM1,000 rate from the original example. Each claim gets a row so duplicate payments with different dates or references are not lost. This is not a status report for a historical date before a void.
 - Money is computed with `Decimal` during export, originating from integer sen. Formulas use `ROUND(..., 2)`. Values beyond Excel's numeric precision are rejected.
 

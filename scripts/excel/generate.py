@@ -450,7 +450,9 @@ class Export:
         s=self.books[book][title]
         self.print_sheets[('tunjang-annual' if tunjang else 'annual',0)]=s
         self.put(s,'A1',self.org['name'])
-        self.put(s,'A2',f'RUMUSAN KEWANGAN TAHUN {self.year}' + (' — AKAUN TUNJANG' if tunjang else ''))
+        # The reference summary carries the plain title even in the funds workbook;
+        # the workbook itself, its tab name and the printed header say which fund.
+        self.put(s,'A2',f'RUMUSAN KEWANGAN TAHUN {self.year}')
         self.put(s,'C4',f'TAHUN {self.year}');self.put(s,'B6',f'BAKI PADA 1.1.{self.year}')
         it,ot,closing,adjust=(16,31,32,33) if tunjang else (12,18,19,20)
         self.put(s,f'B{adjust}','Pelarasan')
@@ -530,7 +532,10 @@ class Export:
         self.print_sheets[('dues',0)]=s
         self.books[3].remove(template)
         self.put(s,'A1',self.org['name']);self.put(s,'A2',f'KUTIPAN YURAN {self.year}')
-        self.put(s,'E4',f'YURAN {self.year}');self.put(s,'D4','AHLI / FELDA')
+        # Column D holds the member name (the dues table has no region field), so
+        # label it as such: the reference header said FELDA because it listed
+        # settlements, which this data model does not record.
+        self.put(s,'E4',f'YURAN {self.year}');self.put(s,'D4','AHLI')
         for r,d in enumerate(dues,5):
             sr=r-3
             self.put(s,f'C{r}',r-4)

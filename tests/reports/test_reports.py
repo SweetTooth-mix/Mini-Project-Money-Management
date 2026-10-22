@@ -111,6 +111,22 @@ class ReportTests(unittest.TestCase):
         self.assertEqual([tunjang.cell(r,1).value for r in range(8,16)], list(range(1,9)))
         self.assertEqual([tunjang.cell(r,1).value for r in range(18,31)], list(range(1,14)))
 
+    def test_deliberate_differences_from_the_reference_workbooks(self):
+        # Three labels differ on purpose. The reference files are not always
+        # right, so these assert the choice rather than the original text.
+        tunjang = self.books[3]['rumusan tahunan']
+        # Reference: 'RUMUSAN KEWANGAN TAHUN 2021' — plain title, no suffix.
+        self.assertEqual(tunjang['A2'].value, f'RUMUSAN KEWANGAN TAHUN {self.data["year"]}')
+        self.assertNotIn('AKAUN TUNJANG', tunjang['A2'].value)
+        # Reference: 'FELDA', but that column listed settlements while ours
+        # holds the member name, so it is labelled for what it contains.
+        self.assertEqual(self.books[3]['rumusan yuran']['D4'].value, 'AHLI')
+        # The monthly books name the opening balance after their own month. The
+        # reference May sheet still said '1.4.2026', a leftover from April.
+        for m in range(1,13):
+            month = self.books[1][module.MONTHS[m-1]]
+            self.assertEqual(month['B7'].value, f'Baki pada 1.{m}.{self.data["year"]}')
+
     def test_dynamic_rows_tunjang_and_empty_months(self):
         self.assertGreater(self.books[1]['Mei'].max_row, 24)
         self.assertGreater(self.books[2]['Mei'].max_row, 30)
