@@ -371,8 +371,9 @@ test("audit log filters by user, action, search text and Malaysia date range", a
   const byAction = await auditData({ action: "DOKUMEN_CIPTA" });
   assert.equal(byAction.count, 1);
 
+  // Every entry for this document mentions its number in the detail column.
   const byText = await auditData({ q: doc.number });
-  assert.equal(byText.count, 1);
+  assert.equal(byText.count, 3);
 
   const miss = await auditData({ q: "tiada-yang-sepadan" });
   assert.equal(miss.count, 0);
