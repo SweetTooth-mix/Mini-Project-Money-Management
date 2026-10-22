@@ -270,6 +270,11 @@ test("registration requires approval and ordinary users cannot access management
   await adminContext.close();
 });
 
+// Needs the Python virtualenv and LibreOffice; the CI browser job has neither.
+test.skip(
+  process.env.E2E_SKIP_REPORTS === "true",
+  "requires the Excel/PDF reporting toolchain",
+);
 test("linked Excel package and template PDF download from authenticated report screen", async ({
   page,
 }) => {
