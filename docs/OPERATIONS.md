@@ -159,6 +159,28 @@ Expired sessions and login-attempt counters are pruned automatically once an hou
 30 3 * * * cd /srv/kira-rapi && npm run cleanup
 ```
 
+## Approval notifications
+
+Submitting a document for approval can notify reviewers over Telegram, a JSON webhook, or both. Configure either channel in `.env`:
+
+```bash
+# Telegram: create a bot with @BotFather and invite it to the review group.
+APPROVAL_TELEGRAM_TOKEN=123456:ABC-DEF
+APPROVAL_TELEGRAM_CHAT_ID=-1001234567890
+
+# Or any endpoint that accepts a JSON POST.
+APPROVAL_WEBHOOK_URL=https://hooks.example/kira
+```
+
+The request carries the Malay message plus the raw fields (`id`, `number`, `type`, `party`, `description`, `amountSen` as a string, `submittedBy`, `url`). The link is built from `APP_URL`, so set it to the public address.
+
+Operationally:
+
+- Delivery happens **after** the submission commits, with a three-second timeout per channel. Failures appear as `approval.notify_failed` log lines with the channel name and either the HTTP status or the error name; they never reach the user.
+- Reviewers without a configured channel still see submissions in the pending queue and the dashboard badge, so notifications are an addition, not a dependency.
+- A Telegram token without a chat id is treated as unconfigured, so a half-filled `.env` cannot silently drop messages.
+- Rotating the token only requires restarting the app; the notifier reads the environment once per process.
+
 ## Logging and monitoring
 
 **Log format.** Every server log line is a single JSON object on stdout:
@@ -253,7 +275,7 @@ Verified on **22 October 2026 (Asia/Kuala_Lumpur)** for layered login throttling
 | --- | --- |
 | GitHub Actions (`quality`) | Pass: typecheck, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high`, production build |
 | GitHub Actions (`integration`) | Pass: PostgreSQL 16, 15 integration tests including concurrent throttle counting and health probes |
-| Unit tests | 36 passing (9 audit filters, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
+| Unit tests | 46 passing (9 audit filters, 10 approval notifications, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
 | PostgreSQL integration tests | 15 passing: 3 for throttling and audit filtering, 2 for health probes |
 | Prettier and ESLint | 0 errors, 0 warnings across `app/`, `lib/`, `components/` and `tests/` |
 
