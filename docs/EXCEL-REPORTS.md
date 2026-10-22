@@ -15,6 +15,27 @@ The workbooks preserve merged cells, column widths, fonts, colours, borders, lab
 
 The originally empty February sheet is completed using the January format. Year, organisation name, signatories and figures come from the application. The old links to a Windows drive and the 2021/2025/2026 files are not used. The templates in the repository have been cleaned of transactions, signatory names, cheque numbers, addresses, workbook metadata and original link caches; uploaded files containing historical data are not stored in the repository and are not imported into the database.
 
+## Mapping to the treasurer's four workbooks
+
+The four generated files replace the manual workbooks one for one:
+
+| Manual workbook | Generated file | What the system fills in |
+| --- | --- | --- |
+| `5_...0500.xlsx` — `baucer`, `resit` | `1. Baucer dan Resit.xlsx` | One sheet per document: letterhead, number, date, payee, amount, amount in words, purpose and reference are filled from the record; the two- or three-column signature block comes from the organisation profile |
+| `5_...0499.xlsx` — `Sheet1` (one month per file) | `2. Buku Kewangan.xlsx` | All twelve months as separate sheets with the same 24 columns, the four fund splits, the running cash/bank balance and the monthly totals |
+| `5_...0501.xlsx` — `jan`, `feb` (empty), `rumusan` | `3. Bulanan dan Rumusan Tahunan.xlsx` | Income and expenses by fund for each month, `Jumlah` and `Baki Bulanan`, `seperti di bkkt`, and the twelve-month summary with every month linked |
+| `5_...0502.xlsx` — `jan2021`, `rumusan tahunan`, `rumusan yuran` | `4. Akaun Tunjang.xlsx` | The funds-account ledger per month, the annual summary against the original income and expense categories, and the dues collection list |
+
+Labels, column order, merged cells, fonts and borders come from `templates/excel/*.xlsx`, which are the same four layouts with the historical data removed.
+
+What the collector no longer does by hand:
+
+- **Cross-file links.** The manual workbooks depend on `[1]1`, `[1]2` … `[1]12` — one file per month. When a file is renamed or moved the formulas break: the four reference workbooks contained **328 cells showing `#REF!`**, most of them in the annual summaries. The generated package keeps the same link structure but rebuilds every workbook together, so the links resolve and values are cached for readers that do not recalculate.
+- **Opening balances.** Each month's opening balance is carried from the previous month's closing balance instead of being retyped.
+- **Amounts in words.** `RINGGIT MALAYSIA` is generated from the amount, so the two can never disagree.
+- **Row numbers and totals.** `Bil`, `JUMLAH`, `JUMLAH SEMASA` and `BAKI BULANAN` are recalculated; adding rows extends the tables and the totals follow.
+- **The empty February sheet.** Months with no data are still produced with the January layout, so the twelve-month summary has a column for every month.
+
 ## Editing and the relationship between files
 
 1. Extract all files into the same folder. Keep the file names so the relative links stay valid.

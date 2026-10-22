@@ -300,7 +300,7 @@ class Export:
             self.doc_sheets[d['id']] = title
             org = d.get('snapshot') or self.org
             for a,v in {'A2':org['name'], 'A3':org.get('address',''),
-                        'A4':f"No. Telefon: {org.get('phone','')}  Email: {org.get('email','')}",
+                        'A4':f"No. Telefon: {org.get('phone','')}  Email Add: {org.get('email','')}",
                         'B8':d['number'], 'B9':datetime.fromisoformat(d['date'][:10]),
                         'B11':d['party'], 'B14':ringgit(d['amountSen']), 'B15':d['words'],
                         'B18':d['description'], 'B22':d['reference']}.items():
@@ -451,7 +451,7 @@ class Export:
         self.print_sheets[('tunjang-annual' if tunjang else 'annual',0)]=s
         self.put(s,'A1',self.org['name'])
         self.put(s,'A2',f'RUMUSAN KEWANGAN TAHUN {self.year}' + (' — AKAUN TUNJANG' if tunjang else ''))
-        self.put(s,'C4',f'TAHUN {self.year}');self.put(s,'B6',f'BAKI AWAL {self.year}')
+        self.put(s,'C4',f'TAHUN {self.year}');self.put(s,'B6',f'BAKI PADA 1.1.{self.year}')
         it,ot,closing,adjust=(16,31,32,33) if tunjang else (12,18,19,20)
         self.put(s,f'B{adjust}','Pelarasan')
         for m in range(1,13):
@@ -476,7 +476,10 @@ class Export:
                 for g in range(4):
                     for r,sc in [(8+g,'D'),(14+g,'E')]:
                         self.link(s,f'{c}{r}',self.analysis,f'{sc}{self.metrics[(m,g)]}')
-                for r,label in [(8,'Gabungan JKKR'),(9,'AC Tumpang'),(10,'Dana Kerohanian'),(11,'Lain2'),(14,'Gabungan JKKR'),(15,'AC Tumpang'),(16,'Dana Kerohanian'),(17,'Lain2')]:self.put(s,f'B{r}',label)
+                # Row number, label and Bil number, numbered 1-4 in each section as in the reference.
+                for r,label,n in [(8,'Gabungan JKKR',1),(9,'AC Tumpang',2),(10,'Dana Kerohanian',3),(11,'Lain2',4),
+                                  (14,'Gabungan JKKR',1),(15,'AC Tumpang',2),(16,'Dana Kerohanian',3),(17,'Lain2',4)]:
+                    self.put(s,f'B{r}',label);self.put(s,f'A{r}',n)
             self.summed_range(s,f'{c}{it}',c,8,it-1)
             self.summed_range(s,f'{c}{ot}',c,18 if tunjang else 14,ot-1)
             self.total(s,f'{c}{adjust}',[(self.analysis,f'F{self.metrics[(m,g)]}') for g in groups])
@@ -495,7 +498,7 @@ class Export:
             inc=[e for e in es if int(e['amountSen'])>=0];out=[e for e in es if int(e['amountSen'])<0]
             s,row=self.copied(3,'jan2021',MONTHS[m-1],[(11,max(0,len(inc)-4),10),(16,max(0,len(out)-3),15)])
             self.print_sheets[('tunjang',m)]=s
-            self.put(s,'A1',self.org['name']);self.put(s,'A2',f'AKAUN TUNJANG — {self.data["tunjangName"]}')
+            self.put(s,'A1',self.org['name']);self.put(s,'A2',f'AKAUN TUNJANG {self.data["tunjangName"]}')
             self.put(s,'A3',f'{MONTHS[m-1].upper()} {self.year}');self.put(s,'A6',f'Baki pada 1.{m}.{self.year}')
             self.link(s,'F6',self.analysis,f'C{self.metrics[(m,4)]}')
             for items,start,incoming in [(inc,7,True),(out,row(13),False)]:

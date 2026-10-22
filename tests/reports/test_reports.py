@@ -97,6 +97,20 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(self.books[2]['rumusan']['E8'].value, -100)
         self.assertEqual(self.books[2]['rumusan']['F20'].value, 30)
 
+    def test_labels_match_the_reference_workbooks(self):
+        # The four workbooks are replacements for the treasurer's manual files,
+        # so the fixed labels are part of the contract, not incidental text.
+        receipt = self.books[0][self.export.doc_sheets['d1']]
+        self.assertTrue(receipt['A4'].value.startswith('No. Telefon: '))
+        self.assertIn('Email Add: ', receipt['A4'].value)
+        annual = self.books[2]['rumusan']
+        self.assertEqual(annual['B6'].value, f'BAKI PADA 1.1.{self.data["year"]}')
+        self.assertEqual([annual.cell(r,1).value for r in range(8,12)], [1,2,3,4])
+        self.assertEqual([annual.cell(r,1).value for r in range(14,18)], [1,2,3,4])
+        tunjang = self.books[3]['rumusan tahunan']
+        self.assertEqual([tunjang.cell(r,1).value for r in range(8,16)], list(range(1,9)))
+        self.assertEqual([tunjang.cell(r,1).value for r in range(18,31)], list(range(1,14)))
+
     def test_dynamic_rows_tunjang_and_empty_months(self):
         self.assertGreater(self.books[1]['Mei'].max_row, 24)
         self.assertGreater(self.books[2]['Mei'].max_row, 30)
