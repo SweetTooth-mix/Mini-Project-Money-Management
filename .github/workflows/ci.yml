@@ -133,6 +133,7 @@ jobs:
           --health-retries 20
     env:
       DATABASE_URL: postgresql://kira:kira_ci_password@127.0.0.1:5432/kira_rapi
+      METRICS_TOKEN: ci-metrics-token-0123456789
     steps:
       - uses: actions/checkout@v5
 
@@ -163,6 +164,7 @@ jobs:
           docker run --detach --name kira-rapi-ci --network host \
             --env DATABASE_URL \
             --env APP_URL=http://127.0.0.1:3000 \
+            --env METRICS_TOKEN \
             kira-rapi:ci
 
       - name: Wait for a healthy container
@@ -188,6 +190,22 @@ jobs:
 
       - name: Check the login page renders
         run: curl --fail --silent --output /dev/null http://127.0.0.1:3000/login
+
+      # Verifies the HTTP timing patch really runs inside the production server,
+      # not just in unit tests: the request above must appear in the exposition.
+      - name: Check metrics are scrapeable
+        run: |
+          curl --fail --silent --output /dev/null http://127.0.0.1:3000/login
+          curl --fail --silent -H "Authorization: Bearer $METRICS_TOKEN" \
+            http://127.0.0.1:3000/api/metrics | tee metrics.txt
+          grep -q 'kira_http_requests_total{method="GET",route="/login",status="2xx"}' metrics.txt
+          grep -q 'kira_http_request_duration_seconds_bucket{method="GET",route="/login"' metrics.txt
+          grep -q 'kira_process_uptime_seconds' metrics.txt
+
+      - name: Check metrics reject an unauthenticated scrape
+        run: |
+          status="$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/metrics)"
+          test "$status" = "401" || { echo "expected 401, got $status" >&2; exit 1; }
 
       - name: Container logs
         if: always()
