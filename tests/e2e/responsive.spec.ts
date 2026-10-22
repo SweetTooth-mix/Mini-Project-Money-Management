@@ -105,13 +105,21 @@ test("touch targets stay reachable and text stays readable on a phone", async ({
   await login(page);
   await page.goto("/dashboard/buku-tunai");
 
-  // Thumb-sized controls: WCAG 2.5.8 asks for 24px, 44px is the comfortable
-  // target. The theme and language toggles are the smallest things in the bar.
-  for (const selector of [".mobile-menu", ".theme-toggle", ".notification"]) {
+  // Thumb-sized controls: WCAG 2.5.8 asks for 24px. The menu button and the
+  // theme/language toggles share the crowded top bar.
+  for (const selector of [".mobile-menu", ".theme-toggle"]) {
     const box = await page.locator(selector).first().boundingBox();
     expect(box, `${selector} should be visible`).not.toBeNull();
     expect(Math.min(box!.width, box!.height)).toBeGreaterThanOrEqual(24);
   }
+
+  // The bell is dropped below 600px on purpose: the top bar has no room for it
+  // next to the profile, and the pending count is already on the vouchers link.
+  // Asserting the intent keeps someone from "fixing" it back into the bar.
+  await expect(page.locator(".topbar .notification")).toBeHidden();
+  await expect(
+    page.locator('.sidebar a[href="/dashboard/baucer-resit"] .nav-count'),
+  ).toBeAttached();
 
   // Nothing in the main content renders below 11px at this width: 9-10px is
   // unreadable on a phone held at arm's length.
