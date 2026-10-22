@@ -164,9 +164,11 @@ async function seed() {
     },
   ];
   for (const sample of samples) {
-    const { fund, ...fields } = sample;
+    // `day` is a fixture-only field: it must be used here and kept out of the
+    // object spread, or Prisma rejects it as an unknown document argument.
+    const { day, fund, ...fields } = sample;
     const date = dateOnly(
-      `${month}-${String(Math.min(sample.day, Number(today().slice(8)))).padStart(2, "0")}`,
+      `${month}-${String(Math.min(day, Number(today().slice(8)))).padStart(2, "0")}`,
     );
     const doc = await createDocument(admin, {
       ...fields,
