@@ -292,6 +292,11 @@ test("English form actions keep stored values and printable documents in Malay",
   });
 });
 
+// Needs the Python virtualenv and LibreOffice; the CI browser job has neither.
+test.skip(
+  process.env.E2E_SKIP_REPORTS === "true",
+  "requires the Excel/PDF reporting toolchain",
+);
 test("English report UI downloads the same four Malay workbooks and Malay PDF", async ({
   page,
 }) => {

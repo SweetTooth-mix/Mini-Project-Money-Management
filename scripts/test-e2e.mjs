@@ -91,7 +91,15 @@ function run(command, args) {
         `::error::${output
           .split("\n")
           .filter((line) => line.trim())
-          .slice(-40)
+          // Drop the artefact chatter: it says where a screenshot went, not
+          // why the assertion failed.
+          .filter(
+            (line) =>
+              !/^\s*(attachment #|Error Context:|test-results\/|-{5,}|={5,})/.test(
+                line,
+              ),
+          )
+          .slice(-60)
           .map((line) => line.replaceAll("%", "%25").replaceAll("\r", ""))
           .join("%0A")}`,
       );

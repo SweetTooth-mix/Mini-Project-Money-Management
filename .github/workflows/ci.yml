@@ -74,6 +74,9 @@ jobs:
       # The suite creates its own kira_rapi_e2e_test database; there is no
       # docker compose project inside the job.
       E2E_SKIP_COMPOSE_DB: "true"
+      # No LibreOffice or Python virtualenv in this job; the container job
+      # covers the reporting toolchain instead.
+      E2E_SKIP_REPORTS: "true"
       CI: "true"
     steps:
       - uses: actions/checkout@v5
