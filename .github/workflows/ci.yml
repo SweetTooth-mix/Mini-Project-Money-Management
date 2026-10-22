@@ -174,13 +174,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Resolve base image digest
-        run: |
-          for image in postgres:16-bookworm; do
-            digest=$(docker buildx imagetools inspect "$image" --format '{{json .Manifest}}' | jq -r .digest)
-            echo "::warning::DIGEST ${image} ${digest}"
-          done
-
       - name: Build runtime image
         run: docker build --target runner --tag kira-rapi:ci .
 

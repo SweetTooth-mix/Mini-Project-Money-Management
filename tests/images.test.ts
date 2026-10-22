@@ -34,20 +34,27 @@ test("every Dockerfile base image is pinned by digest", () => {
   for (const line of lines) assert.match(line, PINNED_FROM);
 });
 
-test("every CI service image is pinned by digest", () => {
+// compose.yaml also names the image it builds from this repository, which has
+// no upstream digest to pin.
+const LOCAL_IMAGES = new Set(["kira-rapi:local", "kira-rapi:migrate"]);
+
+test("every remote service image is pinned by digest", () => {
   for (const file of [
     ".github/workflows/ci.yml",
     ".github/workflows/docs-screenshots.yml",
+    "compose.yaml",
   ]) {
     const images = [
       ...readFileSync(file, "utf8").matchAll(/^\s+image:\s*(\S+)$/gm),
     ].map((match) => match[1]);
     assert.ok(images.length > 0, `no service images found in ${file}`);
-    for (const image of images)
+    for (const image of images) {
+      if (LOCAL_IMAGES.has(image)) continue;
       assert.match(
         image,
         new RegExp(`${LITERAL_DIGEST.source}$`),
         `${file}: ${image}`,
       );
+    }
   }
 });

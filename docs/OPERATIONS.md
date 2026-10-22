@@ -69,6 +69,16 @@ docker build -t kira-rapi .
 docker build --target migrate -t kira-rapi:migrate .
 ```
 
+**Base images are pinned by digest.** Every `FROM` line resolves to `node:22-bookworm-slim@sha256:…` through `ARG NODE_IMAGE_DIGEST`, and the CI and Compose database services name `postgres:16@sha256:…` and `postgres:16-bookworm@sha256:…`. A tag is a moving pointer: a re-published `node:22-bookworm-slim` would otherwise change the shipped image without a commit. `tests/images.test.ts` fails if a pin is dropped.
+
+To take a base image update, resolve the new manifest digest and change it deliberately, together with `NODE_VERSION`:
+
+```bash
+docker buildx imagetools inspect node:22-bookworm-slim --format '{{json .Manifest}}' | jq -r .digest
+```
+
+The digest of a tag can differ between variants — `postgres:16` and `postgres:16-bookworm` are separate indexes — so resolve the exact tag that is being used.
+
 With Compose (`compose.yaml`), the `container` profile wires the database and an uploads volume. The profile is opt-in so `docker compose up -d` keeps starting only PostgreSQL for local development.
 
 ```bash
