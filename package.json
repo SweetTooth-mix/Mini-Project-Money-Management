@@ -28,7 +28,9 @@
     "restore:verify": "bash scripts/restore-verify.sh"
   },
   "dependencies": {
-    "@fontsource/dm-sans": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/public-sans": "5.3.0",
+    "@fontsource/source-serif-4": "5.3.1",
     "@prisma/client": "6.19.3",
     "bcryptjs": "3.0.3",
     "lucide-react": "1.55.0",

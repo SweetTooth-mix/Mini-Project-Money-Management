@@ -1,6 +1,7 @@
 # Kira Rapi UI/UX design
 
-Visual direction: modern corporate with jade green, DM Sans typography and financial screens that put balances and daily actions first. The interface supports Malay and English. The binding rules behind this page — palette and
+Visual direction: ledger editorial — deep forest green, Source Serif 4 headings, Public Sans UI text and
+IBM Plex Mono figures, on cool paper. Financial screens put balances and daily actions first. The interface supports Malay and English. The binding rules behind this page — palette and
 contrast floors, spacing and radius tokens, motion limits and banned patterns — live in
 [DESIGN.md](../DESIGN.md).
 
