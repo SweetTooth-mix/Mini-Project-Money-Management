@@ -79,6 +79,8 @@ docker buildx imagetools inspect node:22-bookworm-slim --format '{{json .Manifes
 
 The digest of a tag can differ between variants — `postgres:16` and `postgres:16-bookworm` are separate indexes — so resolve the exact tag that is being used.
 
+A digest never moves on its own, so Dependabot watches the `docker` and `docker-compose` ecosystems weekly and opens the bump. Merging that pull request is the point at which a rebuilt base image reaches production; leaving it open means shipping the previous one.
+
 With Compose (`compose.yaml`), the `container` profile wires the database and an uploads volume. The profile is opt-in so `docker compose up -d` keeps starting only PostgreSQL for local development.
 
 ```bash
