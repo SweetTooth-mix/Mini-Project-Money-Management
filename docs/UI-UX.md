@@ -23,7 +23,27 @@ The BM/EN control is available on desktop and phone, including the sign-in and r
 
 The sidebar becomes an expandable menu at widths up to 1100px. When the menu opens, focus moves inside it, Tab/Shift+Tab stay within it and the background content cannot be activated. Escape closes the menu and returns focus to the opening button. The menu closes when a link is chosen or the viewport returns to desktop size.
 
-Cards and forms reflow with viewport width. Long tables scroll inside their container. Focus indicators are visible, a skip-to-content link is provided, and the device setting for reduced motion is respected.
+Cards and forms reflow with viewport width. Focus indicators are visible, a skip-to-content link is provided, and the device setting for reduced motion is respected.
+
+### Breakpoints and the responsive floor
+
+| Width | Layout |
+| --- | --- |
+| ≥ 1600px | Wider gutters, content capped so lines stay readable |
+| 1100–1599px | Permanent sidebar, four metric cards per row |
+| 760–1099px | Sidebar becomes a drawer; metric cards drop to two per row and the dashboard grids to one column |
+| ≤ 759px | Compact top bar with an icon-only profile, stacked heading actions |
+| ≤ 600px | 16px inputs and a 46px minimum height, so iOS does not zoom on focus; tables get larger cells and tighter panel padding |
+| ≤ 480px | Narrowest phones; every remaining two-column pair collapses |
+
+Two rules hold at every width.
+
+- **Nothing renders below 11px on a phone.** The 9–10px labels used on the desktop dashboard (captions, chart axis, table footer) are raised at the 600px breakpoint. Below that size the text is unreadable when the phone is held at arm's length, which matters for a committee that is not all young.
+- **A cropped table advertises itself.** `.table-scroll` carries two shadow layers that appear only while there is hidden content on that side and vanish at the ends, using `background-attachment: local` so no JavaScript or resize observer is needed. `overscroll-behavior-x: contain` stops a sideways swipe on the table from scrolling the page behind it.
+
+`100dvh` is used alongside `100vh` on the shell, the sign-in layout and the registration page, so the collapsing mobile address bar does not cause a jump.
+
+The viewport meta tag comes from Next.js; the layout is verified at 360, 390, 768, 1024 and 1440px by `tests/e2e/responsive.spec.ts`, which asserts no horizontal page scroll, readable type, thumb-sized controls and a working drawer on tablet.
 
 ## Maintenance and verification
 
