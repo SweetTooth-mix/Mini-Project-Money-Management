@@ -1,0 +1,24 @@
+# Keep the build context small and free of secrets or local state.
+.git
+.gitignore
+.github
+node_modules
+.next
+.venv
+.venv/**
+__pycache__
+*.pyc
+.data
+.env
+.env.*
+!.env.example
+test-results
+playwright-report
+docs/screenshots
+*.log
+*.tsbuildinfo
+next-env.d.ts
+Dockerfile
+.dockerignore
+compose.yaml
+README.md

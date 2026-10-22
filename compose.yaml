@@ -15,5 +15,46 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
+
+  # Application container. Opt in so `docker compose up -d` keeps starting only
+  # the database for local development:
+  #   docker compose --profile container up -d --build
+  app:
+    profiles: ["container"]
+    build:
+      context: .
+      target: runner
+    image: kira-rapi:local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://kira:${POSTGRES_PASSWORD}@db:5432/kira_rapi
+      UPLOAD_DIR: /data/uploads
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - kira-uploads:/data/uploads
+
+  # One-off migration and seed runner. Uses the same image build context but
+  # keeps the Prisma CLI:
+  #   docker compose --profile container run --rm migrate
+  #   docker compose --profile container run --rm migrate npx prisma db seed
+  migrate:
+    profiles: ["container"]
+    build:
+      context: .
+      target: migrate
+    image: kira-rapi:migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://kira:${POSTGRES_PASSWORD}@db:5432/kira_rapi
+
 volumes:
   kira-data:
+  kira-uploads:

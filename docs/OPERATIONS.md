@@ -54,6 +54,57 @@ Use HTTPS and a matching `APP_URL` before building and starting. Keep the Host h
 
 Production deployment requires a **new database for this schema version**, `SEED_DEMO=false` and private initial users. Do not point it at a legacy database without a separate migration process. PostgreSQL does not need to be reachable from the Internet. Run the application process as a non-root user.
 
+## Container deployment
+
+The multi-stage `Dockerfile` produces a runtime image containing Node 22, LibreOffice Calc, Liberation fonts and a Python virtualenv with `openpyxl`. Nothing else has to be installed on the host.
+
+| Target | Contents | Use |
+| --- | --- | --- |
+| `runner` (default) | Production bundle, prod dependencies, generated Prisma client, LibreOffice, venv | Serve traffic |
+| `migrate` | Full dependencies including the Prisma CLI and `tsx` | `migrate deploy` and the seed |
+| `deps`, `builder`, `prod-deps`, `python-deps` | Intermediate stages | Build only, not shipped |
+
+```bash
+docker build -t kira-rapi .
+docker build --target migrate -t kira-rapi:migrate .
+```
+
+With Compose (`compose.yaml`), the `container` profile wires the database and an uploads volume. The profile is opt-in so `docker compose up -d` keeps starting only PostgreSQL for local development.
+
+```bash
+docker compose --profile container build
+docker compose --profile container run --rm migrate
+docker compose --profile container run --rm migrate npx prisma db seed   # first install only
+docker compose --profile container up -d app
+docker compose --profile container logs -f app
+```
+
+Inside Compose the application reaches the database at `db:5432`; the host-published `127.0.0.1:5434` is for tools running on the host, not for the container.
+
+**Runtime contract.**
+
+| Item | Value |
+| --- | --- |
+| User | `nextjs`, UID 1001 |
+| Port | `3000`, bound to `0.0.0.0` |
+| Writable path | `/data/uploads` only (declare a volume here) |
+| `UPLOAD_DIR` | `/data/uploads` |
+| `EXCEL_PYTHON` | `/opt/reports/venv/bin/python` |
+| Health check | `HEALTHCHECK` calls `/api/health` every 30 s |
+
+Because only `/data/uploads` is written to, the container can run with a read-only root filesystem plus a writable volume:
+
+```bash
+docker run --read-only --tmpfs /tmp \
+  -v kira-uploads:/data/uploads \
+  --env-file .env \
+  -p 127.0.0.1:3000:3000 kira-rapi
+```
+
+Next.js needs `.next/cache` for image optimisation and server caches; with `--read-only` add `--tmpfs /app/.next/cache` or accept that caches stay in memory. Uploads and the database are the only state that must be backed up, and the existing `npm run backup` and `npm run restore:verify` scripts run on the host against the Compose database unchanged.
+
+**Image checks in CI.** The `container` CI job builds both images, applies migrations, seeds a demo organisation, starts the container and waits for its own `HEALTHCHECK` to report healthy. It then requires `/api/health` to report `reports: ok`, which proves LibreOffice and the Python virtualenv work inside the image, not just on a developer machine.
+
 ## Readiness
 
 ```bash
