@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { randomBytes } from "node:crypto";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 const url = new URL(process.env.DATABASE_URL);
 url.pathname = "/kira_rapi_e2e_test";
 if (!["localhost", "127.0.0.1"].includes(url.hostname))
@@ -61,7 +61,6 @@ if (hasCompose) {
 }
 
 const options = {
-  stdio: "inherit",
   env: {
     ...process.env,
     DATABASE_URL: url.toString(),
@@ -75,27 +74,31 @@ const options = {
   },
 };
 
-const playwright = ["playwright", "test", ...process.argv.slice(2)];
-try {
-  execFileSync(
-    "npx",
-    ["prisma", "migrate", "reset", "--force", "--skip-seed"],
-    options,
-  );
-  execFileSync("npm", ["run", "db:seed"], options);
-  execFileSync("npx", playwright, options);
-} catch (error) {
-  // CI job logs are not always reachable; surface the tail as an annotation.
-  const log = [error.stdout?.toString() || "", error.stderr?.toString() || ""]
-    .join("")
-    .trim();
-  if (process.env.CI && log)
-    console.error(
-      `::error::${log
-        .split("\n")
-        .slice(-40)
-        .join("%0A")
-        .replace(/%(?!0A)/g, "%25")}`,
-    );
-  process.exit(error.status ?? 1);
+// Output is captured rather than inherited so a failing run can repeat its tail
+// as a check-run annotation: job logs are not reachable from every environment.
+function run(command, args) {
+  const result = spawnSync(command, args, {
+    ...options,
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const output = `${result.stdout || ""}${result.stderr || ""}`;
+  process.stdout.write(output);
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    if (process.env.CI && output.trim())
+      console.error(
+        `::error::${output
+          .split("\n")
+          .filter((line) => line.trim())
+          .slice(-40)
+          .map((line) => line.replaceAll("%", "%25").replaceAll("\r", ""))
+          .join("%0A")}`,
+      );
+    process.exit(result.status ?? 1);
+  }
 }
+
+run("npx", ["prisma", "migrate", "reset", "--force", "--skip-seed"]);
+run("npm", ["run", "db:seed"]);
+run("npx", ["playwright", "test", ...process.argv.slice(2)]);
