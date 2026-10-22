@@ -119,11 +119,40 @@ remain from the first implementation and are not a licence to add more.
 
 ## 5. Motion
 
-- Exactly two keyframes exist: `pulse` (loading) and `spin` (progress). A third needs a reason.
-- Durations 120–240ms, `ease` or `ease-out`. **No** bounce, elastic, spring or overshoot.
-- **No** hover scale, no card lift, no micro-animation sprinkled across rows. Hover changes
-  colour, background or border — never geometry.
-- `prefers-reduced-motion: reduce` is honoured globally; keep that block.
+Motion has one job here: show where a number came from. The signature move is the chart growing
+from its baseline on first paint. Everything else is a state change, not an entrance.
+
+### Tokens
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--dur-fast` | 120ms | hover, focus, colour changes |
+| `--dur-base` | 180ms | drawer slide, backdrop fade |
+| `--dur-slow` | 240ms | chart bars |
+| `--ease-out` | `cubic-bezier(0.2, 0, 0, 1)` | every transition; decelerates, never overshoots |
+| `--stagger` | 40ms | delay between chart bar groups |
+
+### The three keyframes
+
+| Keyframe | Where | What |
+| --- | --- | --- |
+| `bar-grow` | dashboard chart | `scaleY(0) → 1` from `transform-origin: bottom`, staggered 40ms per month |
+| `pulse` | loading dots | opacity 0.25 ↔ 1 |
+| `spin` | progress ring | rotate 360° |
+
+A fourth keyframe needs a reason that survives review.
+
+### Rules
+
+- Animate **`transform` and `opacity` only** — both compositor-friendly. Never animate `width`,
+  `height`, `top` or `left`.
+- Never `transition: all`. List the properties: colour, border, background, box-shadow.
+- **No** hover scale, no card lift, no geometry change on hover. Hover changes colour, background
+  or border — never position or size.
+- No entrance animations on text or panels: an element that fades in is an element that is
+  briefly unreadable, and briefly invisible to a screenshot test.
+- `prefers-reduced-motion: reduce` is honoured globally with `!important` on transition and
+  animation; keep that block last in the file.
 
 ---
 
