@@ -251,7 +251,7 @@ npm audit                  # Dependency audit
 
 1. `quality` — `prisma generate`, `typecheck`, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high` and a production build.
 2. `integration` — PostgreSQL 16 as a service, a `kira_rapi_test` database, `prisma migrate deploy` and the 15 integration tests.
-3. `accessibility` — production build, Chromium, then the full Playwright suite against the isolated `kira_rapi_e2e_test` database, including the axe audits. Failure screenshots are uploaded as an artefact.
+3. `accessibility` — production build, Chromium, then the Playwright suite against the isolated `kira_rapi_e2e_test` database, including the axe audits. The two scenarios that download generated Excel/PDF files are skipped there (`E2E_SKIP_REPORTS=true`) because the job has no LibreOffice or Python virtualenv; the `container` job covers that toolchain. Failure screenshots are uploaded as an artefact.
 4. `container` — builds the runtime and migration images, applies migrations, seeds a demo organisation, starts the container and waits for its own `HEALTHCHECK` to report healthy. It then asserts that `/api/health` reports the reporting toolchain as `ok`, which proves LibreOffice and the Python virtualenv work inside the image.
 
 Integration and browser failures are surfaced as check-run annotations, so the cause is readable without downloading job logs. The Excel/PDF suite stays manual because it needs LibreOffice.
