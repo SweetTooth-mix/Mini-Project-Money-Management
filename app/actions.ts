@@ -31,6 +31,7 @@ import { deleteUpload, storeUpload } from "@/lib/uploads";
 import { pruneOpportunistically } from "@/lib/maintenance";
 import { clientAddress } from "@/lib/request-ip";
 import { logError } from "@/lib/log";
+import { getApprovalNotifier } from "@/lib/approval-notify";
 import {
   check,
   loginBuckets,
@@ -209,18 +210,50 @@ export async function createDocumentAction(form: FormData) {
 
 export async function documentAction(form: FormData) {
   const id = str(form, "id", 100);
+  const action = choice(form, "action", [
+    "submit",
+    "approve",
+    "reject",
+    "pay",
+    "void",
+  ]);
   await run(
     `/dashboard/baucer-resit/${encodeURIComponent(id)}`,
     async (user) => {
       await transitionDocument(
         user,
         id,
-        choice(form, "action", ["submit", "approve", "reject", "pay", "void"]),
+        action,
         optional(form, "reason"),
         dateOnly(optional(form, "date") || today()),
       );
+      // Only after the transaction committed: a reviewer ping must never turn a
+      // saved submission into an error, and the notifier swallows its own
+      // failures anyway.
+      if (action === "submit") await notifyReviewers(id);
     },
   );
+}
+
+async function notifyReviewers(documentId: string) {
+  const notifier = getApprovalNotifier();
+  if (!notifier.configured) return;
+  const document = await db.document.findUnique({
+    where: { id: documentId },
+    include: { createdBy: true },
+  });
+  if (!document) return;
+  const base = process.env.APP_URL?.replace(/\/$/, "");
+  await notifier.notify({
+    id: document.id,
+    number: document.number,
+    type: document.type,
+    party: document.party,
+    description: document.description,
+    amountSen: document.amountSen,
+    submittedBy: document.createdBy.name || document.createdBy.email,
+    url: `${base ?? ""}/dashboard/baucer-resit/${document.id}`,
+  });
 }
 
 export async function updateDocumentAction(form: FormData) {

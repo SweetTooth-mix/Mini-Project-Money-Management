@@ -207,6 +207,9 @@ See [`.env.example`](.env.example). Never commit `.env`, database dumps or uploa
 | `LOG_LEVEL` | — | `debug`, `info`, `warn` or `error`; default `info` |
 | `SERVICE_NAME` | — | Label attached to every log line, default `kira-rapi` |
 | `ERROR_WEBHOOK_URL` | — | Optional JSON POST target for error records; delivery failures are ignored |
+| `APPROVAL_TELEGRAM_TOKEN` | — | Telegram bot token for approval notifications |
+| `APPROVAL_TELEGRAM_CHAT_ID` | — | Chat or group that receives the notification |
+| `APPROVAL_WEBHOOK_URL` | — | JSON POST target for approvals, for Slack-style hooks |
 
 ¹ Only needed when PostgreSQL runs through Compose. ² Needed for the first seed run.
 
@@ -230,7 +233,7 @@ Public registration creates a `PENDING` USER. Only a Super Admin can activate it
 
 | Suite | Command | Count | Requirements |
 | --- | --- | :---: | --- |
-| Unit | `npm test` | 36 tests | Node only |
+| Unit | `npm test` | 46 tests | Node only |
 | Integration | `npm run test:integration` | 15 tests | PostgreSQL |
 | Excel/PDF reports | `npm run test:reports` | 8 tests | Python + LibreOffice |
 | Browser and accessibility | `npm run test:e2e` | 16 scenarios, 3 of them axe audits over 13 screens | Current build + Chromium |
@@ -263,6 +266,19 @@ Integration and browser failures are surfaced as check-run annotations, so the c
 `tests/e2e/a11y.spec.ts` runs [axe-core](https://github.com/dequelabs/axe-core) over the login and register pages in both themes, all nine dashboard screens, and the sign-in failure state — 13 audits in three scenarios. It fails on `serious` and `critical` findings across the WCAG 2.0/2.1 A and AA rule sets; lower-impact findings are reported by axe but do not break the build, because several of them are deliberate design choices in this app.
 
 The audit is part of `npm run test:e2e` and runs in CI on every pull request. It complements, and does not replace, manual keyboard and screen-reader checks: automated tooling finds a minority of real accessibility problems.
+
+## Approval notifications
+
+When a document is submitted for approval, reviewers can be notified without any mail server: the app posts one JSON request to whichever channels are configured.
+
+| Channel | Variables |
+| --- | --- |
+| Telegram | `APPROVAL_TELEGRAM_TOKEN`, `APPROVAL_TELEGRAM_CHAT_ID` |
+| Webhook (Slack, Mattermost, custom) | `APPROVAL_WEBHOOK_URL` |
+
+The message stays in Malay, like the printed documents and reports, and carries the document number, type, party, description, formatted amount, the submitter's name and a link built from `APP_URL`. The webhook also receives the raw fields, with `amountSen` as a string because JSON has no integer type wide enough for `BigInt`.
+
+Notifications are best-effort by design: they are sent after the transaction commits, each channel has a three-second timeout, and a failure is logged (`approval.notify_failed`) rather than shown to the user. A reviewer who misses a ping still sees the document in their pending queue. With no channel configured the code path is a no-op.
 
 ## Observability
 
@@ -359,11 +375,11 @@ The steps above have been exercised in a development environment; the applicatio
 Not yet implemented, in priority order:
 
 1. **Bank reconciliation** and CSV statement import with suggested matches.
-2. **Approval notifications** over email or Telegram for `PENDING` documents.
+2. **Email delivery** for approval notifications; Telegram and webhooks work today.
 3. **Multiple attachments** per document (currently one file per document).
 4. **Metrics**: request latency and error rates exported for scraping; logs and health checks exist today, but there is no time-series data.
 5. **Slimmer image**: the LibreOffice layer dominates the image size; a separate report worker image would let the web container stay small.
-6. **Email delivery**, multi-organisation support and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
+6. **Multi-organisation support** and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
 
 Antivirus scanning for attachments is not provided. Restoring a backup of real user data has not been performed in this environment; run `npm run restore:verify` on the production host before you need it.
 
