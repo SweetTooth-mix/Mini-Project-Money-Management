@@ -5927,6 +5927,39 @@ select {
   }
 }
 
+/* ==========================================================================
+   v5 · Ketumpatan. Selaraskan ruang dengan mockup arah C: 24px sisi halaman,
+   16px dalam kad. Nilai diambil daripada skala jarak, bukan nombor mentah.
+   Desktop sahaja — telefon sudah ada nilai tersendiri di bawah.
+   ========================================================================== */
+@media screen and (min-width: 761px) {
+  .main-content {
+    padding: var(--s-7) var(--s-8) var(--s-8);
+  }
+  .topbar {
+    padding-inline: var(--s-8);
+  }
+  .metric {
+    padding: var(--s-6) var(--s-6) var(--s-5);
+  }
+  .panel-heading {
+    padding: var(--s-6) var(--s-6) var(--s-5);
+  }
+  .panel {
+    margin-bottom: var(--s-7);
+  }
+  .page-heading {
+    margin-bottom: var(--s-7);
+  }
+}
+
+/* Skrin besar kekal lapang di bahagian atas, tetapi ikut skala. */
+@media screen and (min-width: 1600px) {
+  .main-content {
+    padding-top: var(--s-9);
+  }
+}
+
 @media screen and (max-width: 600px) {
   /* Type floor, second pass, for the labels the first pass missed: table
      sub-lines, status pills, activity text and the drawer captions were still

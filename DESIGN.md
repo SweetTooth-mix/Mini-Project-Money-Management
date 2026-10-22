@@ -115,6 +115,22 @@ radii left in the file are decorative geometry (`.metric-decoration`), print she
 Use the tokens for new `padding`, `margin` and `gap`. Legacy declarations with 13/15/17/19/22/23/25px
 remain from the first implementation and are not a licence to add more.
 
+### Page density
+
+The layout is **compact, not airy**. A clerk reads this screen for hours; every pixel of chrome is
+a row of data they cannot see.
+
+| Surface | Padding |
+| --- | --- |
+| Page (`.main-content`) | `--s-7 --s-8 --s-8` (20 / 24 / 24); `--s-9` top from 1600px |
+| Top bar | `0 --s-8` |
+| Card (`.metric`, `.panel-heading`) | `--s-6 --s-6 --s-5` (16 / 16 / 12) |
+| Gap between cards | `--s-7` |
+
+These live in the `v5` block near the end of `app/globals.css`, scoped to `min-width: 761px` so the
+phone values below are untouched. Do not let a padded-out "premium" spacing scale creep back in:
+larger gaps read as unfinished, not as luxury, in a ledger.
+
 ---
 
 ## 5. Motion
