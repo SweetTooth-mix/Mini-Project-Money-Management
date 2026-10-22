@@ -253,7 +253,7 @@ Verified on **22 October 2026 (Asia/Kuala_Lumpur)** for layered login throttling
 | --- | --- |
 | GitHub Actions (`quality`) | Pass: typecheck, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high`, production build |
 | GitHub Actions (`integration`) | Pass: PostgreSQL 16, 15 integration tests including concurrent throttle counting and health probes |
-| Unit tests | 35 passing (9 audit filters, 7 throttling/client address, 8 logging/health, 11 existing) |
+| Unit tests | 36 passing (9 audit filters, 7 throttling/client address, 8 logging/health, 1 dictionary grouping, 11 existing) |
 | PostgreSQL integration tests | 15 passing: 3 for throttling and audit filtering, 2 for health probes |
 | Prettier and ESLint | 0 errors, 0 warnings across `app/`, `lib/`, `components/` and `tests/` |
 

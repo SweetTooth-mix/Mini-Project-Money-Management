@@ -29,7 +29,7 @@ Cards and forms reflow with viewport width. Long tables scroll inside their cont
 
 - Colour tokens and responsive rules: `app/globals.css`.
 - Initial theme: `app/layout.tsx`; theme control: `components/theme-toggle.tsx`.
-- Language: `lib/i18n.ts` holds the dictionary; `lib/i18n-server.ts` reads the cookie; `components/language-toggle.tsx` and `app/language-actions.ts` change the language choice.
+- Language: `lib/i18n.ts` re-exports the dictionary and helpers, with the phrases grouped by screen area in `lib/i18n/messages/`; `lib/i18n-server.ts` reads the cookie; `components/language-toggle.tsx` and `app/language-actions.ts` change the language choice.
 - Navigation and focus management: `components/shell.tsx`.
 - Theme, desktop/phone, menu focus and printing from night mode scenarios: `tests/e2e/design.spec.ts`.
 - Document flow and Excel/PDF downloads: `tests/e2e/app.spec.ts`.
