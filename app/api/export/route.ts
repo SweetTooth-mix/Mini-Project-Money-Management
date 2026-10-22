@@ -1,11 +1,13 @@
 import { currentUser } from "@/lib/auth";
 import { ledgerData } from "@/lib/queries";
 import { csvCell } from "@/lib/ledger";
+import { requestIdFrom, responseHeaders } from "@/lib/request-id";
 
 export async function GET(request: Request) {
   if (!(await currentUser()))
     return Response.json({ error: "Log masuk diperlukan." }, { status: 401 });
   const params = Object.fromEntries(new URL(request.url).searchParams);
+  const requestId = requestIdFrom(request);
   const data = await ledgerData(params);
   const decimal = (sen: bigint) =>
     `${sen < 0n ? "-" : ""}${(sen < 0n ? -sen : sen) / 100n}.${((sen < 0n ? -sen : sen) % 100n).toString().padStart(2, "0")}`;
@@ -51,6 +53,7 @@ export async function GET(request: Request) {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="buku-tunai-${data.month}.csv"`,
       "Cache-Control": "private, no-store",
+      ...responseHeaders(requestId),
     },
   });
 }

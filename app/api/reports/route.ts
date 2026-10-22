@@ -6,6 +6,8 @@ import path from "node:path";
 import { currentUser } from "@/lib/auth";
 import { excelData, reportKinds } from "@/lib/excel";
 import { DomainError } from "@/lib/money";
+import { log } from "@/lib/log";
+import { requestIdFrom, responseHeaders } from "@/lib/request-id";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -29,7 +31,11 @@ const schema = z.object({
 });
 
 export async function GET(request: Request) {
-  const headers = { "Cache-Control": "private, no-store" };
+  const requestId = requestIdFrom(request);
+  const headers = {
+    "Cache-Control": "private, no-store",
+    ...responseHeaders(requestId),
+  };
   if (!(await currentUser()))
     return Response.json(
       { error: "Sila log masuk." },
@@ -106,11 +112,15 @@ export async function GET(request: Request) {
   } catch (error) {
     if (error instanceof DomainError)
       return Response.json({ error: error.message }, { status: 400, headers });
-    // Worker stderr can contain record values or paths; never expose it to a client or logs.
-    console.error(
-      "Report generation failed",
-      error instanceof Error ? error.name : "UnknownError",
-    );
+    // Only the error name is recorded: worker stderr can contain record values
+    // or local paths, and this route must never leak either.
+    log.error("report.generate_failed", {
+      requestId,
+      report: options.report,
+      format: options.format,
+      year: options.year,
+      errName: error instanceof Error ? error.name : "UnknownError",
+    });
     return Response.json(
       {
         error:

@@ -1,6 +1,7 @@
 import { currentUser } from "@/lib/auth";
 import { auditExportRows } from "@/lib/audit";
 import { csvCell } from "@/lib/ledger";
+import { requestIdFrom, responseHeaders } from "@/lib/request-id";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   if (!(await currentUser()))
     return Response.json({ error: "Log masuk diperlukan." }, { status: 401 });
+  const requestId = requestIdFrom(request);
   const params = Object.fromEntries(new URL(request.url).searchParams);
   const rows = await auditExportRows(params);
   const when = new Intl.DateTimeFormat("en-GB", {
@@ -66,6 +68,7 @@ export async function GET(request: Request) {
       "Content-Disposition": `attachment; filename="jejak-audit-${stamp}.csv"`,
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
+      ...responseHeaders(requestId),
     },
   });
 }

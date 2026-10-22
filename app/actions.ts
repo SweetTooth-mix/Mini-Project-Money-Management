@@ -30,6 +30,7 @@ import {
 import { deleteUpload, storeUpload } from "@/lib/uploads";
 import { pruneOpportunistically } from "@/lib/maintenance";
 import { clientAddress } from "@/lib/request-ip";
+import { logError } from "@/lib/log";
 import {
   check,
   loginBuckets,
@@ -82,12 +83,13 @@ async function run(
     )
       message = "Rekod dengan kod atau e-mel ini sudah wujud.";
     else {
-      console.error(
-        "Operation failed",
-        error instanceof Prisma.PrismaClientKnownRequestError
-          ? error.code
-          : "internal",
-      );
+      logError("action.failed", error, {
+        path,
+        userId: user.id,
+        ...(error instanceof Prisma.PrismaClientKnownRequestError
+          ? { prismaCode: error.code }
+          : {}),
+      });
       message = "Perubahan tidak dapat disimpan. Sila cuba semula.";
     }
   }
