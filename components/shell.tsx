@@ -150,10 +150,13 @@ export function Shell({
         <Link
           href="/dashboard"
           className="brand-link"
-          aria-label={t("Kira Rapi — dashboard")}
           onClick={() => setOpen(false)}
         >
+          {/* The wordmark is a logo, so the link takes its name from the
+              visually hidden text (WCAG 2.5.3 keeps the visible text inside the
+              accessible name; a logo has no literal text to match). */}
           <Brand />
+          <span className="sr-only">{t("Kira Rapi — dashboard")}</span>
         </Link>
         <button
           className="icon-button mobile-close"
@@ -279,15 +282,18 @@ export function Shell({
               <Bell size={20} />
               {pending > 0 && <i />}
             </Link>
-            <Link
-              href="/dashboard/settings"
-              className="topbar-profile"
-              aria-label={t("Tetapan akaun {name}", { name })}
-            >
-              <span className="avatar avatar-small">{name[0]}</span>
+            <Link href="/dashboard/settings" className="topbar-profile">
+              <span className="avatar avatar-small" aria-hidden="true">
+                {name[0]}
+              </span>
               <span>
                 <strong>{name.split(" ")[0]}</strong>
                 <small>{translateMessage(roleNames[role], language)}</small>
+              </span>
+              {/* Appended, not replaced: the visible name and role stay part of
+                  the accessible name. */}
+              <span className="sr-only">
+                {t("Tetapan akaun {name}", { name })}
               </span>
             </Link>
           </div>

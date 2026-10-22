@@ -33,13 +33,24 @@ function describeViolations(
     );
 }
 
+// Problems accumulate across screens so one run reports every failing page
+// instead of stopping at the first.
+const problems: string[] = [];
+
 async function audit(page: Page, label: string) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
-  const problems = describeViolations(results.violations);
-  expect(problems, `Accessibility problems on ${label}`).toEqual([]);
+  problems.push(
+    ...describeViolations(results.violations).map(
+      (problem) => `${label}: ${problem}`,
+    ),
+  );
 }
+
+test.afterAll(() => {
+  expect(problems, "Accessibility problems").toEqual([]);
+});
 
 test("public screens are accessible in both themes", async ({ page }) => {
   for (const theme of ["light", "dark"] as const) {
