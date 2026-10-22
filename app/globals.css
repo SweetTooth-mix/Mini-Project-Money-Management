@@ -315,7 +315,7 @@ svg {
   border-radius: var(--r-lg);
 }
 .note-spark {
-  color: #6f8a4e;
+  color: var(--accent);
   font-size: 25px;
   margin-bottom: var(--s-2);
 }
@@ -409,7 +409,7 @@ svg {
 }
 .breadcrumb {
   font-size: 11px;
-  color: #929a97;
+  color: var(--muted);
 }
 .breadcrumb > span {
   margin: 0 var(--s-6);
@@ -423,7 +423,7 @@ svg {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #6a786f;
+  color: var(--muted);
   font-size: 10px;
 }
 .workspace-state i {
@@ -608,15 +608,15 @@ svg {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #718077;
+  color: var(--muted);
 }
 .month-filter input {
   font-size: 11px;
-  border: 1px solid #e0e6e1;
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
   padding: 7px;
   background: white;
-  color: #607568;
+  color: var(--muted);
   width: 149px;
   min-height: 32px;
 }
@@ -890,7 +890,7 @@ svg {
 }
 .accessible-chart {
   padding: 0 23px 13px;
-  color: #829087;
+  color: var(--muted);
   font-size: 9px;
 }
 .accessible-chart summary {
@@ -921,7 +921,7 @@ svg {
   align-items: center;
   gap: 7px;
   font-size: 10px;
-  color: #64746a;
+  color: var(--muted);
 }
 .fund-label i {
   width: 7px;
@@ -959,7 +959,7 @@ svg {
 }
 .panel-footnote {
   font-size: 9px;
-  color: #9aa39c;
+  color: var(--muted);
   padding: 0 23px 19px;
 }
 .table-scroll {
@@ -1088,11 +1088,11 @@ tfoot td {
   justify-content: space-between;
   align-items: center;
   font-size: 10px;
-  color: #8a978d;
+  color: var(--muted);
 }
 .table-footer strong {
   font-weight: 600;
-  color: #52695b;
+  color: var(--ink);
 }
 .pagination {
   display: flex;
@@ -1128,7 +1128,7 @@ tfoot td {
 .approval-card-top {
   display: flex;
   justify-content: space-between;
-  color: #9b9b82;
+  color: var(--muted);
   margin-bottom: var(--s-2);
 }
 .approval-card-top small {
@@ -1527,7 +1527,7 @@ select {
   text-align: center;
   gap: var(--s-3);
   padding: 55px var(--s-7);
-  color: #899584;
+  color: var(--muted);
 }
 .empty-state > span {
   width: 52px;
@@ -1598,7 +1598,7 @@ select {
   padding-top: 15px;
 }
 .danger-disclosure > summary {
-  color: #b88875;
+  color: var(--red);
   font-size: 10px;
   cursor: pointer;
 }
@@ -2191,7 +2191,7 @@ select {
   justify-content: center;
   gap: var(--s-5);
   min-height: 50vh;
-  color: #92a380;
+  color: var(--muted);
   font-size: 13px;
 }
 .loading-dot {
