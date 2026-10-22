@@ -7,14 +7,29 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    # Runtime dependencies are pinned exactly on purpose, so version updates are
+    # limited to development dependencies. `allow` does not suppress security
+    # updates: a vulnerable runtime package still gets a pull request.
+    allow:
+      - dependency-type: development
     groups:
-      # Runtime deps are pinned exactly on purpose; review these one by one.
-      production:
-        dependency-type: production
-        update-types: ["security"]
       development:
-        dependency-type: development
         update-types: ["minor", "patch"]
+
+  # The Dockerfile and compose.yaml are pinned by digest, which by design never
+  # moves on its own. Without these two entries the pinned Node and PostgreSQL
+  # images would stay frozen and stop receiving security rebuilds.
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
 
   - package-ecosystem: github-actions
     directory: "/"
