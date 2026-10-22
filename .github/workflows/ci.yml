@@ -52,6 +52,74 @@ jobs:
       - name: Production build
         run: npm run build
 
+  container:
+    name: Container image
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: kira
+          POSTGRES_PASSWORD: kira_ci_password
+          POSTGRES_DB: kira_rapi
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kira -d kira_rapi"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://kira:kira_ci_password@127.0.0.1:5432/kira_rapi
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build runtime image
+        run: docker build --target runner --tag kira-rapi:ci .
+
+      - name: Build migration image
+        run: docker build --target migrate --tag kira-rapi:migrate .
+
+      - name: Apply migrations
+        run: |
+          docker run --rm --network host             --env DATABASE_URL             kira-rapi:migrate npx prisma migrate deploy
+
+      - name: Seed a demo organisation
+        run: |
+          docker run --rm --network host             --env DATABASE_URL             --env SEED_DEMO=true             --env SEED_ADMIN_PASSWORD=ci-password-12345             --env SEED_REVIEWER_PASSWORD=ci-password-12345             kira-rapi:migrate npx tsx prisma/seed.ts
+
+      - name: Start the application container
+        run: |
+          docker run --detach --name kira-rapi-ci --network host             --env DATABASE_URL             --env APP_URL=http://127.0.0.1:3000             kira-rapi:ci
+
+      - name: Wait for a healthy container
+        run: |
+          for attempt in $(seq 1 40); do
+            status="$(docker inspect --format '{{.State.Health.Status}}' kira-rapi-ci)"
+            echo "health: $status"
+            if [ "$status" = "healthy" ]; then exit 0; fi
+            if [ "$status" = "unhealthy" ]; then
+              docker logs kira-rapi-ci
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Container did not become healthy in time" >&2
+          docker logs kira-rapi-ci
+          exit 1
+
+      - name: Check the reporting toolchain inside the image
+        run: |
+          curl --fail --silent http://127.0.0.1:3000/api/health | tee health.json
+          node -e "const r=require('./health.json'); if (r.checks.reports !== 'ok') { console.error('reporting toolchain missing:', r); process.exit(1); }"
+
+      - name: Check the login page renders
+        run: curl --fail --silent --output /dev/null http://127.0.0.1:3000/login
+
+      - name: Container logs
+        if: always()
+        run: docker logs kira-rapi-ci || true
+
   integration:
     name: PostgreSQL integration tests
     runs-on: ubuntu-latest

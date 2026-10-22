@@ -120,6 +120,7 @@ Previews: [day](docs/screenshots/dashboard.png) · [night](docs/screenshots/dash
 | Validation | Zod at form and URL-parameter boundaries |
 | Passwords | bcryptjs (cost 12) |
 | Reporting | Python 3 + openpyxl, LibreOffice for PDF |
+| Deployment | PM2 behind nginx, or the provided multi-stage `Dockerfile` |
 
 The application uses a single global Prisma Client, reads through `lib/queries.ts` and writes through `lib/finance.ts`. Every financial write takes a row lock on the organisation (`SELECT ... FOR UPDATE`) inside one transaction, which serialises payment posting, period closing and audit updates. Money never passes through `float`; `lib/money.ts` owns all conversion and formatting.
 
@@ -250,6 +251,7 @@ npm audit                  # Dependency audit
 
 1. `quality` — `prisma generate`, `typecheck`, ESLint, Prettier, unit tests, `npm audit --omit=dev --audit-level=high` and a production build.
 2. `integration` — PostgreSQL 16 as a service, a `kira_rapi_test` database, `prisma migrate deploy` and the 15 integration tests.
+3. `container` — builds the runtime and migration images, applies migrations, seeds a demo organisation, starts the container and waits for its own `HEALTHCHECK` to report healthy. It then asserts that `/api/health` reports the reporting toolchain as `ok`, which proves LibreOffice and the Python virtualenv work inside the image.
 
 Integration failures are surfaced as check-run annotations, so the cause is readable without downloading job logs. Excel/PDF and browser suites stay manual because they need LibreOffice and Chromium.
 
@@ -308,13 +310,39 @@ npm run start
 
 Every instance needs access to the same database and uploads directory. For a single-host PM2/nginx deployment, run one instance first and keep uploads on persistent storage. Include both PostgreSQL and uploads in backups.
 
+### Container deployment
+
+The [`Dockerfile`](Dockerfile) builds a runtime image that already contains Node, LibreOffice Calc, Liberation fonts and a Python virtualenv with `openpyxl`, so nothing has to be installed by hand on the host.
+
+```bash
+docker build -t kira-rapi .                            # runtime image
+docker build --target migrate -t kira-rapi:migrate .   # Prisma CLI for migrate deploy and seed
+```
+
+Or with Compose, which also wires the database and an uploads volume:
+
+```bash
+docker compose --profile container build
+docker compose --profile container run --rm migrate            # migrate deploy
+docker compose --profile container run --rm migrate npx prisma db seed
+docker compose --profile container up -d app
+```
+
+Notes:
+
+- The `container` profile is opt-in, so `docker compose up -d` still starts only PostgreSQL for local development.
+- Migrations run as a separate one-off container because the runtime image deliberately omits the Prisma CLI; it is built from the `migrate` target.
+- Mount a volume at `/data/uploads` (Compose uses `kira-uploads`). Nothing else in the image is written to at run time.
+- The image runs as UID 1001 (`nextjs`) and declares a `HEALTHCHECK` against `/api/health`.
+- `DATABASE_URL` must point at `db:5432` inside Compose, not `127.0.0.1:5434`.
+
 The steps above have been exercised in a development environment; the application has not yet been installed on the original LXC host or production domain. PM2/nginx configuration, backup and recovery are described in [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## Documentation
 
 | Document | Contents |
 | --- | --- |
-| [OPERATIONS.md](docs/OPERATIONS.md) | PM2/nginx deployment, backup and recovery, login throttling, audit, operating rules |
+| [OPERATIONS.md](docs/OPERATIONS.md) | PM2/nginx and container deployment, backup and recovery, logging, login throttling, audit, operating rules |
 | [UI-UX.md](docs/UI-UX.md) | Design principles, typography, themes and responsive patterns |
 | [EXCEL-REPORTS.md](docs/EXCEL-REPORTS.md) | Excel templates, fund mapping, PDF generation and Python requirements |
 | [legacy-context.md](docs/legacy-context.md) | Context of the original system the requirements were drawn from |
@@ -327,7 +355,7 @@ Not yet implemented, in priority order:
 2. **Approval notifications** over email or Telegram for `PENDING` documents.
 3. **Multiple attachments** per document (currently one file per document).
 4. **Metrics**: request latency and error rates exported for scraping; logs and health checks exist today, but there is no time-series data.
-5. **Dockerfile** for reproducible deployment with LibreOffice and the Python virtualenv.
+5. **Slimmer image**: the LibreOffice layer dominates the image size; a separate report worker image would let the web container stay small.
 6. **Email delivery**, multi-organisation support and legacy data migration (needs a schema mapping and a balance reconciliation against the source).
 
 Antivirus scanning for attachments is not provided. Restoring a backup of real user data has not been performed in this environment; run `npm run restore:verify` on the production host before you need it.
