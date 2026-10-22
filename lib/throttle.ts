@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { db } from "./db";
 import {
   WINDOW_MS,
@@ -13,13 +14,6 @@ export {
   type LoginBuckets,
   type ThrottleOutcome,
 } from "./throttle-policy";
-
-type Snapshot = {
-  key: string;
-  limit: number;
-  attempts: number;
-  windowStart: Date;
-};
 
 /**
  * Read every bucket and report whether the attempt may proceed.
@@ -39,9 +33,7 @@ export async function check(buckets: Bucket[]): Promise<ThrottleOutcome> {
       if (!row || row.windowStart.getTime() <= now - WINDOW_MS) return null;
       return row.attempts >= bucket.limit ? { row, limit: bucket.limit } : null;
     })
-    .filter(
-      (entry): entry is { row: Snapshot; limit: number } => entry !== null,
-    )
+    .filter((entry) => entry !== null)
     .sort(
       (a, b) => a.row.windowStart.getTime() - b.row.windowStart.getTime(),
     )[0];
@@ -56,47 +48,32 @@ export async function check(buckets: Bucket[]): Promise<ThrottleOutcome> {
 }
 
 /**
- * Count one failed attempt against every bucket.
+ * Count one failed attempt against every bucket in a single statement.
  *
- * Rows are locked with SELECT ... FOR UPDATE so concurrent failures cannot
- * overwrite each other's counter. Keys are locked in sorted order to avoid
- * deadlocks between two attempts that share buckets.
+ * The increment happens inside the database, so concurrent failures cannot lose
+ * an update, and the row is created on demand without Prisma's emulated upsert
+ * (which is a SELECT followed by INSERT and can raise a duplicate-key error when
+ * several sign-ins race). Keys are sent in sorted order so that two callers
+ * locking the same set always acquire them in the same order.
  */
 export async function record(buckets: Bucket[]): Promise<void> {
   if (!buckets.length) return;
   const ordered = [...buckets].sort((a, b) => a.key.localeCompare(b.key));
-  const now = Date.now();
-  await db.$transaction(async (tx) => {
-    const snapshots: Snapshot[] = [];
-    for (const bucket of ordered) {
-      await tx.loginAttempt.upsert({
-        where: { key: bucket.key },
-        create: { key: bucket.key },
-        update: {},
-      });
-      await tx.$queryRaw`SELECT "key" FROM "LoginAttempt" WHERE "key" = ${bucket.key} FOR UPDATE`;
-      const row = await tx.loginAttempt.findUniqueOrThrow({
-        where: { key: bucket.key },
-      });
-      const expired = row.windowStart.getTime() <= now - WINDOW_MS;
-      snapshots.push({
-        ...bucket,
-        attempts: expired ? 0 : row.attempts,
-        windowStart: expired ? new Date(now) : row.windowStart,
-      });
-    }
-    await Promise.all(
-      snapshots.map((snapshot) =>
-        tx.loginAttempt.update({
-          where: { key: snapshot.key },
-          data: {
-            attempts: snapshot.attempts + 1,
-            windowStart: snapshot.windowStart,
-          },
-        }),
-      ),
-    );
-  });
+  const values = Prisma.join(
+    ordered.map((bucket) => Prisma.sql`(${bucket.key}, 1, now())`),
+  );
+  await db.$executeRaw`
+    INSERT INTO "LoginAttempt" ("key", "attempts", "windowStart")
+    VALUES ${values}
+    ON CONFLICT ("key") DO UPDATE SET
+      "attempts" = CASE
+        WHEN "LoginAttempt"."windowStart" <= now() - interval '15 minutes' THEN 1
+        ELSE "LoginAttempt"."attempts" + 1
+      END,
+      "windowStart" = CASE
+        WHEN "LoginAttempt"."windowStart" <= now() - interval '15 minutes' THEN now()
+        ELSE "LoginAttempt"."windowStart"
+      END`;
 }
 
 /** Clear the buckets after a successful sign-in so a typo spree does not linger. */
