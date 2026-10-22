@@ -5592,11 +5592,10 @@ select {
   .brand-symbol i {
     background: var(--accent);
   }
-  .brand small,
-  .brand-light,
+  /* Wordmark: scoped to the sidebar. The auth panel has its own dark ground
+     and must keep inheriting its light brand colour. */
   .sidebar .brand-name small,
-  .sidebar .brand small,
-  .sidebar .brand-light {
+  .sidebar .brand small {
     color: var(--muted);
   }
   .sidebar .brand-light {
