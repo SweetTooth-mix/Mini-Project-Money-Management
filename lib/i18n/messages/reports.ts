@@ -45,6 +45,11 @@ export const reportsMessages = {
     ms: "PDF format asal",
     en: "PDF in original format",
   },
+  "Menyediakan fail daripada rekod semasa. PDF mungkin mengambil masa sehingga satu minit.":
+    {
+      ms: "Menyediakan fail daripada rekod semasa. PDF mungkin mengambil masa sehingga satu minit.",
+      en: "Preparing files from current records. PDFs may take up to a minute.",
+    },
   "Jana yuran bulan ini": {
     ms: "Jana yuran bulan ini",
     en: "Generate this month's dues",
@@ -61,6 +66,11 @@ export const reportsMessages = {
     ms: "Profil & template organisasi",
     en: "Organization profile & template",
   },
+  "Maklumat ini digunakan pada cetakan. Dokumen yang telah diluluskan mengekalkan maklumat ketika kelulusan.":
+    {
+      ms: "Maklumat ini digunakan pada cetakan. Dokumen yang telah diluluskan mengekalkan maklumat ketika kelulusan.",
+      en: "This information appears on printed documents. Approved documents retain the details recorded at approval.",
+    },
   "Laporan yang mudah disemak, dibentang dan dicetak.": {
     ms: "Laporan yang mudah disemak, dibentang dan dicetak.",
     en: "Reports that are easy to review, present and print.",
@@ -100,6 +110,15 @@ export const reportsMessages = {
   "Jana laporan Excel": {
     ms: "Jana laporan Excel",
     en: "Generate Excel reports",
+  },
+  "Rekod yang sama, dalam format yang anda kenal. Jana fail boleh edit atau PDF sedia cetak.":
+    {
+      ms: "Rekod yang sama, dalam format yang anda kenal. Jana fail boleh edit atau PDF sedia cetak.",
+      en: "The same records, in a familiar format. Generate editable files or print-ready PDFs.",
+    },
+  "4 workbook berpaut": {
+    ms: "4 workbook berpaut",
+    en: "4 linked workbooks",
   },
   "Aliran pautan laporan": {
     ms: "Aliran pautan laporan",
@@ -165,6 +184,11 @@ export const reportsMessages = {
     ms: "Rumusan yuran",
     en: "Dues summary",
   },
+  "Gabungan JKKR dipilih secara asal. Tukar jika laporan menggunakan dana lain.":
+    {
+      ms: "Gabungan JKKR dipilih secara asal. Tukar jika laporan menggunakan dana lain.",
+      en: "Gabungan JKKR is selected by default. Change this if the report uses another fund.",
+    },
   "Semak pemetaan kolum Excel": {
     ms: "Semak pemetaan kolum Excel",
     en: "Review Excel column mapping",
@@ -181,14 +205,43 @@ export const reportsMessages = {
     ms: "Cara guna fail yang dijana",
     en: "Using the generated files",
   },
+  "Pastikan pautan antara fail terus berfungsi.": {
+    ms: "Pastikan pautan antara fail terus berfungsi.",
+    en: "Keep the links between files working.",
+  },
+  "Ekstrak keempat-empat fail ke folder yang sama. Kekalkan nama fail, buka semuanya dalam Excel dan kemas kini pautan.":
+    {
+      ms: "Ekstrak keempat-empat fail ke folder yang sama. Kekalkan nama fail, buka semuanya dalam Excel dan kemas kini pautan.",
+      en: "Extract all four files into the same folder. Keep their filenames, open them all in Excel and update the links.",
+    },
+  "Ubah amaun, nama, butiran atau rujukan pada fail 1. Formula menghubungkan buku kewangan, laporan bulanan dan rumusan.":
+    {
+      ms: "Ubah amaun, nama, butiran atau rujukan pada fail 1. Formula menghubungkan buku kewangan, laporan bulanan dan rumusan.",
+      en: "Edit amounts, names, details or references in file 1. Formulas link the ledger, monthly reports and summaries.",
+    },
   "Jana semula untuk rekod baharu": {
     ms: "Jana semula untuk rekod baharu",
     en: "Regenerate for new records",
   },
+  "Tambah transaksi atau ubah bulan, dana dan jenis akaun dalam aplikasi. Jika amaun diedit dalam Excel, kemas kini amaun dalam perkataan juga.":
+    {
+      ms: "Tambah transaksi atau ubah bulan, dana dan jenis akaun dalam aplikasi. Jika amaun diedit dalam Excel, kemas kini amaun dalam perkataan juga.",
+      en: "Add transactions or change the month, fund and account type in the app. If you edit an amount in Excel, also update the amount in words.",
+    },
   "Cetak daripada PDF": {
     ms: "Cetak daripada PDF",
     en: "Print from PDF",
   },
+  "PDF menggunakan template Excel yang sama. Baucer/resit individu tersedia pada halaman dokumen.":
+    {
+      ms: "PDF menggunakan template Excel yang sama. Baucer/resit individu tersedia pada halaman dokumen.",
+      en: "PDFs use the same Excel templates. Individual vouchers and receipts are available on their document pages.",
+    },
+  "Perubahan dalam Excel tidak diselaraskan semula ke aplikasi. Simpan fail asal sebelum membuat suntingan.":
+    {
+      ms: "Perubahan dalam Excel tidak diselaraskan semula ke aplikasi. Simpan fail asal sebelum membuat suntingan.",
+      en: "Excel changes are not synced back to the app. Keep the original files before editing.",
+    },
   "PDF, PNG atau JPEG · maks. 5 MB": {
     ms: "PDF, PNG atau JPEG · maks. 5 MB",
     en: "PDF, PNG or JPEG · max. 5 MB",
@@ -213,6 +266,10 @@ export const reportsMessages = {
     ms: "Kandungan fail mesti PDF, PNG, atau JPEG.",
     en: "The file content must be PDF, PNG or JPEG.",
   },
+  "Fail tidak sah.": {
+    ms: "Fail tidak sah.",
+    en: "Invalid file.",
+  },
   "Pilihan laporan tidak sah.": {
     ms: "Pilihan laporan tidak sah.",
     en: "Invalid report options.",
@@ -225,4 +282,9 @@ export const reportsMessages = {
     ms: "Pilih dana akaun tunjang sebelum jana.",
     en: "Select a core account fund before generating.",
   },
+  "Laporan gagal dijana. Semak pemasangan Python/openpyxl dan LibreOffice pada server, kemudian cuba lagi.":
+    {
+      ms: "Laporan gagal dijana. Semak pemasangan Python/openpyxl dan LibreOffice pada server, kemudian cuba lagi.",
+      en: "Unable to generate the report. Check the server's Python/openpyxl and LibreOffice installation, then try again.",
+    },
 } as const;

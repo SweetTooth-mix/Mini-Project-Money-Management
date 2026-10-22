@@ -29,10 +29,6 @@ export const commonMessages = {
     ms: "Selesai",
     en: "Completed",
   },
-  Dibatalkan: {
-    ms: "Dibatalkan",
-    en: "Voided",
-  },
   Aktif: {
     ms: "Aktif",
     en: "Active",
@@ -44,14 +40,6 @@ export const commonMessages = {
   " · Pindahan": {
     ms: " · Pindahan",
     en: " · Transfer",
-  },
-  Tarikh: {
-    ms: "Tarikh",
-    en: "Date",
-  },
-  Amaun: {
-    ms: "Amaun",
-    en: "Amount",
   },
   "Gambaran keseluruhan": {
     ms: "Gambaran keseluruhan",
@@ -128,10 +116,6 @@ export const commonMessages = {
   "Contoh: Pejabat Daerah": {
     ms: "Contoh: Pejabat Daerah",
     en: "Example: District Office",
-  },
-  "Amaun (RM)": {
-    ms: "Amaun (RM)",
-    en: "Amount (RM)",
   },
   "Pantau kutipan bulanan dan urus ahli komuniti anda.": {
     ms: "Pantau kutipan bulanan dan urus ahli komuniti anda.",
@@ -220,10 +204,6 @@ export const commonMessages = {
   "Tiada tempoh dikunci.": {
     ms: "Tiada tempoh dikunci.",
     en: "No period is locked.",
-  },
-  "Kunci sehingga tarikh": {
-    ms: "Kunci sehingga tarikh",
-    en: "Lock through date",
   },
   "Simpan kawalan tempoh": {
     ms: "Simpan kawalan tempoh",
@@ -329,14 +309,6 @@ export const commonMessages = {
     ms: "Sedang memuatkan rekod…",
     en: "Loading records…",
   },
-  "4 workbook berpaut": {
-    ms: "4 workbook berpaut",
-    en: "4 linked workbooks",
-  },
-  "Butiran dan amaun sumber": {
-    ms: "Butiran dan amaun sumber",
-    en: "Source details and amounts",
-  },
   "Buku kewangan": {
     ms: "Buku kewangan",
     en: "Financial ledger",
@@ -360,10 +332,6 @@ export const commonMessages = {
   Lain2: {
     ms: "Lain2",
     en: "Lain2",
-  },
-  "Pastikan pautan antara fail terus berfungsi.": {
-    ms: "Pastikan pautan antara fail terus berfungsi.",
-    en: "Keep the links between files working.",
   },
   "Simpan dalam satu folder": {
     ms: "Simpan dalam satu folder",
@@ -396,10 +364,6 @@ export const commonMessages = {
   "Pindahkan wang tanpa menambah pendapatan atau perbelanjaan.": {
     ms: "Pindahkan wang tanpa menambah pendapatan atau perbelanjaan.",
     en: "Move money without adding income or expenses.",
-  },
-  "Tarikh pindahan": {
-    ms: "Tarikh pindahan",
-    en: "Transfer date",
   },
   Butiran: {
     ms: "Butiran",
@@ -445,10 +409,6 @@ export const commonMessages = {
     ms: "Sebab penolakan",
     en: "Reason for rejection",
   },
-  "Sebab pembatalan": {
-    ms: "Sebab pembatalan",
-    en: "Reason for voiding",
-  },
   "Siapa, bila dan apa yang berubah. Rekod untuk ketelusan organisasi.": {
     ms: "Siapa, bila dan apa yang berubah. Rekod untuk ketelusan organisasi.",
     en: "Who, when and what changed. Records for organizational accountability.",
@@ -473,10 +433,6 @@ export const commonMessages = {
     ms: "Lain-lain",
     en: "Other",
   },
-  "Tarikh pembukaan": {
-    ms: "Tarikh pembukaan",
-    en: "Opening date",
-  },
   "Warna penanda": {
     ms: "Warna penanda",
     en: "Marker color",
@@ -493,6 +449,11 @@ export const commonMessages = {
     ms: "Komuniti makmur.",
     en: "Thriving communities.",
   },
+  "Satu ruang untuk setiap rekod, setiap urusan, dan setiap sen yang diamanahkan.":
+    {
+      ms: "Satu ruang untuk setiap rekod, setiap urusan, dan setiap sen yang diamanahkan.",
+      en: "One place for every record, every task and every entrusted sen.",
+    },
   "Lebih jelas. Lebih yakin.": {
     ms: "Lebih jelas. Lebih yakin.",
     en: "More clarity. More confidence.",
@@ -516,10 +477,6 @@ export const commonMessages = {
   "nama@organisasi.my": {
     ms: "nama@organisasi.my",
     en: "name@organization.my",
-  },
-  "Mohon akses": {
-    ms: "Mohon akses",
-    en: "Request access",
   },
   "Kira Rapi — Kewangan Komuniti": {
     ms: "Kira Rapi — Kewangan Komuniti",
@@ -545,10 +502,6 @@ export const commonMessages = {
     ms: "SERTAI RUANG KERJA",
     en: "JOIN THE WORKSPACE",
   },
-  "Mohon akses.": {
-    ms: "Mohon akses.",
-    en: "Request access.",
-  },
   "Gunakan 12–72 aksara.": {
     ms: "Gunakan 12–72 aksara.",
     en: "Use 12–72 characters.",
@@ -560,10 +513,6 @@ export const commonMessages = {
   "Tukar ke English": {
     ms: "Tukar ke English",
     en: "Switch to English",
-  },
-  "{date} · RUANG KERJA ANDA": {
-    ms: "{date} · RUANG KERJA ANDA",
-    en: "{date} · YOUR WORKSPACE",
   },
   "Selamat datang, {name}.": {
     ms: "Selamat datang, {name}.",
@@ -577,14 +526,6 @@ export const commonMessages = {
     ms: "{count} rekod · semua bulan",
     en: "{count} records · all months",
   },
-  "{month}: penerimaan {amount}": {
-    ms: "{month}: penerimaan {amount}",
-    en: "{month}: income {amount}",
-  },
-  "{month}: perbelanjaan {amount}": {
-    ms: "{month}: perbelanjaan {amount}",
-    en: "{month}: expenses {amount}",
-  },
   "Rekod dalam {month}": {
     ms: "Rekod dalam {month}",
     en: "Records in {month}",
@@ -593,17 +534,9 @@ export const commonMessages = {
     ms: "{count} rekod belum selesai",
     en: "{count} outstanding records",
   },
-  "Tempoh dikunci sehingga {date}.": {
-    ms: "Tempoh dikunci sehingga {date}.",
-    en: "Period locked through {date}.",
-  },
   "Sebelum {month}": {
     ms: "Sebelum {month}",
     en: "Before {month}",
-  },
-  "Pelarasan / pindahan: {amount}": {
-    ms: "Pelarasan / pindahan: {amount}",
-    en: "Adjustments / transfers: {amount}",
   },
   "{count} rekod": {
     ms: "{count} rekod",
@@ -612,10 +545,6 @@ export const commonMessages = {
   "{count} rekod · Halaman {page}": {
     ms: "{count} rekod · Halaman {page}",
     en: "{count} records · Page {page}",
-  },
-  "Disediakan oleh {name} · {date}": {
-    ms: "Disediakan oleh {name} · {date}",
-    en: "Prepared by {name} · {date}",
   },
   "Sila lengkapkan semua medan wajib.": {
     ms: "Sila lengkapkan semua medan wajib.",
@@ -653,17 +582,9 @@ export const commonMessages = {
     ms: "Tempoh kewangan ini telah dikunci.",
     en: "This financial period is locked.",
   },
-  "Amaun mesti lebih daripada sifar.": {
-    ms: "Amaun mesti lebih daripada sifar.",
-    en: "The amount must be greater than zero.",
-  },
   "Nyatakan sebab penolakan (sekurang-kurangnya 5 aksara).": {
     ms: "Nyatakan sebab penolakan (sekurang-kurangnya 5 aksara).",
     en: "Enter a reason for rejection (at least 5 characters).",
-  },
-  "Nyatakan sebab pembatalan (sekurang-kurangnya 5 aksara).": {
-    ms: "Nyatakan sebab pembatalan (sekurang-kurangnya 5 aksara).",
-    en: "Enter a reason for voiding (at least 5 characters).",
   },
   "Rekod ledger tidak dijumpai.": {
     ms: "Rekod ledger tidak dijumpai.",
@@ -673,44 +594,13 @@ export const commonMessages = {
     ms: "Hanya tempoh sebelum hari ini boleh dikunci.",
     en: "Only periods before today can be locked.",
   },
-  "Masukkan amaun yang sah dengan maksimum 2 tempat perpuluhan.": {
-    ms: "Masukkan amaun yang sah dengan maksimum 2 tempat perpuluhan.",
-    en: "Enter a valid amount with up to 2 decimal places.",
-  },
-  "Amaun melebihi had yang dibenarkan.": {
-    ms: "Amaun melebihi had yang dibenarkan.",
-    en: "The amount exceeds the permitted limit.",
-  },
-  "Tarikh tidak sah.": {
-    ms: "Tarikh tidak sah.",
-    en: "Invalid date.",
-  },
-  "Amaun tidak disokong.": {
-    ms: "Amaun tidak disokong.",
-    en: "Unsupported amount.",
-  },
-  "Amaun tidak boleh negatif.": {
-    ms: "Amaun tidak boleh negatif.",
-    en: "The amount cannot be negative.",
-  },
-  "Fail tidak sah.": {
-    ms: "Fail tidak sah.",
-    en: "Invalid file.",
-  },
+  "Eksport ini terhad kepada 5,000 catatan setahun. Hubungi pentadbir untuk eksport arkib.":
+    {
+      ms: "Eksport ini terhad kepada 5,000 catatan setahun. Hubungi pentadbir untuk eksport arkib.",
+      en: "This export is limited to 5,000 entries per year. Contact an administrator for an archive export.",
+    },
   "Semua tindakan": {
     ms: "Semua tindakan",
     en: "All actions",
-  },
-  "Dari tarikh": {
-    ms: "Dari tarikh",
-    en: "From date",
-  },
-  "Hingga tarikh": {
-    ms: "Hingga tarikh",
-    en: "Until date",
-  },
-  "Tarikh mengikut waktu Malaysia (GMT+8).": {
-    ms: "Tarikh mengikut waktu Malaysia (GMT+8).",
-    en: "Dates follow Malaysia time (GMT+8).",
   },
 } as const;

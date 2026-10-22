@@ -1,4 +1,4 @@
-// Settings, language and theme controls.
+// Settings, language, theme and display controls.
 // Malay source phrases are the keys; see lib/i18n/dictionary.ts.
 export const settingsMessages = {
   "Aktifkan mod siang": {

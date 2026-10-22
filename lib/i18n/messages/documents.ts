@@ -9,6 +9,10 @@ export const documentsMessages = {
     ms: "Menunggu kelulusan",
     en: "Awaiting approval",
   },
+  Dibatalkan: {
+    ms: "Dibatalkan",
+    en: "Voided",
+  },
   " · Pembalikan": {
     ms: " · Pembalikan",
     en: " · Reversal",
@@ -109,6 +113,11 @@ export const documentsMessages = {
     ms: "Baucer & resit",
     en: "Vouchers & receipts",
   },
+  "Draf tidak masuk buku kewangan. Pindahan, pembalikan dan baki pembukaan dipaparkan mengikut jenis catatan.":
+    {
+      ms: "Draf tidak masuk buku kewangan. Pindahan, pembalikan dan baki pembukaan dipaparkan mengikut jenis catatan.",
+      en: "Drafts are excluded from the ledger. Transfers, reversals and opening balances are shown by entry type.",
+    },
   "Baucer yang telah dibayar": {
     ms: "Baucer yang telah dibayar",
     en: "Paid vouchers",
@@ -201,6 +210,10 @@ export const documentsMessages = {
     ms: "Batalkan dokumen",
     en: "Void document",
   },
+  "Sebab pembatalan": {
+    ms: "Sebab pembatalan",
+    en: "Reason for voiding",
+  },
   "Tarikh pembalikan": {
     ms: "Tarikh pembalikan",
     en: "Reversal date",
@@ -208,6 +221,10 @@ export const documentsMessages = {
   "Rekod asal dikekalkan. Entri pembalikan akan ditambah ke buku tunai.": {
     ms: "Rekod asal dikekalkan. Entri pembalikan akan ditambah ke buku tunai.",
     en: "The original record is retained. A reversal entry will be added to the cash book.",
+  },
+  "Sahkan pembatalan": {
+    ms: "Sahkan pembatalan",
+    en: "Confirm void",
   },
   "Dokumen ini telah ditutup. Cipta draf baharu jika pembetulan diperlukan.": {
     ms: "Dokumen ini telah ditutup. Cipta draf baharu jika pembetulan diperlukan.",
@@ -253,10 +270,20 @@ export const documentsMessages = {
     ms: "Sediakan resit — {name}",
     en: "Prepare receipt — {name}",
   },
+  "Yuran {month}/{year}. Resit perlu diluluskan dan disahkan diterima sebelum yuran dikira dibayar.":
+    {
+      ms: "Yuran {month}/{year}. Resit perlu diluluskan dan disahkan diterima sebelum yuran dikira dibayar.",
+      en: "Dues for {month}/{year}. The receipt must be approved and confirmed as received before dues are marked as paid.",
+    },
   "Halaman {page} · {count} dokumen": {
     ms: "Halaman {page} · {count} dokumen",
     en: "Page {page} · {count} documents",
   },
+  "Rekodkan selepas wang benar-benar dibayar. Baki akan dikemas kini sekali sahaja.":
+    {
+      ms: "Rekodkan selepas wang benar-benar dibayar. Baki akan dikemas kini sekali sahaja.",
+      en: "Record only after the money has been paid. The balance will be updated once.",
+    },
   "Sahkan bayaran": {
     ms: "Sahkan bayaran",
     en: "Confirm payment",
@@ -313,6 +340,10 @@ export const documentsMessages = {
     ms: "Tarikh bayaran tidak boleh mendahului tarikh dokumen.",
     en: "The payment date cannot precede the document date.",
   },
+  "Nyatakan sebab pembatalan (sekurang-kurangnya 5 aksara).": {
+    ms: "Nyatakan sebab pembatalan (sekurang-kurangnya 5 aksara).",
+    en: "Enter a reason for voiding (at least 5 characters).",
+  },
   "Dokumen ini telah ditutup.": {
     ms: "Dokumen ini telah ditutup.",
     en: "This document is closed.",
@@ -333,4 +364,9 @@ export const documentsMessages = {
     ms: "Dokumen tidak ditemui.",
     en: "Document not found.",
   },
+  "Pakej ini terhad kepada 500 dokumen setahun. Hubungi pentadbir untuk eksport arkib.":
+    {
+      ms: "Pakej ini terhad kepada 500 dokumen setahun. Hubungi pentadbir untuk eksport arkib.",
+      en: "This package is limited to 500 documents per year. Contact an administrator for an archive export.",
+    },
 } as const;

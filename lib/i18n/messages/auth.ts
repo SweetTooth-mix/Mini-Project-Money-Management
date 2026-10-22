@@ -1,4 +1,4 @@
-// Sign-in, registration, users and roles.
+// Sign-in, registration, users, roles and access.
 // Malay source phrases are the keys; see lib/i18n/dictionary.ts.
 export const authMessages = {
   Pengguna: {
@@ -41,6 +41,11 @@ export const authMessages = {
     ms: "Akses pengguna",
     en: "User access",
   },
+  "Permohonan baharu perlu diaktifkan. Menyahaktifkan pengguna turut menamatkan sesinya.":
+    {
+      ms: "Permohonan baharu perlu diaktifkan. Menyahaktifkan pengguna turut menamatkan sesinya.",
+      en: "New applicants must be activated. Deactivating a user also ends their sessions.",
+    },
   "Kata laluan anda": {
     ms: "Kata laluan anda",
     en: "Your password",
@@ -61,10 +66,6 @@ export const authMessages = {
     ms: "Tukar kata laluan",
     en: "Change password",
   },
-  "Sahkan pembatalan": {
-    ms: "Sahkan pembatalan",
-    en: "Confirm void",
-  },
   "Alamat e-mel": {
     ms: "Alamat e-mel",
     en: "Email address",
@@ -77,9 +78,17 @@ export const authMessages = {
     ms: "Masukkan kata laluan",
     en: "Enter your password",
   },
+  "Mohon akses": {
+    ms: "Mohon akses",
+    en: "Request access",
+  },
   "Akses terlindung · Sesi 8 jam": {
     ms: "Akses terlindung · Sesi 8 jam",
     en: "Protected access · 8-hour session",
+  },
+  "Mohon akses.": {
+    ms: "Mohon akses.",
+    en: "Request access.",
   },
   "{count} ahli berdaftar": {
     ms: "{count} ahli berdaftar",

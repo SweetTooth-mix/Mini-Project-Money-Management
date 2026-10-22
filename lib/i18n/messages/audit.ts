@@ -13,6 +13,11 @@ export const auditMessages = {
     ms: "Log keluar",
     en: "Log out",
   },
+  "Kosongkan medan untuk membuka semula tempoh. Perubahan direkod dalam audit.":
+    {
+      ms: "Kosongkan medan untuk membuka semula tempoh. Perubahan direkod dalam audit.",
+      en: "Clear this field to reopen the period. Changes are recorded in the audit trail.",
+    },
   "Eksport ledger CSV": {
     ms: "Eksport ledger CSV",
     en: "Export ledger CSV",
@@ -69,6 +74,11 @@ export const auditMessages = {
     ms: "← Kembali ke log masuk",
     en: "← Back to login",
   },
+  "Permohonan diterima. Akaun baharu perlu diaktifkan oleh pentadbir sebelum log masuk.":
+    {
+      ms: "Permohonan diterima. Akaun baharu perlu diaktifkan oleh pentadbir sebelum log masuk.",
+      en: "Request received. An administrator must activate your new account before you can log in.",
+    },
   "Sesi berubah. Sila log masuk semula.": {
     ms: "Sesi berubah. Sila log masuk semula.",
     en: "Your session has changed. Please log in again.",

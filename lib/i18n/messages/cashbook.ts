@@ -9,9 +9,17 @@ export const cashbookMessages = {
     ms: "Transaksi",
     en: "Transaction",
   },
+  Tarikh: {
+    ms: "Tarikh",
+    en: "Date",
+  },
   "Dana / Akaun": {
     ms: "Dana / Akaun",
     en: "Fund / Account",
+  },
+  Amaun: {
+    ms: "Amaun",
+    en: "Amount",
   },
   Baki: {
     ms: "Baki",
@@ -28,6 +36,10 @@ export const cashbookMessages = {
   "Akaun & dana": {
     ms: "Akaun & dana",
     en: "Accounts & funds",
+  },
+  "Amaun (RM)": {
+    ms: "Amaun (RM)",
+    en: "Amount (RM)",
   },
   "Butiran transaksi": {
     ms: "Butiran transaksi",
@@ -93,6 +105,10 @@ export const cashbookMessages = {
     ms: "Daftar ahli pertama untuk mula mengurus yuran.",
     en: "Register your first member to start managing dues.",
   },
+  "Kunci sehingga tarikh": {
+    ms: "Kunci sehingga tarikh",
+    en: "Lock through date",
+  },
   "Cipta akaun pengguna": {
     ms: "Cipta akaun pengguna",
     en: "Create user account",
@@ -156,6 +172,10 @@ export const cashbookMessages = {
   "Semua transaksi": {
     ms: "Semua transaksi",
     en: "All transactions",
+  },
+  "Butiran dan amaun sumber": {
+    ms: "Butiran dan amaun sumber",
+    en: "Source details and amounts",
   },
   "Baki berjalan & pecahan dana": {
     ms: "Baki berjalan & pecahan dana",
@@ -221,6 +241,11 @@ export const cashbookMessages = {
     ms: "Cari butiran, rujukan atau kategori…",
     en: "Search details, reference or category…",
   },
+  "Baki merangkumi semua transaksi dalam bulan, akaun dan dana yang dipilih, termasuk transaksi di luar hasil carian.":
+    {
+      ms: "Baki merangkumi semua transaksi dalam bulan, akaun dan dana yang dipilih, termasuk transaksi di luar hasil carian.",
+      en: "Balances include every transaction in the selected month, account and fund, including transactions outside the search results.",
+    },
   "Halaman {page} daripada {pages} · {count} transaksi": {
     ms: "Halaman {page} daripada {pages} · {count} transaksi",
     en: "Page {page} of {pages} · {count} transactions",
@@ -241,6 +266,10 @@ export const cashbookMessages = {
     ms: "Ke akaun",
     en: "To account",
   },
+  "Tarikh pindahan": {
+    ms: "Tarikh pindahan",
+    en: "Transfer date",
+  },
   "Contoh: Tambah wang peti tunai": {
     ms: "Contoh: Tambah wang peti tunai",
     en: "Example: Top up petty cash",
@@ -249,6 +278,11 @@ export const cashbookMessages = {
     ms: "Telah direkod dalam buku tunai",
     en: "Recorded in the cash book",
   },
+  "Tindakan kewangan dan perubahan akses direkodkan bersama transaksi berkaitan.":
+    {
+      ms: "Tindakan kewangan dan perubahan akses direkodkan bersama transaksi berkaitan.",
+      en: "Financial actions and access changes are recorded with their related transactions.",
+    },
   "Baki semasa daripada buku tunai": {
     ms: "Baki semasa daripada buku tunai",
     en: "Current balance from the cash book",
@@ -257,6 +291,11 @@ export const cashbookMessages = {
     ms: "Dana organisasi",
     en: "Organization funds",
   },
+  "Dana ialah tujuan peruntukan. Satu akaun boleh menyimpan wang daripada beberapa dana.":
+    {
+      ms: "Dana ialah tujuan peruntukan. Satu akaun boleh menyimpan wang daripada beberapa dana.",
+      en: "Funds define the purpose of allocations. One account can hold money for several funds.",
+    },
   "Baki semasa": {
     ms: "Baki semasa",
     en: "Current balance",
@@ -288,6 +327,10 @@ export const cashbookMessages = {
   "Baki pembukaan (RM)": {
     ms: "Baki pembukaan (RM)",
     en: "Opening balance (RM)",
+  },
+  "Tarikh pembukaan": {
+    ms: "Tarikh pembukaan",
+    en: "Opening date",
   },
   "Dana baki pembukaan": {
     ms: "Dana baki pembukaan",
@@ -337,14 +380,43 @@ export const cashbookMessages = {
     ms: "Tetapan akaun {name}",
     en: "Account settings for {name}",
   },
+  "{date} · RUANG KERJA ANDA": {
+    ms: "{date} · RUANG KERJA ANDA",
+    en: "{date} · YOUR WORKSPACE",
+  },
   "{count} rekod yuran belum selesai": {
     ms: "{count} rekod yuran belum selesai",
     en: "{count} outstanding dues records",
+  },
+  "{month}: penerimaan {amount}": {
+    ms: "{month}: penerimaan {amount}",
+    en: "{month}: income {amount}",
+  },
+  "{month}: perbelanjaan {amount}": {
+    ms: "{month}: perbelanjaan {amount}",
+    en: "{month}: expenses {amount}",
+  },
+  "Tempoh dikunci sehingga {date}.": {
+    ms: "Tempoh dikunci sehingga {date}.",
+    en: "Period locked through {date}.",
+  },
+  "Pelarasan / pindahan: {amount}": {
+    ms: "Pelarasan / pindahan: {amount}",
+    en: "Adjustments / transfers: {amount}",
   },
   "{count} transaksi · {month}": {
     ms: "{count} transaksi · {month}",
     en: "{count} transactions · {month}",
   },
+  "Disediakan oleh {name} · {date}": {
+    ms: "Disediakan oleh {name} · {date}",
+    en: "Prepared by {name} · {date}",
+  },
+  "Rekodkan selepas wang benar-benar diterima. Baki akan dikemas kini sekali sahaja.":
+    {
+      ms: "Rekodkan selepas wang benar-benar diterima. Baki akan dikemas kini sekali sahaja.",
+      en: "Record only after the money has been received. The balance will be updated once.",
+    },
   "E-mel atau kata laluan tidak tepat, atau akaun belum aktif.": {
     ms: "E-mel atau kata laluan tidak tepat, atau akaun belum aktif.",
     en: "The email or password is incorrect, or the account is not active.",
@@ -369,6 +441,10 @@ export const cashbookMessages = {
     ms: "Pilih akaun dan dana yang aktif.",
     en: "Select an active account and fund.",
   },
+  "Amaun mesti lebih daripada sifar.": {
+    ms: "Amaun mesti lebih daripada sifar.",
+    en: "The amount must be greater than zero.",
+  },
   "Pilih akaun berbeza dan amaun positif.": {
     ms: "Pilih akaun berbeza dan amaun positif.",
     en: "Select different accounts and a positive amount.",
@@ -381,6 +457,26 @@ export const cashbookMessages = {
     ms: "Baki pembukaan mesti sifar atau positif.",
     en: "The opening balance must be zero or positive.",
   },
+  "Masukkan amaun yang sah dengan maksimum 2 tempat perpuluhan.": {
+    ms: "Masukkan amaun yang sah dengan maksimum 2 tempat perpuluhan.",
+    en: "Enter a valid amount with up to 2 decimal places.",
+  },
+  "Amaun melebihi had yang dibenarkan.": {
+    ms: "Amaun melebihi had yang dibenarkan.",
+    en: "The amount exceeds the permitted limit.",
+  },
+  "Tarikh tidak sah.": {
+    ms: "Tarikh tidak sah.",
+    en: "Invalid date.",
+  },
+  "Amaun tidak disokong.": {
+    ms: "Amaun tidak disokong.",
+    en: "Unsupported amount.",
+  },
+  "Amaun tidak boleh negatif.": {
+    ms: "Amaun tidak boleh negatif.",
+    en: "The amount cannot be negative.",
+  },
   "Pilihan dana tidak sah.": {
     ms: "Pilihan dana tidak sah.",
     en: "Invalid fund selection.",
@@ -392,5 +488,17 @@ export const cashbookMessages = {
   "Pakej ini terhad kepada 5,000 tuntutan yuran setahun.": {
     ms: "Pakej ini terhad kepada 5,000 tuntutan yuran setahun.",
     en: "This package is limited to 5,000 dues records per year.",
+  },
+  "Dari tarikh": {
+    ms: "Dari tarikh",
+    en: "From date",
+  },
+  "Hingga tarikh": {
+    ms: "Hingga tarikh",
+    en: "Until date",
+  },
+  "Tarikh mengikut waktu Malaysia (GMT+8).": {
+    ms: "Tarikh mengikut waktu Malaysia (GMT+8).",
+    en: "Dates follow Malaysia time (GMT+8).",
   },
 } as const;
