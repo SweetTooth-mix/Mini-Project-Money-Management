@@ -155,7 +155,9 @@ svg {
 }
 .app-shell {
   display: flex;
+  /* dvh tracks the collapsing address bar; vh stays as the fallback. */
   min-height: 100vh;
+  min-height: 100dvh;
 }
 .sidebar {
   position: fixed;
@@ -958,6 +960,28 @@ svg {
 .table-scroll {
   position: relative;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  /* Shadows appear only while there is hidden content on that side: the two
+     "local" layers scroll with the content and cover the shadow at the ends,
+     so no JavaScript or resize observer is needed. */
+  background:
+    linear-gradient(to right, var(--surface) 40%, transparent) left center,
+    linear-gradient(to left, var(--surface) 40%, transparent) right center,
+    radial-gradient(farthest-side at 0 50%, rgb(30 105 77 / 20%), transparent)
+      left center,
+    radial-gradient(
+        farthest-side at 100% 50%,
+        rgb(30 105 77 / 20%),
+        transparent
+      )
+      right center;
+  background-repeat: no-repeat;
+  background-size:
+    42px 100%,
+    42px 100%,
+    15px 100%,
+    15px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 table {
   width: 100%;
@@ -1942,6 +1966,7 @@ select {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 .auth-story {
   background: #174f3c;
@@ -2124,6 +2149,7 @@ select {
 .register-page {
   padding: 45px 20px;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2986,6 +3012,7 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 @media (max-width: 480px) {
   .excel-report-map {
     grid-template-columns: 1fr;
@@ -4966,7 +4993,7 @@ select {
     letter-spacing: -0.8px;
   }
   .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 1.3px;
     margin-bottom: 12px;
   }
@@ -4995,7 +5022,7 @@ select {
     flex-wrap: wrap;
   }
   .subtle-tag {
-    font-size: 10px;
+    font-size: 11px;
     padding: 3px 7px;
   }
   .month-filter {
@@ -5039,7 +5066,7 @@ select {
     letter-spacing: -0.9px;
   }
   .metric-detail {
-    font-size: 10px;
+    font-size: 11px;
     margin-top: 10px;
     line-height: 1.5;
   }
@@ -5054,7 +5081,7 @@ select {
     font-size: 12px;
   }
   .task-strip small {
-    font-size: 10px;
+    font-size: 11px;
   }
   .panel {
     margin-bottom: 20px;
@@ -5075,7 +5102,7 @@ select {
     font-size: 11px;
   }
   .chart-legend {
-    font-size: 10px;
+    font-size: 11px;
     gap: 12px;
   }
   .chart {
@@ -5084,7 +5111,7 @@ select {
     gap: 10px;
   }
   .chart-y-labels {
-    font-size: 9px;
+    font-size: 11px;
     width: 53px;
   }
   .bar-groups {
@@ -5098,12 +5125,12 @@ select {
     gap: 3px;
   }
   .bar-group > span {
-    font-size: 10px;
+    font-size: 11px;
   }
   .chart-summary {
     margin: 0 18px;
     padding: 15px 0;
-    font-size: 10px;
+    font-size: 11px;
     align-items: flex-start;
   }
   .chart-summary strong {
@@ -5138,7 +5165,7 @@ select {
   }
   .panel-footnote {
     padding: 0 18px 19px;
-    font-size: 10px;
+    font-size: 11px;
   }
   .recent-entries > li {
     padding: 16px 18px;
@@ -5157,7 +5184,7 @@ select {
     font-size: 11px;
   }
   .recent-entry-copy small {
-    font-size: 9px;
+    font-size: 11px;
     line-height: 1.7;
   }
   .recent-entries .amount {
@@ -5195,7 +5222,7 @@ select {
     font-size: 12px;
   }
   .activity-item small {
-    font-size: 10px;
+    font-size: 11px;
   }
   input,
   textarea,
@@ -5274,7 +5301,7 @@ select {
   }
   .table-footer {
     padding: 15px 18px;
-    font-size: 10px;
+    font-size: 11px;
     flex-wrap: wrap;
   }
   .form-disclosure > summary {
@@ -5304,7 +5331,7 @@ select {
     flex-direction: column;
     align-items: center;
     gap: 6px;
-    font-size: 10px;
+    font-size: 11px;
     text-align: center;
   }
   .workflow-steps > div:not(:last-child):after {
@@ -5332,7 +5359,7 @@ select {
     font-size: 12px;
   }
   .report-connection-heading > span {
-    font-size: 10px;
+    font-size: 11px;
     margin-left: 26px;
   }
   .excel-report-map > div {
@@ -5342,7 +5369,7 @@ select {
     font-size: 12px;
   }
   .excel-report-map small {
-    font-size: 10px;
+    font-size: 11px;
   }
   .report-map-top {
     margin-bottom: 15px;
@@ -5425,7 +5452,7 @@ select {
   }
   .app-footer {
     margin: 20px 17px 0;
-    font-size: 10px;
+    font-size: 11px;
     padding: 22px 0;
     flex-wrap: wrap;
     gap: 7px;
@@ -5470,5 +5497,43 @@ select {
   .language-toggle,
   .language-error {
     display: none !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  /* Type floor, second pass, for the labels the first pass missed: table
+     sub-lines, status pills, activity text and the drawer captions were still
+     9-10px on a phone. Placed last so it wins over the design-system block,
+     which sets several of these at 10px later in the file. The A4 facsimile on
+     the summary page is excluded on purpose: it is a scaled sheet of paper,
+     not UI chrome. */
+  .table-sub,
+  .transaction-cell small,
+  .recent-entry-copy small,
+  .activity-item small,
+  .activity-item strong,
+  .activity-item p,
+  .approval-card-top small,
+  .approval-card > div:last-child,
+  .approval-card b,
+  .panel-bottom-link,
+  .status,
+  .count-pill,
+  .type-tag,
+  .filter-hint,
+  .audit-action,
+  .account-card p,
+  .account-card > small,
+  .document-filters select,
+  .paid-notice span,
+  .nav-caption,
+  .nav-count,
+  .org-switch small,
+  .sidebar-note p,
+  .sidebar-note a,
+  .sidebar-user small,
+  .avatar,
+  .app-footer {
+    font-size: 11px;
   }
 }
