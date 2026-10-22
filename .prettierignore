@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.data/
+.venv/
+package-lock.json
+test-results/
+playwright-report/
+docs/screenshots/
+templates/excel/
+*.xlsx
+*.md

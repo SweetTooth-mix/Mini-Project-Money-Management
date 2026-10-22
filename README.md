@@ -132,8 +132,12 @@ npm run test:reports       # Template Excel, pautan formula, baki 12 bulan dan P
 npm run build             # Build production dan semakan TypeScript
 npm run test:e2e           # Chromium: dokumen, Excel/PDF, tema, bahasa/cookie dan telefon
 npm run typecheck
+npm run lint              # ESLint: Next core-web-vitals + TypeScript
+npm run format:check      # Prettier
 npm audit
 ```
+
+GitHub Actions (`.github/workflows/ci.yml`) menjalankan semakan jenis, ESLint, Prettier, ujian unit, audit dependency production dan build pada setiap pull request. Job kedua menggunakan PostgreSQL 16 sebagai service dan menjalankan `npm run test:integration`. Ujian laporan Excel/PDF dan browser kekal dijalankan secara manual kerana memerlukan LibreOffice dan Chromium.
 
 `test:integration` menyediakan `kira_rapi_test` pada PostgreSQL Compose tempatan dan membersihkan data fixture dalam DB tersebut. Untuk database ujian luaran, tetapkan `TEST_DATABASE_URL` yang nama databasenya berakhir dengan `_test`.
 

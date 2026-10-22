@@ -121,7 +121,7 @@ export function Shell({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onResize);
-      menuButton.current?.focus();
+      trigger?.focus();
     };
   }, [open]);
   const current =
