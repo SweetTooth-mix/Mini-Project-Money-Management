@@ -110,7 +110,7 @@ svg {
   flex-shrink: 0;
 }
 ::selection {
-  background: #c8e6d4;
+  background: var(--accent-soft);
 }
 .muted {
   color: var(--muted);
@@ -382,7 +382,7 @@ svg {
   border-radius: var(--r-sm);
 }
 .icon-button:hover {
-  background: #eef2ef;
+  background: var(--surface-hover);
 }
 .workspace {
   margin-left: 250px;
@@ -542,7 +542,7 @@ svg {
   border-color: #f0d5cf;
 }
 .button-danger:hover {
-  background: #fde7e2;
+  background: var(--surface-hover);
 }
 .button-small {
   font-size: 10px;
@@ -1016,7 +1016,7 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 tbody tr:hover {
-  background: #fcfdfb;
+  background: var(--surface-hover);
 }
 tfoot th,
 tfoot td {
@@ -1127,7 +1127,7 @@ tfoot td {
 }
 .approval-card:hover {
   border-color: #bdd1c1;
-  background: #fafcf9;
+  background: var(--surface-hover);
 }
 .approval-card-top {
   display: flex;
@@ -1477,8 +1477,8 @@ select {
   margin-bottom: 25px;
 }
 .account-icon {
-  background: #edf5ed;
-  border: 1px solid #dbe9da;
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
   width: 46px;
   height: 46px;
   border-radius: var(--r-xl);
@@ -1519,10 +1519,10 @@ select {
   font-family: monospace;
   font-size: 10px;
   letter-spacing: -0.3px;
-  background: #f4f6f1;
+  background: var(--surface-soft);
   padding: var(--s-1) var(--s-2);
   border-radius: var(--r-xs);
-  color: #7d8c75;
+  color: var(--muted);
 }
 .empty-state {
   display: flex;
@@ -1537,7 +1537,7 @@ select {
   width: 52px;
   height: 52px;
   border-radius: var(--r-xl);
-  background: #f2f6ee;
+  background: var(--surface-soft);
   display: grid;
   place-items: center;
   color: #9eb192;
@@ -1888,12 +1888,12 @@ select {
 }
 .timeline p {
   font-size: 11px;
-  color: #5f6d54;
+  color: var(--muted);
   margin: 5px 0;
 }
 .timeline small {
   font-size: 9px;
-  color: #5f6d54;
+  color: var(--muted);
 }
 .report-sheet {
   max-width: 980px;
@@ -2096,7 +2096,7 @@ select {
   display: grid;
   place-items: center;
   padding: 55px;
-  background: #fcfcf9;
+  background: var(--surface);
 }
 .auth-form {
   width: 100%;
@@ -2163,7 +2163,7 @@ select {
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  background: #f5f8f0;
+  background: var(--paper);
 }
 .register-card {
   background: white;
@@ -2974,19 +2974,19 @@ select {
 .excel-report-map > div {
   padding: var(--s-7);
   border: 1px solid var(--border, #deded5);
-  background: #fff;
+  background: var(--surface);
   border-radius: var(--r-xl);
   display: grid;
   gap: var(--s-3);
 }
 .excel-report-map span {
-  color: #377555;
+  color: var(--accent);
   font-size: 12px;
   letter-spacing: 0.1em;
 }
 .excel-report-map small,
 .excel-help {
-  color: #5c685f;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.7;
 }
@@ -3419,7 +3419,11 @@ select {
     padding: 36px 36px var(--s-8);
     max-width: 1560px;
     margin: 0 auto;
-    outline: none;
+  }
+  /* Sasaran pautan langkau: cincin mesti kekal nampak, bukan dibuang. */
+  .main-content:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
   }
   .app-footer {
     margin: 30px 36px 0;
@@ -5557,6 +5561,13 @@ select {
   h1 {
     letter-spacing: -0.4px;
   }
+  h1,
+  h2,
+  h3,
+  .panel-heading h2,
+  .page-heading h1 {
+    text-wrap: balance;
+  }
   .panel-heading h2 {
     font-family: var(--font-display);
     font-size: 17px;
@@ -6056,4 +6067,16 @@ select {
   .app-footer {
     font-size: 11px;
   }
+}
+
+/* v8 · Audit filter note
+   The audit log's timezone note was the only element carrying .form-hint, and
+   no rule existed for it, so it rendered as body copy with default margins.
+   Styled with the same muted 11px treatment as .filter-hint so the two hints
+   read as one family. */
+.form-hint {
+  margin: var(--s-2) 0 var(--s-6);
+  font-size: 11px;
+  color: var(--muted);
+  text-wrap: pretty;
 }
