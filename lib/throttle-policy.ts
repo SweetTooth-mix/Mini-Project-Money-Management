@@ -59,6 +59,15 @@ export const registerBuckets = (email: string, ip: string): Bucket[] => [
   { key: hashKey(`register:email:${email}`), limit: 5 },
 ];
 
+/**
+ * Report generation runs Python and LibreOffice, so it is the most expensive
+ * thing a signed-in user can ask for. Ten per window is far more than a
+ * treasurer needs and far less than a script would like.
+ */
+export const reportBuckets = (userId: string): Bucket[] => [
+  { key: hashKey(`report:user:${userId}`), limit: 10 },
+];
+
 export type ThrottleOutcome = {
   allowed: boolean;
   /** Seconds until the blocking window ends, for messaging and Retry-After. */

@@ -1,7 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveAddress } from "../lib/request-ip";
-import { loginBuckets, registerBuckets } from "../lib/throttle-policy";
+import { resolveAddress, trustProxyHeaders } from "../lib/request-ip";
+import {
+  loginBuckets,
+  registerBuckets,
+  reportBuckets,
+} from "../lib/throttle-policy";
 
 const reader = (values: Record<string, string>) => (name: string) =>
   values[name];
@@ -114,4 +118,25 @@ test("registration buckets stay small and per-address", () => {
   assert.equal(buckets.length, 2);
   assert.ok(buckets.every((bucket) => bucket.limit === 5));
   assert.equal(registerBuckets("baru@contoh.my", "unknown").length, 1);
+});
+
+test("proxy headers are trusted only when configured explicitly", () => {
+  // Defaulting to trust would let a direct client choose its own bucket.
+  assert.equal(trustProxyHeaders({}), false);
+  assert.equal(trustProxyHeaders({ TRUST_PROXY_HEADERS: "false" }), false);
+  assert.equal(trustProxyHeaders({ TRUST_PROXY_HEADERS: "1" }), false);
+  assert.equal(trustProxyHeaders({ TRUST_PROXY_HEADERS: "true" }), true);
+});
+
+test("report generation is limited per user, not per account role", () => {
+  const [bucket] = reportBuckets("user-1");
+  assert.equal(bucket.limit, 10);
+  // Two users never share a budget.
+  assert.notEqual(
+    reportBuckets("user-1")[0].key,
+    reportBuckets("user-2")[0].key,
+  );
+  // The key is opaque: a user id must not be readable in the row.
+  assert.match(bucket.key, /^[a-f0-9]{64}$/);
+  assert.ok(!bucket.key.includes("user-1"));
 });

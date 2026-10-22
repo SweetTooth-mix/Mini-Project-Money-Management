@@ -9,6 +9,7 @@ import { DomainError } from "@/lib/money";
 import { log } from "@/lib/log";
 import { requestIdFrom, responseHeaders } from "@/lib/request-id";
 import { z } from "zod";
+import { check, record, reportBuckets } from "@/lib/throttle";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,11 +37,28 @@ export async function GET(request: Request) {
     "Cache-Control": "private, no-store",
     ...responseHeaders(requestId),
   };
-  if (!(await currentUser()))
+  const user = await currentUser();
+  if (!user)
     return Response.json(
       { error: "Sila log masuk." },
       { status: 401, headers },
     );
+  // Every render spawns Python and LibreOffice. Without this, one signed-in
+  // account could saturate the host by requesting reports in a loop.
+  const buckets = reportBuckets(user.id);
+  const throttle = await check(buckets);
+  if (!throttle.allowed)
+    return Response.json(
+      { error: "Terlalu banyak permintaan laporan. Cuba lagi sebentar." },
+      {
+        status: 429,
+        headers: {
+          ...headers,
+          "Retry-After": String(throttle.retryAfterSeconds),
+        },
+      },
+    );
+  await record(buckets);
   const parsed = schema.safeParse(
     Object.fromEntries(new URL(request.url).searchParams),
   );

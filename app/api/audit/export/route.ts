@@ -12,8 +12,15 @@ export const dynamic = "force-dynamic";
  * only reads. Cells pass through csvCell to defuse spreadsheet formulas.
  */
 export async function GET(request: Request) {
-  if (!(await currentUser()))
+  const user = await currentUser();
+  if (!user)
     return Response.json({ error: "Log masuk diperlukan." }, { status: 401 });
+  // The trail covers every other user's actions, so it stays with managers.
+  if (user.role === "USER")
+    return Response.json(
+      { error: "Eksport jejak audit memerlukan peranan pentadbir." },
+      { status: 403 },
+    );
   const requestId = requestIdFrom(request);
   const params = Object.fromEntries(new URL(request.url).searchParams);
   const rows = await auditExportRows(params);

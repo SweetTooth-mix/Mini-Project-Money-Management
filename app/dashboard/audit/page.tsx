@@ -2,7 +2,7 @@ import { uiLocale } from "@/lib/i18n";
 import { getI18n } from "@/lib/i18n-server";
 import Link from "next/link";
 import { ArrowDownToLine, Search as SearchIcon } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireManager } from "@/lib/auth";
 import { auditData } from "@/lib/audit";
 import type { Search } from "@/lib/queries";
 import { Empty, Field, PageHeading, Panel } from "@/components/ui";
@@ -14,7 +14,7 @@ export default async function Audit({
 }) {
   const { t, language } = await getI18n();
 
-  await requireUser();
+  await requireManager();
   const search = await searchParams;
   const data = await auditData(search);
   const filters = data.filters;
