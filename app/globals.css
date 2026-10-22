@@ -1877,7 +1877,8 @@ select {
 }
 .report-letterhead p {
   font-size: 11px;
-  color: #859979;
+  /* 5.2:1 on the report paper: the old #859979 was 2.9:1 at 11px. */
+  color: #5f6d54;
   margin-bottom: 6px;
 }
 .report-letterhead h3 {
@@ -1891,7 +1892,8 @@ select {
   font-size: 13px;
 }
 .report-opening > span {
-  color: #7e8f71;
+  /* 5.2:1 on the report paper: the old #7e8f71 was 3.3:1. */
+  color: #5f6d54;
 }
 .report-totals {
   margin-top: 20px;

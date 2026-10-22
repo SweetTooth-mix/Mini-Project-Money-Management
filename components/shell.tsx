@@ -152,10 +152,11 @@ export function Shell({
           className="brand-link"
           onClick={() => setOpen(false)}
         >
-          {/* The wordmark is a logo, so the link takes its name from the
-              visually hidden text (WCAG 2.5.3 keeps the visible text inside the
-              accessible name; a logo has no literal text to match). */}
-          <Brand />
+          {/* The wordmark is a logo: hidden from assistive technology so the
+              link is announced once, with the name the rest of the app uses. */}
+          <span aria-hidden="true">
+            <Brand />
+          </span>
           <span className="sr-only">{t("Kira Rapi — dashboard")}</span>
         </Link>
         <button
