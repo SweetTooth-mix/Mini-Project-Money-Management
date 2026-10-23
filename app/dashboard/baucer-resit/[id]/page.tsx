@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Check, Download, FileCheck2, Paperclip, Send } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { canReadDocument } from "@/lib/access";
 import { money, shortDate, terbilang, today } from "@/lib/money";
 import type { Search } from "@/lib/queries";
 import { Field, Flash, PageHeading, Panel, Status } from "@/components/ui";
@@ -52,6 +53,9 @@ export default async function DocumentPage({
       : currentOrg;
   const admin = user.role !== "USER";
   const editable = doc.status === "DRAFT" && doc.createdById === user.id;
+  // Same rule the download route applies, so the link is never offered for a
+  // file the route would refuse.
+  const readable = canReadDocument(user, doc);
   const [accounts, funds] = editable
     ? await Promise.all([
         db.account.findMany({ where: { active: true } }),
@@ -348,7 +352,7 @@ export default async function DocumentPage({
           </Panel>
           <Panel title={t("Lampiran")} action={<Paperclip size={17} />}>
             <div className="action-stack">
-              {doc.attachment ? (
+              {doc.attachment && readable && (
                 <a
                   href={`/api/attachments/${doc.attachment.id}`}
                   className="attachment-link"
@@ -356,7 +360,15 @@ export default async function DocumentPage({
                   <Download size={16} />
                   {doc.attachment.fileName}
                 </a>
-              ) : (
+              )}
+              {doc.attachment && !readable && (
+                <p className="muted">
+                  {t(
+                    "Lampiran draf hanya boleh dibuka oleh penyedia dan pentadbir.",
+                  )}
+                </p>
+              )}
+              {!doc.attachment && (
                 <p className="muted">{t("Tiada lampiran.")}</p>
               )}
               {doc.status === "DRAFT" && doc.createdById === user.id && (
