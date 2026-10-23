@@ -234,6 +234,10 @@ export const documentsMessages = {
     ms: "Lampiran",
     en: "Attachments",
   },
+  "Lampiran draf hanya boleh dibuka oleh penyedia dan pentadbir.": {
+    ms: "Lampiran draf hanya boleh dibuka oleh penyedia dan pentadbir.",
+    en: "A draft attachment can only be opened by its author and by managers.",
+  },
   "Tiada lampiran.": {
     ms: "Tiada lampiran.",
     en: "No attachments.",
