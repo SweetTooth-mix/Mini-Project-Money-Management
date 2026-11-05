@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16-bookworm@sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0
+    image: postgres:18-bookworm@sha256:5c4783a8cc3f0074912164f94dfa1be4e043438f0f707cf968d7af9a0d31a2c8
     restart: unless-stopped
     environment:
       POSTGRES_DB: kira_rapi
